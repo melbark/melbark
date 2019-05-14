@@ -1,0 +1,521 @@
+﻿<!doctype html>
+<html lang=en>
+  <head>
+    <meta charset=utf-8>
+    <meta name="viewport" content="width=device-width; height=device-height; initial-scale=1.0; maximum-scale=1.0;" /> 
+    <title>PointerEvents Tracker</title>
+    <style type="text/css"> 
+
+      * {
+        -webkit-touch-callout: none; /* prevent callout to copy image, etc when tap to hold */
+        -webkit-text-size-adjust: none; /* prevent webkit from resizing text to fit */
+        /* make transparent link selection, adjust last value opacity 0 to 1.0 */
+        -webkit-tap-highlight-color: rgba(0,0,0,0); 
+        -webkit-user-select: none; /* prevent copy paste, to allow, change 'none' to 'text' */
+        -webkit-tap-highlight-color: rgba(0,0,0,0); 
+      }
+
+      body {
+        background-color: #000000;
+        margin: 0px;
+      }
+      canvas {
+        background-color:#111133;
+        display:block; 
+        position:absolute; 
+      }
+      .container {
+        width:auto;
+        text-align:center;
+        background-color:#ff0000;
+      }
+    </style>
+
+
+  </head>
+  <body onload = "init()">
+  <title>spectralpool</title>
+
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/pep/0.4.1/pep.js"></script>
+    <!-- <script src="./js/teoria.js"></script> -->
+
+    <script src="chroma.js"></script>
+
+    <script src="http://192.168.0.14:3000/js/chroma.js"></script>
+    <script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth/Synthknob_files/raphael-min.js"></script>
+    <script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth/Synthknob_files/qwerty-hancock.js"></script>
+    <!-- <script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth/Synthknob_files/jquery.knob.js"></script> -->
+    <script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth//tuna-master/tuna.js"></script>
+    <script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth//stats.js-master/src/Stats.js"></script>
+
+    <script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth/js/lib/recorder.js"></script>
+    <script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth/js/recordLive.js"></script>
+    <script src='http://192.168.0.14:3000/js/teoria.js'></script>
+
+
+
+
+    <script>
+
+//livereload refresh 
+document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
+':35729/livereload.js?snipver=1"></' + 'script>')    
+
+// shim layer with setTimeout fallback
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+  window.webkitRequestAnimationFrame ||
+  window.mozRequestAnimationFrame    ||
+  window.oRequestAnimationFrame      ||
+  window.msRequestAnimationFrame     ||
+  function( callback ){
+    window.setTimeout(callback, 1000 / 60);
+  };
+})();
+
+
+ var socket = io.connect('http://192.168.0.14:3000')
+
+ socket.on('connect', function(){
+    var sessionid = socket.io.engine.id;
+    // console.log(sessionid)
+});
+
+
+
+var canvas,
+c, // c is the canvas' context 2D
+container;
+
+setupCanvas();
+var pointers;
+var voices = []
+var modelist = [
+// 'major'
+// ,'minor'
+,'ionian'
+,'dorian'
+,'phrygian'
+,'lydian'
+,'mixolydian'
+,'aeolian' 
+,'locrian'
+// ,'majorpentatonic'
+// ,'minorpentatonic'
+// ,'chromatic'
+// ,'harmonicchromatic' 
+// ,'blues'
+// ,'doubleharmonic'
+// ,'flamenco'
+// ,'harmonicminor'
+// ,'melodicminor'
+// ,'wholetonelydian'
+// ,'wholetonedorian'
+]
+
+
+canvas.addEventListener( 'pointerdown', onPointerDown, false );
+canvas.addEventListener( 'pointermove', onPointerMove, false );
+canvas.addEventListener( 'pointerup', onPointerUp, false );
+canvas.addEventListener( 'pointercancel', onPointerUp, false );
+canvas.addEventListener( 'pointerleave', onPointerUp, false );
+window.onorientationchange = resetCanvas;
+window.onresize = resetCanvas;
+
+function resetCanvas (e) {
+  // resize the canvas - but remember - this clears the canvas too.
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  //make sure we scroll to the top left.
+  window.scrollTo(0,0); 
+}
+
+function init(){
+  pointers = {};
+  requestAnimFrame(draw);
+}
+
+function draw() {
+  
+  c.clearRect(0,0,canvas.width, canvas.height); 
+
+  for(var pointerId in pointers)
+  {
+    var pointer = pointers[pointerId]; 
+    var note4 = teoria.note.fromFrequency(pointer.x);
+    var a4 = teoria.note(String(note4.note));
+    var freq = a4.fq()
+    pointer.voice.update(a4.fq(),1-1/pointer.y)
+
+    c.beginPath(); 
+    c.fillStyle = "white";
+    c.fillText(pointer.pointerType + " pointerId : "+ pointer.pointerId + " ,note: " + a4 + " ,freq: " + freq +" ,x:"+pointer.x+" ,y:"+pointer.y, pointer.x ,30); 
+  
+    // c.beginPath(); 
+    // c.strokeStyle = "cyan";
+    // c.lineWidth = "6";
+    // c.arc(pointer.x, pointer.y, 40, 0, Math.PI*2, true); 
+    // c.stroke();
+
+
+   
+ 
+  /*vco.frequency.value = san.fq()*/
+ 
+  var note4scale = teoria.note.fromFrequency(pointer.x/2);
+  var b4 = teoria.note(String(note4scale.note));
+  for (var k = 1; k<= 7; k++){ 
+  var mode4 = modelist[k]
+  var mode4scale = b4.scale(mode4)
+  c.fillText(mode4, pointer.x/2-40, 50+k*40);
+  for (var i = 1; i<= 7; i++) {  
+
+    var san = mode4scale.get(i);
+    // // c.font = "20px Ariel";
+     c.fillText(san, san.fq(), 50+k*40);
+    c.strokeStyle = "blue";
+
+    c.beginPath();
+    c.moveTo(san.fq(), 50+i*40);
+    c.lineTo(san.fq(), 60+i*50);
+
+    c.closePath();
+    c.stroke();
+/*
+    c.font = "20px Ariel";
+    c.fillText(san, san.fq(), 20);
+
+    c.beginPath();
+    c.moveTo(san.fq(), 50);
+    c.lineTo(san.fq(), 900);
+    c.closePath();
+    c.stroke();
+    */
+
+    for (var j = 1; j <  100; j++) {
+          c.strokeStyle = "red";
+      var san = mode4scale.get(i);
+      c.beginPath();
+      c.moveTo(san.fq()*j, 50+k*40);
+      c.lineTo(san.fq()*j, 60+k*50);
+      c.closePath();
+      c.stroke();
+    }
+
+
+
+  }
+}
+
+
+
+  }
+  //c.fillText("hello", 0,0); 
+
+  requestAnimFrame(draw);
+}
+
+function onPointerDown(e) {
+  var voice
+  pointers[e.pointerId] = {
+    x: e.clientX,
+    y: e.clientY,
+    pointerType: e.pointerType,
+    pointerId: e.pointerId
+  };
+  
+  pointers[e.pointerId].voice = new Voice(e.clientX,1/e.clientY,e.pointerId);
+  pointers[e.pointerId].voice.start();
+  console.log(pointers)
+
+  paint = true;
+  stroke = true;
+  // addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop); //pass the x y and co-ordinate of the click to draw on canvas  
+  // redraw();
+  socket.emit('pdown', {                            //on each click send the x and y co-ordinates of the click to the server
+      'x':e.pageX - this.offsetLeft,               //passing x co-ordinate to server
+      'y':e.pageY - this.offsetTop,                //passing y co-ordinate to server
+      'paint':paint,                               //passing boolean indicating if the user is drawing or not
+      'str':stroke ,                                //passing the color of the current user 
+      'pointerType': e.pointerType,
+      'pointerId': e.pointerId,
+      'clientname': name
+    });  
+}
+
+function onPointerMove(e) {
+  // Prevent the browser from doing its default thing (scroll, zoom)
+  var pointer = pointers[e.pointerId];
+  paint = true;
+  stroke = true;
+  if (pointer) {
+    pointer.x = e.clientX;
+    pointer.y = e.clientY;
+    pointers[e.pointerId].voice.update(e.clientX,1/e.clientY);
+    socket.emit('pmove', {        //every time user moves the mouse send the x and y co-ordinates of the new position to the server
+      'x':e.pageX - this.offsetLeft,  //send x co-ordinate of the new position
+      'y':e.pageY - this.offsetTop,   //send y co-ordinate of the new position
+      'paint':paint,                  //passing boolean indicating if the user is drawing or not       
+      'str':stroke,                    //passing the color of the current user 
+         'pointerType': e.pointerType,
+      'pointerId': e.pointerId,
+      'clientname': name    
+    });
+  }
+} 
+
+function onPointerUp(e) { 
+  pointers[e.pointerId].voice.stop();
+  delete pointers[e.pointerId];
+  paint = false;
+  stroke = false;
+  socket.emit('pup', {                 //whenever a user releases the mouse button send the x and y co-ordinates of that location
+      'x':e.pageX - this.offsetLeft,    //pass x co-ordinate of the mouse relase location
+      'y':e.pageY - this.offsetTop,     //pass y co-ordinate of the mouse relase location
+      'paint':paint,                    //passing boolean indicating if the user is drawing or not
+      'str':stroke,                      //passing the color of the current user 
+         'pointerType': e.pointerType,
+      'pointerId': e.pointerId,
+      'clientname': name   
+  });
+
+}
+
+socket.on('pdown', function(data){         //receiving data from the server
+  // addClick(data.x,data.y , data.paint);  
+  console.log("pdown")
+
+ var voice
+  pointers[10+data.pointerId] = {
+    x: data.x,
+    y: data.y,
+    pointerType: data.pointerType,
+    pointerId: 10+ data.pointerId
+  };
+  
+  pointers[10 + data.pointerId].voice = new Voice(pointers[10+data.pointerId].x,1/pointers[10+data.pointerId].y,10+data.pointerId);
+  pointers[10+data.pointerId].voice.start();
+  console.log(pointers)
+
+    //pass the received a and y co-ordinates to draw on the canvas
+  var tempStroke = stroke;                 //save the current color
+  stroke = data.str;                       //set color to that of the received data
+  // redraw();                                //paint using the new color
+  stroke = tempStroke;                      //set color back to the original
+});
+
+socket.on('pmove', function(data){    
+  console.log("pmove")     //receiving data from the server
+  // addClick(data.x, data.y, data.paint);    //pass the received a and y co-ordinates to draw on the canvas
+  var tempStroke = stroke;                 //save the current color
+  stroke = data.str;                       //set color to that of the received data
+  // redraw();                                //paint using the new color
+  stroke = tempStroke;                     //set color back to the original
+
+  var pointer = pointers[10+ data.pointerId];
+  if (pointer) {
+    pointer.x =  data.x,
+    pointer.y =  data.y,
+    pointers[10+ data.pointerId].voice.update(data.x,1/data.y);
+  }
+// console.log(pointer)
+
+});
+
+socket.on('pup', function (data) {
+  // console.log(pointer)
+  console.log("pup")   //receiving data from the server
+  // addClick(data.x, data.y, data.paint);    //pass the received a and y co-ordinates to draw on the canvas
+  var tempStroke = stroke;                 //save the current color
+  stroke = data.str;                       //set color to that of the received data
+  // redraw();                                //paint using the new color
+  stroke = tempStroke;                     //set color back to the original
+ 
+
+  pointers[10+ data.pointerId].voice.stop();
+  delete pointers[10+ data.pointerId];
+
+
+});
+
+
+function setupCanvas() {
+
+  canvas = document.createElement( 'canvas' );
+  canvas.setAttribute( 'touch-action', 'none' );
+  c = canvas.getContext( '2d' );
+  container = document.createElement( 'div' );
+  container.className = "container";
+
+  canvas.width = window.innerWidth; 
+  canvas.height = window.innerHeight; 
+  document.body.appendChild( container );
+  container.appendChild(canvas);	
+
+  c.strokeStyle = "#ffffff";
+  c.lineWidth =2;	
+}
+
+ var hot = new chroma.ColorScale({
+            colors:['#000000', 'darkblue', 'green', 'red','orange', ],
+        positions:[0, .00001, .2, .6,.75],
+        mode:'rgb',
+        limits:[0, 300]
+    });
+  
+  
+  function myLog(x) {return (13.4*x)};   // some log function, just an example
+  canvasWidth = window.innerWidth;
+  canvasHeight = window.innerHeight;
+  function drawSpectrogram(array) {
+ 
+    //var canvas = document.getElementById("canvas");
+      // copy the current canvas onto the temp canvas
+    ctx = canvas.getContext("2d");
+    tempCtx.drawImage(canvas, 0, 0, canvasWidth, canvasHeight);
+      // iterate over the elements from the array
+    var arrayLength = array.length
+    for (var i = 0; i < arrayLength/18  ; i++) {
+        // draw each pixel with the specific color
+        var value = array[i];
+        ctx.fillStyle = hot.getColor(value).hex();
+          ctx.fillRect(myLog(i)/5, canvasHeight - 1, myLog(i+1)/5-myLog(i)/5, 1);
+      }
+      // set translate on the canvas
+      ctx.translate(0, -1);
+      // draw the copied image
+      ctx.drawImage(tempCanvas, 0, 0, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
+      // reset the transformation matrix
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
+
+
+
+var context = new AudioContext;
+
+
+
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@
+var Voice = function(context,touch) {   
+    function Voice(frequency,volume,touch){
+      var lowNote = 0; // C4
+      var highNote = 7900; // B4
+      //this.attack = attack
+      //this.release = release
+
+      
+        this.touch = touch
+        this.identifier = touch.identifier;
+         
+
+
+  /*vco.frequency.value = san.fq()*/
+      //log("continuing touch " + 2 ^ (frequency/68.26));
+      this.frequency = frequency;
+      this.frequency54 = frequency*2.5
+      this.volume = (1-(volume/1010))
+ 
+      this.oscillators = [];
+      this.gains = [];
+     
+
+ };
+           
+
+     Voice.prototype.start = function() {
+
+
+ /* VCA */
+      var vca = context.createGain();
+      vca.gain.value = this.volume
+/* VCO */
+      var vco = context.createOscillator();
+      //vco.type = "square";
+      vco.frequency.value = this.frequency;
+
+      //vco.type = "square";
+       vco.connect(vca)
+
+      vco.start(0);  
+  
+
+    var now = context.currentTime;
+    vca.gain.cancelScheduledValues( now );
+    vca.gain.setValueAtTime(0, now)
+    vca.gain.linearRampToValueAtTime(vca.gain.value, now + .1)
+
+     // envelope.connect(context.destination)      
+      //vca.connect(context.destination);
+      vco.connect(vca);
+      
+
+      vca.connect(context.destination)
+
+   
+    
+      this.oscillators.push(vco); 
+      this.gains.push(vca)
+
+    };
+
+  // Update the note frequency.
+  Voice.prototype.updateFrequency = function(event) {
+    if (event.type == 'touchstart' || event.type == 'touchmove') {
+       var touch = event.touches[0];
+      voice.updateFreq(touch.pageX, touch.pageY);
+    } else if (event.type == 'touchstart' || event.type == 'touchmove') {
+      var touch = event.touches[0];
+      voice.calculateFrequency(touch.pageX, touch.pageY);
+
+    }
+  };
+  // Calculate the note frequency.
+  Voice.calculateNote = function(posX) {
+    var noteDifference = highNote - lowNote;
+    var noteOffset = (noteDifference / el.offsetWidth) * (posX - el.offsetLeft);
+    return lowNote + noteOffset;
+  };  
+  // Calculate the volume.
+  Voice.calculateVolume = function(posY) {
+    var volumeLevel = 1 - (((100 / el.offsetHeight) * (posY - el.offsetTop)) / 100);
+    return volumeLevel;
+  };
+    Voice.prototype.update = function(x,y) {
+      this.gains.forEach(function(g, _) {
+      g.gain.value = (1-(y/1010))
+     // log("touch" + touch + "; " +  g.gain.value)
+     });
+      this.oscillators.forEach(function(oscillator, _) {
+      oscillator.frequency.value =  x
+      //log("touch" + touch + "; " + oscillator.frequency.value)
+     });
+
+    }; 
+    Voice.prototype.stop = function() {     
+    var now = context.currentTime;
+      this.gains.forEach(function(vcagain, _) {
+              
+              vcagain.gain.cancelScheduledValues( now );
+              vcagain.gain.setValueAtTime(vcagain.gain.value, now)     
+            
+              vcagain.gain.linearRampToValueAtTime(0, now + 1)              
+      });          
+
+ 
+      this.oscillators.forEach(function(oscillator, _) {
+           
+              oscillator.stop(now + 1+0.0001);
+      });
+      delete this.oscillators
+      delete this.gains
+    };
+    return Voice;
+  }(context);
+
+    </script>
+  </body>
+</html>

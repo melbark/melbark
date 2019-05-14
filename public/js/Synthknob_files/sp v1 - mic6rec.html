@@ -1,0 +1,5405 @@
+<!DOCTYPE html>
+<!-- saved from url=(0092)https://mdn.mozillademos.org/en-US/docs/Web/API/Touch_events$samples/Example?revision=823467 -->
+<html>
+
+
+
+
+<script src="Synth_files/chroma.js"></script>
+ <script src="./Synthknob_files/jquery.min.js"></script>
+    <script src="./Synthknob_files/raphael-min.js"></script>
+<script src="./Synthknob_files/qwerty-hancock.js"></script>
+<script src="./Synthknob_files/jquery.knob.js"></script>
+<script src="./tuna-master/tuna.js"></script>
+<script src="./recorderjs/recorder.js"></script>
+<script src="./dat.gui-master/build/dat.gui.min.js"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+
+
+ <style>
+      .knob {
+        float: left;
+        margin-right: 0px;
+        background-color: black;
+        width: 200px;
+        height: 100px;
+      }
+
+      .checkbox{display:none}
+.switch
+{
+width: 62px;
+height: 32px;
+background: #E5E5E5;
+z-index: 0;
+margin: 0;
+padding: 0;
+appearance: none;
+border: none;
+cursor: pointer;
+position: relative;
+border-radius:16px; //IE 11
+-moz-border-radius:16px; //Mozilla
+-webkit-border-radius:16px; //Chrome and Safari
+}
+.switch:before
+{
+content: ' ';
+position: absolute;
+left: 1px;
+top: 1px;
+width: 60px;
+height: 30px;
+background: #FFFFFF;
+z-index: 1;
+border-radius:16px; //IE 11
+-moz-border-radius:16px; //Mozilla
+-webkit-border-radius:16px; //Chrome and Safari
+}
+.switch:after 
+{
+content: ' ';
+height: 29px;
+width: 39px;
+border-radius: 28px;
+background: #FFFFFF;
+position: absolute;
+z-index: 2;
+top: 1px;
+left: 1px;
+-webkit-transition-duration: 300ms;
+transition-duration: 300ms;
+-webkit-box-shadow: 0 2px 5px #999999;
+box-shadow: 0 2px 5px #999999;
+}
+.switchOn , .switchOn:before
+{
+background: #4cd964 !important;
+}
+.switchOn:after
+{
+left: 21px !important;
+}
+
+    </style>
+
+
+
+<body font-color:"grey" style="background-color:black">
+ 
+
+<style>
+body {background-color:lightgray}
+h1   {color:blue}
+p    {color:green}
+
+#header {
+    background-color:black;
+    color:white;
+    text-align:center;
+    padding:0x;
+}
+#nav {
+    line-height:30px;
+    background-color:black;
+    height:400:px;
+    width:400px;
+    float:left;
+    padding:0px; 
+}
+#controller {
+    width:350px;
+    float:left;
+    padding:10px; 
+ }
+ #envelope {
+    width:350px;
+    float:left;
+    padding:10px; 
+ }
+
+}
+#footer {
+    background-color:black;
+    color:white;
+    clear:both;
+    text-align:center;
+    padding:5px; 
+}
+
+#c
+{width: 2048px; height: 720px;}
+
+     #dat-gui-container > div{min-height: 28px; height: 28px; width: 100%; } 
+            #dat-gui-container > div > ul  {position: absolute; z-index: 0;}
+            #dat-gui-container > div > ul { display: table-row;  }
+            #dat-gui-container > div > ul > li { display: table-cell; min-width: 190px ;padding-left: 0px;padding-right:1px}
+            #dat-gui-container > div > ul > li.cr { background: none; line-height: normal; vertical-align: top; border-left: 0px !important;border-bottom: 0px}
+            #dat-gui-container > div > ul > li.cr >div { background: #1a1a1a; height: 27px !important;padding-left: 6px;}
+            #dat-gui-container > div > ul > li.cr > div > span.property-name{padding-top: 6px; }
+            #dat-gui-container > div > ul > li.cr.string >div { border-left:4px solid green; }
+            #dat-gui-container > div > ul > li.cr.number >div { border-left:4px solid blue;}
+            #dat-gui-container > div > ul > li.cr.function >div { border-left:4px solid red;}
+            #dat-gui-container > div > ul > li.cr.color >div { border-left:4px solid orange;}
+            #dat-gui-container > div > ul > li.cr.boolean>div { border-left:4px solid purple;}
+            #dat-gui-container .close-button { display:none;}      
+
+
+</style>
+
+<div id="dat-gui-container"></div>
+
+<div >
+ <canvas id="canvas" width="2048" height="720" style=" background-color: black ;"></canvas>
+
+</div>
+
+<script type="text/javascript">
+
+var obj = {
+    x:5,
+    y:5,
+    'Z Translate': 0.5,
+    Color:"rgba(228,30,0,0.3)",
+    Interpolation: 0,
+    Yes: true
+};
+
+var gui = new dat.GUI({autoPlace: false});
+var Coordinates = gui.addFolder('Coordinates..', "a");
+Coordinates.add(obj, 'x');
+Coordinates.add(obj, 'y');
+
+var Options = gui.addFolder('Options..', "a");
+Options.addColor(obj, 'Color');
+Options.add(obj, 'Z Translate', 0.0, 1.0);
+
+var interpolation = gui.add(obj, 'Interpolation', {Bilinear: 0, Trilinear: 1});
+var interpolation = gui.add(obj, 'Yes');
+
+var dat_container = document.getElementById('dat-gui-container');
+dat_container.appendChild(gui.domElement);
+
+///////////////
+
+
+var sun = new Image();
+var moon = new Image();
+var earth = new Image();
+function init(){
+  sun.src = 'https://mdn.mozillademos.org/files/1456/Canvas_sun.png';
+  moon.src = 'https://mdn.mozillademos.org/files/1443/Canvas_moon.png';
+  earth.src = 'https://mdn.mozillademos.org/files/1429/Canvas_earth.png';
+  window.requestAnimationFrame(draw);
+}
+
+function draw() {
+  var ctx = document.getElementById('canvas').getContext('2d');
+
+  ctx.globalCompositeOperation = 'destination-over';
+  ctx.clearRect(0,0,300,300); // clear canvas
+
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.strokeStyle = 'rgba(0,153,255,0.4)';
+  ctx.save();
+  ctx.translate(150,150);
+
+  // Earth
+  var time = new Date();
+  ctx.rotate( ((2*Math.PI)/60)*time.getSeconds() + ((2*Math.PI)/60000)*time.getMilliseconds() );
+  ctx.translate(105,0);
+  ctx.fillRect(0,-12,50,24); // Shadow
+  ctx.drawImage(earth,-12,-12);
+
+  // Moon
+  ctx.save();
+  ctx.rotate( ((2*Math.PI)/6)*time.getSeconds() + ((2*Math.PI)/6000)*time.getMilliseconds() );
+  ctx.translate(0,28.5);
+  ctx.drawImage(moon,-3.5,-3.5);
+  ctx.restore();
+
+  ctx.restore();
+  
+  ctx.beginPath();
+  ctx.arc(150,150,105,0,Math.PI*2,false); // Earth orbit
+  ctx.stroke();
+ 
+  ctx.drawImage(sun,0,0,300,300);
+
+  window.requestAnimationFrame(spect);
+}
+
+//init();
+
+
+</script>
+
+
+
+<div id="nav">
+   <p>Click Allow, then press R for recording, once done, press S to stop and grab the WAV file.</p>
+        <p id="output"></p>
+  <br>
+<button onclick="startup()">Initialize</button>
+ <div id="hidden" style="display:none">
+      <a id="record-toggle" href="#">Click me to record.</a><br/><br/>
+      <br/>
+      <audio id="recorded-audio" controls="controls">
+      </audio><br/><br/>
+
+      <a id="webaudio-playback" href="#">Click me to play back using Web Audio.</a>
+ </div>
+<form name=soundcloudurl>
+<input type="text" name="input" size=10>
+<input type="button" value="Calculate" onClick='doMath()'>
+<br>
+Answer:
+<input type="text" name="answer" size=10>
+</form>
+<ul>
+    <li>Overdrive (6 different algorithms)</li>
+    <li>Filter</li>
+    <li>Cabinet</li>
+    <li>Delay</li>
+    <li>Convolver (Reverb)</li>
+    <li>Compressor</li>
+    <li>WahWah</li>
+    <li>Tremolo</li>
+    <li>Phaser</li>
+    <li>Chorus</li>
+    <li>Bitcrusher</li>
+    <li>Moog Filter</li>
+</ul>
+
+<label>
+<input type="checkbox" name="checkboxName" class="checkbox"/>
+<div class="switch"></div>
+</label>
+
+<label>
+<input type="checkbox" name="checkboxName" class="checkbox"/>
+<div class="switch"></div>
+</label>
+<label>
+<input type="checkbox" name="checkboxName" class="checkbox"/>
+<div class="switch"></div>
+</label>
+
+
+<div data-role="page">
+  <div data-role="main" class="ui-content">
+    <form method="post" action="demoform.asp">
+      <label for="switch">Flip Toggle Switch:</label>
+        <input type="checkbox" data-role="flipswitch" name="switch" id="switch" checked>
+        <br>
+      <input type="submit" data-inline="true" value="Submit">
+    </form>
+  </div>
+</div>
+
+
+<div data-role="page">
+  <div data-role="header">
+    <h1>Slider Control</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+    <form method="post" action="demoform.asp">
+      <label for="points">Points:</label>
+      <input type="range" name="points" id="points" value="50" min="0" max="100" data-popup-enabled="true">
+      <input type="submit" data-inline="true" value="Submit">
+    </form>
+  </div>
+</div>
+
+<div data-role="page">
+  <div data-role="header">
+    <h1>Slider Control</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+    <form method="post" action="demoform.asp">
+      <label for="points">Points:</label>
+      <input type="range" name="points" id="points" value="50" min="0" max="100" data-popup-enabled="true">
+      <input type="submit" data-inline="true" value="Submit">
+    </form>
+  </div>
+</div>
+
+
+<br>
+
+
+</div>
+
+<div id="controller">
+
+<label>
+<input type="checkbox" name="checkboxName" class="checkbox"/>
+<div class="switch"></div>
+</label>
+
+<h1>Feedback</h1>
+
+
+    <div class="knob">
+      <h2>Delay</h2>
+      <div style="display:inline;width:100px;height:200px;"><canvas width="100" height="200px"></canvas><input class="delay" id="delay" data-width="100" data-angleoffset="-125" data-anglearc="250" data-fgcolor="blue" value="50" data-min="0" data-max="1000" style="width: 54px; height: 33px; position: absolute; vertical-align: middle; margin-top: 33px; margin-left: -77px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(66, 300, 22); padding: 0px; -webkit-appearance: none; background: none;"></div>
+    </div>
+    <div class="knob">
+      <h2>Feedback</h2>
+      <div style="display:inline;width:100px;height:200px;"><canvas width="100" height="200px"></canvas><input class="feedback" id="feedback" data-width="100" data-angleoffset="-125" data-anglearc="250" data-fgcolor="blue" value=".1" data-min="0" data-max="100" style="width: 54px; height: 33px; position: absolute; vertical-align: middle; margin-top: 33px; margin-left: -77px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(66, 300, 22); padding: 0px; -webkit-appearance: none; background: none;"></div>
+    </div>
+    </div>  
+
+  <div id="envelope">
+
+<label>
+<input type="checkbox" name="checkboxName" class="checkbox"/>
+<div class="switch"></div>
+</label>
+    <h2>Envelope</h2>
+
+
+    <div class="knob">
+      <h2>Attack</h2>
+      <div style="display:inline;width:100px;height:200px;"><canvas width="100" height="200px"></canvas><input class="attack" id="attack" data-width="100" data-angleoffset="-125" data-anglearc="250" data-fgcolor="#66EE66" value="10" data-min="0" data-max="1000" style="width: 54px; height: 33px; position: absolute; vertical-align: middle; margin-top: 33px; margin-left: -77px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(102, 238, 102); padding: 0px; -webkit-appearance: none; background: none;"></div>
+    </div>
+
+    <div class="knob">
+      <h2>Decay</h2>
+      <div style="display:inline;width:100px;height:200px;"><canvas width="100" height="200px"></canvas><input class="decay" id="decay" data-width="100" data-angleoffset="-125" data-anglearc="250" data-fgcolor="#66EE66" value="50" data-min="0" data-max="1000" style="width: 54px; height: 33px; position: absolute; vertical-align: middle; margin-top: 33px; margin-left: -77px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(102, 238, 102); padding: 0px; -webkit-appearance: none; background: none;"></div>
+    </div>
+
+   <div class="knob">
+      <h2>Sustain</h2>
+      <div style="display:inline;width:100px;height:200px;"><canvas width="100" height="200px"></canvas><input class="sustain" id="sustain" data-width="100" data-angleoffset="-125" data-anglearc="250" data-fgcolor="#66EE66" value="50" data-min="0" data-max="1000" style="width: 54px; height: 33px; position: absolute; vertical-align: middle; margin-top: 33px; margin-left: -77px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(102, 238, 102); padding: 0px; -webkit-appearance: none; background: none;"></div>
+    </div>
+
+    <div class="knob">
+      <h2>Release</h2>
+      <div style="display:inline;width:100px;height:200px;"><canvas width="100" height="200px"></canvas><input class="release" id="release" data-width="100" data-angleoffset="-125" data-anglearc="250" data-fgcolor="#66EE66" value="50" data-min="0" data-max="1000" style="width: 54px; height: 33px; position: absolute; vertical-align: middle; margin-top: 33px; margin-left: -77px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(102, 238, 102); padding: 0px; -webkit-appearance: none; background: none;"></div>
+    </div>
+ </div>  
+  
+</div>
+ <!--
+<div id="footer">
+Log: <pre id="log"</pre>
+</div>-->
+   
+ <!--<div id="keyboard" style="font-size: 0px;"></div>-->
+
+
+
+
+<script type="text/javascript">
+
+  var delay = 1
+  var feedback = 1
+  var attack = 1
+  var decay = 1
+  var sustain = 1
+  var release = 1
+  $(function() {
+      $(".delay").knob();
+  });
+
+    $(function() {
+      $(".feedback").knob();
+  });
+
+    $(function() {
+      $(".attack").knob();
+  });
+
+    $(function() {
+      $(".decay").knob();
+  });
+
+  $(function() {
+      $(".sustain").knob();
+  });
+
+    $(function() {
+      $(".release").knob();
+  });
+  
+
+  $(".delay").knob({
+        'change' : function (v) { delay = v/100; console.log(v/100);}
+    });
+
+
+ $(".feedback").knob({
+      'change' : function (v) { feedback = v/100; console.log(v/100)}
+  });
+
+  $(".attack").knob({
+        'change' : function (v) { attack = v/100; console.log(v/100);}
+    });
+
+
+ $(".decay").knob({
+      'change' : function (v) { decay = v/100; console.log(v/100)}
+  });
+
+  $(".sustain").knob({
+        'change' : function (v) { sustain = v/100; console.log(v/100);}
+    });
+
+
+ $(".release").knob({
+      'change' : function (v) { release = v/100; console.log(v/100)}
+  });
+
+
+
+
+
+  var context = new AudioContext();
+  var myAudioAnalyser = context.createAnalyser()
+  var ongoingTouches = []; 
+  var voices = [];
+  var mousevoices = []
+  //var voicetracker = {};
+
+    var tuna = new Tuna(context);
+     
+      var phaser = new tuna.Phaser({
+        rate: 1.2,                     //0.01 to 8 is a decent range, but higher values are possible
+        depth: 0.3,                    //0 to 1
+        feedback: 0.2,                 //0 to 1+
+        stereoPhase: 30,               //0 to 180
+        baseModulationFrequency: 700,  //500 to 1500
+        bypass: 0
+    });
+
+    var overdrive = new tuna.Overdrive({
+        outputGain: 0.5,         //0 to 1+
+        drive: 0.7,              //0 to 1
+        curveAmount: 1,          //0 to 1
+        algorithmIndex: 0,       //0 to 5, selects one of our drive algorithms
+        bypass: 0
+    });
+
+
+    var compressor = new tuna.Compressor({
+        threshold: 0.5,    //-100 to 0
+        makeupGain: 1,     //0 and up
+        attack: 1,         //0 to 1000
+        release: 0,        //0 to 3000
+        ratio: 4,          //1 to 20
+        knee: 5,           //0 to 40
+        automakeup: true,  //true/false
+        bypass: 0
+    });
+
+
+
+    var filter = new tuna.Filter({
+        frequency: 440, //20 to 22050
+        Q: 1, //0.001 to 100
+        gain: 0, //-40 to 40
+        filterType: "lowpass", //lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass
+        bypass: 0
+    });
+
+
+
+    var tremolo = new tuna.Tremolo({
+        intensity: 0.3,    //0 to 1
+        rate: 4,         //0.001 to 8
+        stereoPhase: 0,    //0 to 180
+        bypass: 0
+    });
+
+    var wahwah = new tuna.WahWah({
+        automode: true,                //true/false
+        baseFrequency: 0  ,        //0 to 1
+        excursionOctaves: 1 ,         //1 to 6
+        sweep: 0.1  ,               //0 to 1
+        resonance: 5,              //1 to 100
+        sensitivity: 1,           //-1 to 1
+        bypass: 0
+    });
+
+
+
+function startup(context) {
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+  
+  el.addEventListener('mousedown', handleStart,false);
+  el.addEventListener('mousemove', handleMove,false);
+  el.addEventListener('mouseup', handleEnd,false);
+  el.addEventListener('mouseleave', handleCancel,false);
+  el.addEventListener("touchstart", handleStart, false);
+  el.addEventListener("touchend", handleEnd, false);
+  el.addEventListener("touchcancel", handleCancel, false);
+  el.addEventListener("touchleave", handleEnd, false);
+  el.addEventListener("touchmove", handleMove, false);
+  var emptytouch 
+ 
+  tempaudio = context.createOscillator();
+  tempaudio.type = "sine";
+  tempaudio.frequency.value = 40;
+  tempaudio.start(0)
+  loadSound("pink.ogg");
+  //getLiveInput();
+  }
+
+//var ongoingTouches = new Array;
+
+
+function handleStart(evt) {    
+
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+  var offset = findPos(el);
+    
+
+evt.preventDefault();
+  if (evt.type == 'mousedown' || evt.type == 'mousedown') {
+    var frequencyx = evt.pageX;
+    var volumey = evt.y;
+    var mousedown 
+    //log(evt.pageX + ";" + evt.x + ";" + evt.clientX + ";" + evt.posX + ";" + UIEvent.pageX)
+
+    var voice = new Voice(frequencyx,volumey,delay,feedback,attack,decay,sustain,release,1000);   
+    voice.start();
+    mousevoices.push(voice);
+  } if (evt.type == 'touchstart' || evt.type == 'touchstart') {
+     var touches = evt.changedTouches;
+     var touchLength = touches.length;
+  for (var i = 0; i < touchLength; i++) {
+    //log("touchstart.");  
+    var frequencyx = touches[i].pageX;
+    var volumey = touches[i].pageY;
+    var voice = new Voice(frequencyx,volumey,delay,feedback,attack,decay,sustain,release,touches[i]);
+    voice.start();
+    voices.push(voice);
+  }
+  } 
+}
+
+
+function handleEnd(evt) {
+  //log("touchend.");
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+  evt.preventDefault();
+  var offset = findPos(el);
+
+  
+  if (evt.type == 'mouseup' || evt.type == 'mouseup') {
+    
+    for (var i = 0; i < mousevoices.length; i++) {
+       mousevoices[i].stop(); 
+       mousevoices.splice(i, 1); // remove it; we're done   
+    }
+ 
+  } else if (evt.type == 'touchend' || evt.type == 'touchend') {
+     var touches = evt.changedTouches;
+     var touchLength = touches.length;
+    for (var i = 0; i < touchLength; i++) {
+        var idx = ongoingVoiceIndexById(touches[i].identifier);        
+        if (idx >= 0) {
+          voices[idx].stop(); 
+          voices.splice(idx, 1); // remove it; we're done
+        } else {
+          //log("can't figure out which touch to end");
+  }
+  }
+   }
+}
+function handleMove(evt) {  
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+  var offset = findPos(el);
+  evt.preventDefault();   
+  
+
+
+  if (evt.type == 'mousemove' || evt.type == 'mousemove') {
+
+       for (var i = 0; i < mousevoices.length; i++) {
+         var frequencyx = evt.pageX;
+         var volumey = evt.y;
+         mousevoices[i].update(frequencyx,volumey);
+       }
+
+    
+
+  } else if (evt.type == 'touchmove' || evt.type == 'touchmove') {
+  	var touches = evt.changedTouches;
+     var touchLength = touches.length;
+    for (var i = 0; i < touchLength; i++) {
+      
+      var idx = ongoingVoiceIndexById(touches[i].identifier);    
+      if (idx >= 0) {
+          var voicex = touches[i].pageX
+          var voicey = touches[i].pageY
+          voices[idx].update(voicex,voicey);
+          //log("voiceupdate:" + idx + ".");     
+      } else {
+       // log("can't figure out which touch to continue");
+      }
+    }
+   } 
+}
+function handleCancel(evt) {
+//  log("touchend/touchleave.");
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+
+  var offset = findPos(el); 
+
+    if (evt.type == 'mouseleave' || evt.type == 'mouseleave') {
+    
+    for (var i = 0; i < mousevoices.length; i++) {
+       mousevoices[i].stop(); 
+       mousevoices.splice(i, 1); // remove it; we're done   
+    }
+ 
+  } else if (evt.type == 'touchcancel' || evt.type == 'touchcancel') {
+     var touches = evt.changedTouches;
+     var touchLength = touches.length;
+
+  for (var i = 0; i < touchLength; i++) {
+    var idx = ongoingVoiceIndexById(touches[i].identifier);        
+    if (idx >= 0) {
+     //  log("voice:" + idx + ".");
+      voices[idx].stop(); 
+      voices.splice(idx, 1); // remove it; we're done
+    //  log("voicecancel:" + idx + ".");
+    } else {
+    //  log("can't figure out which touch to end");
+      }
+    }
+   } 
+}
+
+
+
+function colorForTouch(touch) {
+  var r = touch.identifier % 16;
+  var g = Math.floor(touch.identifier / 3) % 16;
+  var b = Math.floor(touch.identifier / 7) % 16;
+  r = r.toString(16); // make it a hex digit
+  g = g.toString(16); // make it a hex digit
+  b = b.toString(16); // make it a hex digit
+  var color = "#" + r + g + b;
+  //log("color for touch with identifier " + touch.identifier + " = " + color);
+  return color;
+}
+function copyTouch(touch,voice,counter) {
+  return {identifier: touch.identifier, tracker: counter, clientX: touch.clientX,clientY: touch.clientY, vtrack: voice};
+}
+//function copyVoice(touch,voice,counter) {
+ // return {voiceid: {identifier: identifier: touch.identifier, counter: counter, clientX: touch.clientX,clientY: touch.clientY, voiceobj: voice}};
+//}
+function ongoingTouchIndexById(idToFind) {
+  for (var i = 0; i < ongoingTouches.length; i++) {
+    var id = ongoingTouches[i].identifier;
+    
+    if (id == idToFind) {
+      return i;
+    }
+  }
+  return -1; // not found
+}
+
+
+function ongoingVoiceIndexById(idToFind) {
+
+  var voicesLength = voices.length;
+  for (var i = 0; i < voicesLength; i++) {
+    var id = voices[i].identifier;
+    
+    if (id == idToFind) {
+      return i;
+    }
+  }
+  return -1; // not found
+}
+
+
+function log(msg) {
+  var p = document.getElementById('log');
+  p.innerHTML = msg + "\n" + p.innerHTML;
+}
+ 
+function findPos (obj) {
+    var curleft = 0,
+        curtop = 0;
+
+    if (obj.offsetParent) {
+        do {
+            curleft += obj.offsetLeft;
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+
+        return { x: curleft-document.body.scrollLeft, y: curtop-document.body.scrollTop };
+    }
+}
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@
+var Voice = function(context,touch) {   
+    function Voice(frequency,volume,delay,feedback,attack,decay,sustain,release,touch){
+      var lowNote = 0; // C4
+      var highNote = 7900; // B4
+      //this.attack = attack
+      //this.release = release
+
+      
+        this.touch = touch
+        this.identifier = touch.identifier;
+         
+      
+      //log("continuing touch " + 2 ^ (frequency/68.26));
+      this.frequency = myLog(frequency)/8.15
+      this.volume = 1 - (719.99/volume)
+      this.oscillators = [];
+      this.gains = [];
+     
+      //attaches voice to touch on press by equating to touch obejct id
+ };
+           
+
+     Voice.prototype.start = function() {
+
+      var real = new Float32Array([
+0.000000,
+-0.370874,
+0.288281,
+-0.454893,
+0.061559,
+0.049432,
+-0.012918,
+0.129553,
+-0.041687,
+-0.012594,
+-0.006316,
+0.008130,
+0.000601,
+-0.000181,
+-0.005799,
+0.000374,
+-0.000806,
+0.000236,
+-0.001341,
+0.000891,
+0.000361,
+0.000822,
+-0.000374,
+0.000600,
+0.000703,
+-0.002483,
+0.002295,
+-0.000217,
+0.000450,
+-0.000190,
+0.000034,
+-0.000237,
+0.000719,
+-0.000872,
+0.000771,
+-0.000461,
+0.000487,
+-0.000296,
+-0.000324,
+0.000094,
+-0.000297,
+0.000801,
+-0.000836,
+0.000114,
+0.000064,
+0.000199,
+-0.000033,
+-0.000051,
+-0.000107,
+-0.000221,
+-0.000052,
+0.000198,
+-0.000028,
+-0.000199,
+0.000055,
+-0.000105,
+-0.000255,
+-0.000140,
+0.000114,
+-0.000041,
+-0.000117,
+0.000085,
+-0.000033,
+-0.000004,
+0.000011,
+-0.000273,
+-0.000059,
+-0.000038,
+-0.000255,
+0.000055,
+-0.000013,
+0.000089,
+-0.000059,
+0.000164,
+0.000091,
+0.000001,
+0.000070,
+-0.000004,
+0.000151,
+-0.000148,
+0.000486,
+-0.000242,
+0.000123,
+-0.000050,
+-0.000150,
+0.000053,
+-0.000109,
+0.000183,
+-0.000181,
+0.000331,
+-0.000187,
+0.000227,
+-0.000157,
+0.000145,
+0.000079,
+-0.000158,
+-0.000039,
+-0.000118,
+0.000027,
+-0.000315,
+0.000324,
+-0.000773,
+0.000717,
+-0.000255,
+-0.000114,
+-0.000174,
+-0.000084,
+-0.000107,
+0.000030,
+-0.000092,
+-0.000038,
+-0.000010,
+-0.000173,
+0.000146,
+-0.000033,
+-0.000415,
+0.000811,
+-0.000489,
+0.000142,
+-0.000090,
+0.000044,
+-0.000171,
+0.000034,
+-0.000026,
+-0.000217,
+-0.000042,
+-0.000131,
+0.000229,
+-0.000262,
+0.000534,
+-0.001005,
+0.000352,
+0.000284,
+-0.000795,
+0.000905,
+-0.000018,
+-0.000307,
+0.000268,
+-0.000369,
+0.000470,
+-0.000350,
+0.000241,
+-0.000347,
+0.000472,
+-0.000438,
+0.000056,
+0.000835,
+-0.000250,
+0.000228,
+-0.000023,
+-0.000927,
+0.000283,
+-0.000599,
+0.000170,
+-0.000008,
+0.000220,
+-0.000072,
+0.000262,
+-0.000139,
+0.000048,
+-0.000117,
+0.000160,
+-0.000168,
+0.000174,
+-0.000239,
+0.000141,
+-0.000023,
+-0.000095,
+0.000147,
+-0.000017,
+-0.000049,
+0.000112,
+0.000071,
+-0.000373,
+0.000062,
+0.000120,
+-0.000049,
+0.000005,
+-0.000099,
+0.000010,
+-0.000004,
+-0.000051,
+0.000254,
+-0.000079,
+-0.000125,
+0.000128,
+-0.000043,
+-0.000037,
+-0.000002,
+0.000015,
+-0.000069,
+0.000221,
+-0.000129,
+0.000020,
+0.000037,
+-0.000071,
+0.000027,
+-0.000023,
+-0.000007,
+-0.000008,
+0.000021,
+-0.000001,
+0.000006,
+0.000011,
+0.000011,
+0.000001,
+-0.000005,
+0.000003,
+-0.000004,
+0.000001,
+0.000001,
+-0.000007,
+-0.000006,
+-0.000007,
+-0.000007,
+-0.000007,
+-0.000007,
+-0.000007,
+-0.000007,
+-0.000006,
+-0.000005,
+-0.000005,
+-0.000005,
+-0.000004,
+-0.000003,
+-0.000004,
+-0.000004,
+-0.000003,
+-0.000003,
+-0.000003,
+-0.000003,
+-0.000003,
+-0.000002,
+-0.000003,
+-0.000003,
+-0.000002,
+-0.000002,
+-0.000002,
+-0.000003,
+-0.000002,
+-0.000002,
+-0.000002,
+-0.000002,
+-0.000002,
+-0.000001,
+-0.000002,
+-0.000002,
+-0.000002,
+-0.000001,
+-0.000002,
+-0.000002,
+-0.000002,
+-0.000001,
+-0.000002,
+-0.000002,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000002,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000002,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000002,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000002,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000002,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+]);
+
+var imag =  new Float32Array([
+0.000000,
+0.046536,
+0.256926,
+0.019372,
+-0.496196,
+0.016047,
+-0.063615,
+0.021345,
+-0.007871,
+-0.020463,
+0.009909,
+0.003165,
+-0.000942,
+-0.002837,
+0.002435,
+-0.003583,
+0.001061,
+-0.002121,
+-0.000130,
+0.000233,
+-0.000320,
+0.000087,
+0.000950,
+-0.001264,
+0.002961,
+-0.000701,
+0.000715,
+0.000451,
+-0.000291,
+0.000048,
+0.000166,
+-0.000528,
+0.000677,
+-0.000218,
+-0.000003,
+-0.000280,
+-0.000135,
+0.000574,
+-0.000348,
+0.000214,
+-0.000440,
+0.000625,
+0.001131,
+-0.000147,
+0.000135,
+-0.000206,
+-0.000013,
+-0.000018,
+-0.000061,
+-0.000043,
+0.000120,
+0.000051,
+-0.000039,
+0.000039,
+0.000068,
+-0.000041,
+-0.000088,
+-0.000070,
+0.000099,
+-0.000165,
+0.000194,
+-0.000161,
+-0.000109,
+-0.000013,
+-0.000071,
+0.000097,
+-0.000165,
+-0.000033,
+0.000068,
+0.000003,
+0.000068,
+-0.000104,
+0.000159,
+-0.000107,
+0.000065,
+0.000007,
+0.000123,
+-0.000005,
+-0.000101,
+-0.000075,
+0.000024,
+0.000528,
+-0.000422,
+0.000479,
+-0.000171,
+-0.000048,
+-0.000150,
+0.000350,
+-0.000185,
+-0.000023,
+0.000163,
+0.000053,
+-0.000016,
+0.000018,
+-0.000264,
+0.000025,
+-0.000246,
+-0.000067,
+-0.000231,
+0.000039,
+-0.000093,
+0.000095,
+0.000045,
+0.000450,
+-0.000697,
+0.000170,
+0.000055,
+-0.000160,
+0.000120,
+0.000118,
+-0.000070,
+0.000054,
+0.000057,
+-0.000246,
+0.000253,
+-0.000389,
+0.000138,
+-0.000053,
+0.000014,
+-0.000032,
+-0.000162,
+0.000048,
+-0.000089,
+-0.000145,
+-0.000163,
+0.000127,
+0.000215,
+-0.000009,
+-0.000012,
+0.000117,
+0.000425,
+-0.000036,
+0.000827,
+-0.001058,
+-0.000607,
+0.000224,
+0.000075,
+-0.000086,
+-0.000140,
+0.000358,
+-0.000212,
+0.000479,
+-0.000007,
+-0.000196,
+0.000109,
+0.000138,
+0.000173,
+0.000108,
+-0.000153,
+0.000167,
+-0.000805,
+0.000246,
+-0.000060,
+-0.000009,
+0.000113,
+-0.000008,
+0.000042,
+-0.000097,
+-0.000030,
+0.000144,
+-0.000130,
+0.000154,
+0.000024,
+0.000062,
+-0.000026,
+-0.000145,
+0.000156,
+-0.000205,
+0.000047,
+0.000042,
+-0.000049,
+-0.000070,
+0.000232,
+-0.000152,
+-0.000228,
+0.000210,
+-0.000025,
+0.000046,
+-0.000051,
+0.000131,
+-0.000038,
+-0.000125,
+0.000053,
+0.000214,
+-0.000195,
+0.000066,
+0.000045,
+-0.000026,
+0.000015,
+0.000001,
+-0.000146,
+0.000059,
+0.000115,
+-0.000094,
+0.000138,
+-0.000000,
+0.000007,
+-0.000025,
+0.000013,
+0.000011,
+0.000002,
+0.000016,
+-0.000017,
+-0.000014,
+-0.000017,
+-0.000005,
+-0.000008,
+-0.000006,
+-0.000008,
+-0.000018,
+-0.000007,
+-0.000008,
+-0.000010,
+-0.000009,
+-0.000006,
+-0.000004,
+-0.000004,
+-0.000003,
+-0.000002,
+-0.000001,
+-0.000001,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000001,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+0.000000,
+-0.000000,
+0.000000,
+-0.000000,
+0.000000,
+]);
+        
+     // var imag = new Float32Array(real.length);
+      var hornTable = context.createPeriodicWave(real, imag);
+      this.touch = touch    
+ /* VCA */
+      var vca = context.createGain();
+      vca.gain.value = this.volume
+/* VCO */
+      var vco = context.createOscillator();
+      //vco.type = "square";
+      vco.setPeriodicWave(hornTable);
+      vco.frequency.value = this.frequency;
+  
+      //envelope with 0.001 sec attack and 0.5 sec decay      
+      var envelope = context.createEnvelope(attack,decay,sustain,release);
+
+
+      //var noiseGen = context.createNoiseGen(0,4096)
+      //noiseGen.connect(context.destination)
+      //noiseGen.connect(myAudioAnalyser)
+      envelope.trigger(0.01);
+      //feedback delay of 0.4 seconds with 0.5x feedback
+      var feedbackDelay = context.createFeedbackDelay(delay,feedback);
+      /* connections */
+      vco.connect(vca)
+      //vca.connect(feedbackDelay);   
+      //vco.connect(context.destination)
+      // vca.connect(context.destination) 
+      //vca.connect(envelope)  
+
+      vco.start(0);    
+
+
+      //var delay = new tuna.Delay({
+        //feedback: .7,    //0 to 1+
+        //delayTime: 350,    //how many milliseconds should the wet signal be delayed?
+        //wetLevel: 0.6,    //0 to 1+
+        //dryLevel: .4,       //0 to 1+
+        //cutoff: 300,      //cutoff frequency of the built in lowpass-filter. 20 to 22050
+        //bypass: 0
+      //});
+
+
+     // envelope.connect(context.destination)      
+      //vca.connect(context.destination);
+      vca.connect(tremolo);
+      tremolo.connect(phaser);
+      phaser.connect(feedbackDelay)
+      phaser.connect(wahwah)
+      phaser.connect(context.destination)
+      wahwah.connect(context.destination);
+      feedbackDelay.connect(context.destination) ; 
+      wahwah.connect(myAudioAnalyser);
+      feedbackDelay.connect(myAudioAnalyser);
+    
+      this.oscillators.push(vco); 
+      this.gains.push(vca)
+
+    };
+
+  // Update the note frequency.
+  Voice.prototype.updateFrequency = function(event) {
+    if (event.type == 'touchstart' || event.type == 'touchmove') {
+       var touch = event.touches[0];
+      voice.updateFreq(touch.pageX, touch.pageY);
+    } else if (event.type == 'touchstart' || event.type == 'touchmove') {
+      var touch = event.touches[0];
+      voice.calculateFrequency(touch.pageX, touch.pageY);
+    }
+  };
+  // Calculate the note frequency.
+  Voice.calculateNote = function(posX) {
+    var noteDifference = highNote - lowNote;
+    var noteOffset = (noteDifference / el.offsetWidth) * (posX - el.offsetLeft);
+    return lowNote + noteOffset;
+  };  
+  // Calculate the volume.
+  Voice.calculateVolume = function(posY) {
+    var volumeLevel = 1 - (((100 / el.offsetHeight) * (posY - el.offsetTop)) / 100);
+    return volumeLevel;
+  };
+    Voice.prototype.update = function(x,y) {
+      this.gains.forEach(function(g, _) {
+      g.gain.value = 1 - (719.99/y);
+     // log("touch" + touch + "; " +  g.gain.value)
+     });
+      this.oscillators.forEach(function(oscillator, _) {
+      oscillator.frequency.value = myLog(x)/8.15;
+      //log("touch" + touch + "; " + oscillator.frequency.value)
+     });
+    }; 
+
+    Voice.prototype.stop = function() {     
+
+      this.oscillators.forEach(function(oscillator, _) {
+              oscillator.stop();
+      });
+      delete this.oscillators
+      delete this.gains
+    };
+    return Voice;
+  }(context);
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+  /* NoiseGen */
+
+  function NoiseGenFactory(context, stereo, bufSize){
+    bufSize = bufSize || 512;
+    var node = context.createScriptProcessor(bufSize, 1, 2);
+    node.onaudioprocess = function(e){
+      var outBufferL = e.outputBuffer.getChannelData(0);
+      var outBufferR = e.outputBuffer.getChannelData(1);
+      for (var i = 0; i < bufSize; i++){
+        outBufferL[i] = Math.random() * 2 - 1;
+        outBufferR[i] = stereo ? Math.random() * 2 - 1 : outBufferL[i];
+      }
+    }
+    return node;
+  }
+
+  /* EnvelopeNode */
+
+  function EnvelopeNode(a, d, s, r){
+    this.gain.value = 0;
+    this.att = a;
+    this.dec = d;
+    this.sus = s;
+    this.rel = r;
+
+    this.trigger = function(length){
+      var now = this.context.currentTime;
+      var gain = this.gain;
+      gain.cancelScheduledValues(now);
+      gain.setValueAtTime(0, now);
+      gain.linearRampToValueAtTime(1.0, now + this.att);
+      now += this.att;
+      gain.linearRampToValueAtTime(this.sus, now + this.dec);
+      if (length){
+        var self = this;
+        setTimeout(function(){ self.release(); }, length * 1000);
+      }
+    };
+    this.release = function(){
+      var now = this.context.currentTime;
+      var gain = this.gain;
+      gain.cancelScheduledValues(now);
+      gain.setValueAtTime(gain.value, now);
+      gain.linearRampToValueAtTime(0, now + this.rel);
+    }
+  }
+
+  function EnvelopeFactory(context, a, d, s, r){
+    var gain = context.createGain();
+    EnvelopeNode.call(gain, a, d, s, r);
+    return gain;
+  }
+
+  /* FeedbackDelayNode */
+
+  function FeedbackDelayNode(context, delay, feedback){
+    this.delayTime.value = delay;
+    this.gain = context.createGain();
+    this.gain.gain.value = feedback;
+    this.connect(this.gain);
+    this.gain.connect(this);
+  }
+
+  function FeedbackDelayFactory(context, delayTime, feedback){
+    var delay = context.createDelay(delayTime + 1);
+    FeedbackDelayNode.call(delay, context, delayTime, feedback);
+    return delay;
+  }
+
+  /* ReverbNode */
+
+  function ReverbNodeFactory(context, seconds, options){
+    options = options || {};
+    var sampleRate = context.sampleRate;
+    var length = sampleRate * seconds;
+    var impulse = context.createBuffer(2, length, sampleRate);
+    var impulseL = impulse.getChannelData(0);
+    var impulseR = impulse.getChannelData(1);
+    var decay = options.decay || 2;
+    for (var i = 0; i < length; i++){
+      var n = options.reverse ? length - i : i;
+      impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
+      impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
+    }
+    var convolver = context.createConvolver();
+    convolver.buffer = impulse;
+    return convolver;
+  }
+
+  AudioContext.prototype.createNoiseGen = function(stereo, bufSize){ return NoiseGenFactory(this, stereo, bufSize); };
+  AudioContext.prototype.createEnvelope = function(a, s, d, r){ return EnvelopeFactory(this, a, s, d, r); };
+  AudioContext.prototype.createFeedbackDelay = function(delay, feedback){ return FeedbackDelayFactory(this, delay, feedback); };
+  AudioContext.prototype.createReverbNode = function(seconds, options){ return ReverbNodeFactory(this, seconds, options); };
+
+  /** INSTRUMENTS **/
+
+    /** INSTRUMENTS **/
+
+  function Drum(context){
+    var osc = this.osc = context.createOscillator();
+    osc.frequency.value = 45;
+    osc.type = osc.SINE;
+    var env = this.env = context.createEnvelope(0.001, 0.1, 0, 0.5);
+    osc.connect(env);
+  }
+
+  Drum.prototype.trigger = function(){
+    this.env.trigger(0.05);
+  }
+  Drum.prototype.connect = function(dest){
+    this.env.connect(dest);
+  }
+
+  function HiHat(context){
+    this.noiseGen = context.createNoiseGen();
+    this.filter = context.createBiquadFilter();
+    this.filter.type = this.filter.HIGHPASS;
+    this.filter.frequency.value = 5000;
+    this.noiseGen.connect(this.filter);
+    this.env = context.createEnvelope(0.001, 0.05, 0, 0.2);
+    this.filter.connect(this.env);
+  }
+
+  HiHat.prototype.trigger = function(){
+    this.env.trigger(0.025);
+  }
+  HiHat.prototype.connect = function(dest){
+    this.env.connect(dest);
+  }
+
+  AudioContext.prototype.createDrum = function(){ return new Drum(this); };
+  AudioContext.prototype.createHiHat = function(){ return new HiHat(this); };
+
+  /** LOOP **/
+
+  function Loop(){
+    this.tracks = {};
+    this.stopped = true;
+    this.interval = 500;
+    this.beatUnit = 1/4;
+    this.onPlay = function(){};
+  }
+
+  Loop.prototype.setInstruments = function(instruments){
+    each(instruments, function(inst, label){
+      this.tracks[label] = { instrument: inst };
+    }, this);
+  }
+
+  Loop.prototype.setSequences = function(seqs){
+    each(seqs, function(loop, label){
+      this.tracks[label].loop = typeof loop === "string" ? loop.split('') : loop;
+      this.tracks[label].loopPos = 0;
+    }, this);
+  }
+
+  Loop.prototype.setBPM = function(BPM){
+    this.interval = (60 / BPM) * 1000;
+  }
+
+  Loop.prototype.setBeatUnit = function(unit){
+    this.beatUnit = unit;
+  }
+
+  Loop.prototype.startLoop = function(){
+    this.stopped = false;
+    this.playNext();
+  }
+
+  Loop.prototype.playNext = function(){
+    if (this.stopped) return;
+    each(this.tracks, function(track, name){
+      var currNote = track.loop[track.loopPos];
+      if (currNote === '*'){
+        track.instrument.trigger();
+      }
+      this.onPlay(name, track.loopPos);
+      if (++track.loopPos >= track.loop.length){
+        track.loopPos = 0;
+      }
+    }, this);
+    var self = this;
+    setTimeout(function(){ self.playNext(); }, this.interval * this.beatUnit * 4);
+  }
+
+  Loop.prototype.stopLoop = function(){
+    this.stopped = true;
+  }
+
+  function each(obj, callback, context){
+    context = context || this;
+    for (var prop in obj){
+      if (obj.hasOwnProperty(prop)){
+        callback.call(context, obj[prop], prop);
+      }
+    }
+  }
+
+   //playSoundCloud();
+
+function  playSoundCloud(context) {
+
+  var context = new AudioContext(),
+    audio = new Audio(),
+    source,
+    // `stream_url` you'd get from 
+    // requesting http://api.soundcloud.com/tracks/6981096.json
+    url = 'http://api.soundcloud.com/tracks/6981096/stream' +
+          '?client_id=27d0d20680464016e65074ccc5bd0244';
+
+audio.src = url;
+source = context.createMediaElementSource(audio);
+source.connect(context.destination);
+source.mediaElement.play();
+
+};
+
+
+function doMath(){<!--from  w w w .  j  ava  2 s .  c  om-->
+var inputNum=document.soundcloudurl.input.value;
+
+var result = inputNum;
+document.soundcloudurl.answer.value = result;
+} 
+
+ 
+// load the specified sound
+function loadSound(url) {
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+    request.responseType = 'arraybuffer';
+
+    // When loaded decode the data
+    request.onload = function () {
+
+        // decode the data
+        context.decodeAudioData(request.response, function (buffer) {
+            // when the audio is decoded play the sound
+            playSound(buffer);
+        }, onError);
+    }
+    request.send();
+}
+    // log if an error occurs
+    function onError(e) {
+        console.log(e);
+    }
+
+
+function playSound(buffer) {
+    sourceNode.buffer = buffer;
+    sourceNode.start(0);
+    sourceNode.loop = false;
+}
+
+
+/////////////////////////
+
+
+
+function getLiveInput() {
+  // Only get the audio stream.
+  navigator.GetUserMedia({audio: true}, onStream, onStreamError);
+  
+};
+
+function onStream(stream) {
+  // Wrap a MediaStreamSourceNode around the live input stream.
+  var input = context.createMediaStreamSource(stream);
+  // Connect the input to a filter.
+
+  var feedbackDelay = context.createFeedbackDelay(0.75,0.9); 
+  var vca = context.createGain();
+  vca.gain.value = 1
+
+
+  // Connect graph.
+  input.connect(vca);
+  vca.connect(tremolo)
+  tremolo.connect(phaser)
+  phaser.connect(context.destination)
+  phaser.connect(feedbackDelay)
+  phaser.connect(myAudioAnalyser)
+  feedbackDelay.connect(context.destination)
+  //vca.connect(context.destination)
+  feedbackDelay.connect(myAudioAnalyser)
+  //input.connect(myAudioAnalyser);
+
+  // Set up an animation.
+  //requestAnimationFrame(render);
+};
+
+function onStreamError(e) {
+  console.error(e);
+};
+
+
+///////////////
+
+
+
+    // create a temp canvas we use for copying
+    var tempCanvas = document.createElement("canvas"),
+        tempCtx = tempCanvas.getContext("2d");
+    tempCanvas.width=2048;
+    tempCanvas.height=720;
+
+// used for color distribution
+    var hot = new chroma.ColorScale({
+            colors:['#000000', 'darkblue', 'green', 'red','orange', ],
+        positions:[0, .00001, .2, .6,.75],
+        mode:'rgb',
+        limits:[0, 300]
+    });
+
+    // load the sound
+    setupAudioNodes();
+    var sourceNode;
+    function setupAudioNodes() {
+
+        // setup a javascript node
+        javascriptNode = context.createScriptProcessor(512, 1, 1);
+        // connect to destination, else it isn't called
+        javascriptNode.connect(context.destination);
+
+        
+
+        // setup a analyzer
+        myAudioAnalyser = context.createAnalyser();
+        myAudioAnalyser.smoothingTimeConstant = 0;
+        myAudioAnalyser.fftSize = 4096*2;
+//        var array = new Uint8Array(myAudioAnalyser.frequencyBinCount);
+//        myAudioAnalyser.getByteFrequencyData(array);
+
+
+        sourceNode = context.createBufferSource();
+        sourceNode.connect(myAudioAnalyser);
+        myAudioAnalyser.connect(javascriptNode);
+
+        sourceNode.connect(context.destination);
+    }
+
+  
+    javascriptNode.onaudioprocess = function () {
+
+        // get the average for the first channel
+
+        var array = new Uint8Array(myAudioAnalyser.frequencyBinCount);
+        myAudioAnalyser.getByteFrequencyData(array);
+              drawSpectrogram(array);
+    }
+// var scale = 1024;
+// linear
+//for(var i = 0; i <= 1; i += 0.1) ctx.fillRect(i * scale, 0, 2, 20);
+// logarithmic
+//for(var i = 0; i <= 1; i += 0.1) ctx.fillRect(myLog(i) * scale, 35, 2, 20);
+    function myLog(x) {return (Math.log(1.05)^(x)/Math.log(1.1))};   // some log function, just an example
+    
+    function drawBoard(){
+        var bw = 2048;
+        var bh = 720;
+        var p = 10;
+
+        for (var x = 0; x <= bw; x += 40) {
+            ctx.moveTo(0.5 + x + p, p);
+            ctx.lineTo(0.5 + x + p, bh + p);
+        }
+
+
+        for (var x = 0; x <= bh; x += 40) {
+            ctx.moveTo(p, 0.5 + x + p);
+            ctx.lineTo(bw + p, 0.5 + x + p);
+        }
+
+        ctx.strokeStyle = "white";
+        ctx.stroke();
+        }
+
+
+    function drawSpectrogram(array) {
+        // copy the current canvas onto the temp canvas
+      var el = document.getElementsByTagName("canvas")[0];
+      var ctx = el.getContext("2d");
+      tempCtx.drawImage(canvas, 0, 0, 2048, 720);
+        // iterate over the elements from the array
+      var arrayLength = array.length
+      for (var i = 0; i < arrayLength; i++) {
+          // draw each pixel with the specific color
+          var value = array[i];
+          ctx.fillStyle = hot.getColor(value).hex();
+          ctx.fillRect(myLog(i)/2.5, 720 - 1, myLog(i+1)/2.5-myLog(i)/2.5, 1);
+          
+          //ctx.fillRect(10*i, 600 - 1, .1, 5);
+        }
+
+        ctx.translate(0, -1);
+        // draw the copied image
+        ctx.drawImage(tempCanvas, 0, 0, 2048, 720, 0, 0, 2048, 720);
+        // reset the transformation matrix
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        var bw = 2048;
+        var bh = 720;
+        var p = 10;
+
+  
+        for (var x = 0; x <= bw; x += 10) {
+            ctx.fillStyle = "white"
+            ctx.fillRect(myLog(x*3/2)/2.5, 720 - 1, 1, 1);
+            ctx.fillStyle = "cyan"
+            ctx.fillRect(myLog(x*4/5)/2.5, 720 - 1, 1, 1);
+            ctx.fillStyle = "indigo"
+            ctx.fillRect(myLog(x), 720 - 1, 1, 1);
+        }
+      
+
+
+    
+        // set translate on the canvas
+    
+    }
+            </script>
+            
+</body></html>

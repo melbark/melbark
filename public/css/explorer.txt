@@ -1,0 +1,51 @@
+body {
+  background-color: black;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+canvas {
+  margin: auto;
+}
+
+#guiContainer {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 10;
+}
+
+#guiFxContainer {
+  position: absolute;
+  top: 0px;
+  left: 428px;
+  z-index: 10;
+}
+
+#guiSynthContainer {
+  position: absolute;
+  top: 28px;
+  left: 0px;
+  z-index: 10;
+}
+
+#piano {
+  position: absolute;
+  bottom: 0.1%;
+  z-index: 10;
+}
+
+#osci {
+  position: absolute;
+  top: 0px;
+  left: 708px;
+  z-index: 10;
+}
+
+#meter {
+  position: absolute;
+  top: 0px;
+  left: 708px;
+  z-index: 10;
+}

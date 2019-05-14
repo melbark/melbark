@@ -1,0 +1,210 @@
+/* body {
+  background: #000;
+  font-family: sans-serif;
+  color: white;
+} */
+
+.top-info {
+  color: #888;
+}
+
+a {
+  color: #09F;
+  text-decoration: none;
+}
+
+
+a:hover { color: #C25; }
+
+.keyboard__row {
+  display: flex;
+}
+
+.keyboard__key {
+  display: block;
+  height: 50px;
+  width: 12.5%;
+  flex-grow: 1;
+  text-align: center;
+  line-height: 50px;
+  font-family: sans-serif;
+  font-size: 24px;
+  border: 5px solid black;
+  border-radius: 10px;
+  background: #181818;
+}
+
+.keyboard__key[data-note] {
+  background: #333;
+}
+
+.keyboard__key:hover {
+  background: #555;
+  cursor: pointer;
+}
+
+.keyboard__key.is-playing {
+  background: #555;
+  border-color: #555;
+}
+
+
+.keyboard__key.is-down {
+  background: #8AF;
+  color: white;
+}
+
+.keyboard__key.is-down.is-playing { border-color: #8AF; }
+
+/* ---- arp ---- */
+
+.controls {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+/* clear fix */
+.controls:after {
+  content: '';
+  clear: both;
+  display: block;
+}
+
+.arp-board-container {
+  margin-right: 40px;
+}
+
+.arp-board {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.arp-board__column {
+}
+
+.arp-board__column.is-playing {
+  background: hsla(210, 100%, 50%, 0.1);
+}
+
+.arp-board__cell {
+  width: 30px;
+  height: 20px;
+  background: hsla(0, 0%, 100%, 0.15);
+  margin: 1px;
+  border-radius: 6px;
+}
+
+.arp-board__column:nth-child(8n+1) .arp-board__cell {
+/*  border-radius: 12px 0 0 12px;*/
+}
+
+.arp-board__column:nth-child(8n+0) .arp-board__cell {
+/*  border-radius: 0 12px 12px 0;*/
+}
+
+.arp-board__cell--0 { background: hsla(0, 0%, 100%, 0.45); }
+.arp-board__cell---7,
+.arp-board__cell--7 { background: hsla(0, 0%, 100%, 0.35); }
+.arp-board__cell---3,
+.arp-board__cell--4 { background: hsla(0, 0%, 100%, 0.25); }
+
+.arp-board__cell--rest {
+  margin-top: 10px;
+  background: hsla(0, 100%, 50%, 0.4);
+}
+
+.arp-board__cell.is-selected { background: #8AF; }
+.arp-board__column.is-playing .arp-board__cell.is-selected { background: #FD0; }
+
+.arp-board__cell:hover {
+  background: #5E8;
+  cursor: pointer;
+}
+
+/* ---- range-table ---- */
+
+.option-table {
+  background: #FFF;
+  float: left;
+  color: #333;
+  padding: 10px;
+  border-radius: 5px;
+  margin-right: 40px;
+}
+
+.option-table th {
+  text-align: left;
+  font-weight: normal;
+}
+
+/* ---- arp-button ---- */
+
+.arp-button-container {
+}
+
+.arp-button {
+  display: inline-block;
+  margin: 0 10px 10px 0;
+  border: 4px solid #1D1D1D;
+  border-radius: 5px;
+  background: #1D1D1D;
+  position: relative;
+}
+
+.arp-button:hover {
+  cursor: pointer;
+  border-color: #444;
+}
+
+.arp-button canvas {
+  display: block;
+}
+
+.arp-button.is-selected {
+  border-color: #DDD;
+  background: black;
+}
+
+.arp-button__delete-button {
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  border: none;
+  color: #888;
+  background: #888;
+  font-size: 14px;
+  transform: scale(0.5);
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.arp-button:hover .arp-button__delete-button {
+  color: white;
+  transform: scale(1);
+}
+
+.arp-button__delete-button:hover {
+  background: #D00;
+}
+
+/* ---- add-arp-button --- */
+
+.add-arp-button {
+  background: transparent;
+  border: 2px solid #AAA;
+  color: #BBB;
+  font-size: 14px;
+  border-radius: 6px;
+  padding: 2px 10px;
+  float: right;
+}
+
+.add-arp-button:hover {
+  background: #5E8;
+  color: #333;
+  border-color: #5E8;
+  cursor: pointer;
+}

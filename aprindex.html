@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+
+  <title>Web Audio Arpeggiator</title>
+
+  <link rel="stylesheet" href="/js/arp/demo.css" />
+
+</head>
+<body>
+
+<p class="top-info">
+  Web Audio Arpeggiator,
+  made by Dave DeSandro.
+  <a href="https://github.com/desandro/arpeggiator">Code on GitHub</a>.
+  May I also recommend:
+  <a href="http://isotope.metafizzy.co">Isotope</a>,
+  <a href="http://flickity.metafizzy.co">Flickity</a>, &amp;
+  <a href="http://packery.metafizzy.co">Packery</a>
+</p>
+
+<div class="controls">
+
+  <table class="option-table">
+    <tr>
+      <th>Attack</th>
+      <td><input class="attack-range" type="range" min="0" max="1" value="0.0" step="0.01" /></td>
+    </tr>
+    <tr>
+      <th>Hold</th>
+      <td><input class="hold-range" type="range" min="0" max="1" value="1" step="0.01" /></td>
+    </tr>
+    <tr>
+      <th>Release</th>
+      <td><input class="release-range" type="range" min="0" max="1" value="0.0" step="0.01" /></td>
+    </tr>
+    <tr>
+      <th>Filter</th>
+      <td><input class="filter-range" type="range" min="0" max="1" value="0.3" step="0.01" /></td>
+    </tr>
+    <tr>
+      <th>Resonance</th>
+      <td><input class="res-range" type="range" min="0" max="1" value="0" step="0.01" /></td>
+    </tr>
+    <tr>
+      <th>Speed</th>
+      <td><input class="bpm-range" type="range" min="40" max="400" value="120" /></td>
+    </tr>
+    <tr>
+      <th>Shape</th>
+      <td>
+        <select class="shape-select">
+          <option value="square" selected>square</option>
+          <option value="sawtooth">sawtooth</option>
+          <option value="triangle">triangle</option>
+          <option value="sine">sine</option>
+        </select>
+      </td>
+    </tr>
+  </table>
+
+  <div class="arp-board-container">
+
+  </div>
+
+  <div class="arp-button-list">
+  </div>
+
+</div>
+
+<div class="keyboard">
+  <div class="keyboard__row">
+    <kbd class="keyboard__key keyboard__key--81" data-note="C5">Q</kbd>
+    <kbd class="keyboard__key keyboard__key--87" data-note="D5">W</kbd>
+    <kbd class="keyboard__key keyboard__key--69" data-note="E5">E</kbd>
+    <kbd class="keyboard__key keyboard__key--82" data-note="F5">R</kbd>
+    <kbd class="keyboard__key keyboard__key--84" data-note="G5">T</kbd>
+    <kbd class="keyboard__key keyboard__key--89" data-note="A5">Y</kbd>
+    <kbd class="keyboard__key keyboard__key--85" data-note="B5">U</kbd>
+    <kbd class="keyboard__key keyboard__key--73" data-note="C6">I</kbd>
+    <kbd class="keyboard__key keyboard__key--79" data-note="D6">O</kbd>
+    <kbd class="keyboard__key keyboard__key--80" data-note="E6">P</kbd>
+    <kbd class="keyboard__key keyboard__key--219" data-note="F6">[</kbd>
+    <kbd class="keyboard__key keyboard__key--221" data-note="G6">]</kbd>
+  </div>
+  <div class="keyboard__row">
+    <kbd class="keyboard__key keyboard__key--65" data-note="C4">A</kbd>
+    <kbd class="keyboard__key keyboard__key--83" data-note="D4">S</kbd>
+    <kbd class="keyboard__key keyboard__key--68" data-note="E4">D</kbd>
+    <kbd class="keyboard__key keyboard__key--70" data-note="F4">F</kbd>
+    <kbd class="keyboard__key keyboard__key--71" data-note="G4">G</kbd>
+    <kbd class="keyboard__key keyboard__key--72" data-note="A4">H</kbd>
+    <kbd class="keyboard__key keyboard__key--74" data-note="B4">J</kbd>
+    <kbd class="keyboard__key keyboard__key--75">K</kbd>
+    <kbd class="keyboard__key keyboard__key--76">L</kbd>
+    <kbd class="keyboard__key keyboard__key--186">;</kbd>
+    <kbd class="keyboard__key keyboard__key--222">'</kbd>
+    <kbd class="keyboard__key"></kbd>
+  </div>
+  <div class="keyboard__row">
+    <kbd class="keyboard__key keyboard__key--90" data-note="C3">Z</kbd>
+    <kbd class="keyboard__key keyboard__key--88" data-note="D3">X</kbd>
+    <kbd class="keyboard__key keyboard__key--67" data-note="E3">C</kbd>
+    <kbd class="keyboard__key keyboard__key--86" data-note="F3">V</kbd>
+    <kbd class="keyboard__key keyboard__key--66" data-note="G3">B</kbd>
+    <kbd class="keyboard__key keyboard__key--78" data-note="A3">N</kbd>
+    <kbd class="keyboard__key keyboard__key--77" data-note="B3">M</kbd>
+    <kbd class="keyboard__key keyboard__key--188">,</kbd>
+    <kbd class="keyboard__key keyboard__key--190">.</kbd>
+    <kbd class="keyboard__key keyboard__key--191">/</kbd>
+    <kbd class="keyboard__key"></kbd>
+    <kbd class="keyboard__key"></kbd>
+  </div>
+</div>
+
+<div>
+  <canvas class="viz-canvas"></canvas>
+</div>
+
+<script src="js/arp/initials.js"></script>
+<script src="js/arp/key-code-notes.js"></script>
+<script src="js/arp/utils.js"></script>
+<script src="js/arp/arp-board.js"></script>
+<script src="js/arp/arp-button.js"></script>
+<script src="js/arp/tone.js"></script>
+<script src="js/arp/keyboard-key.js"></script>
+<script src="js/arp/voice.js"></script>
+<script src="js/arp/instrument.js"></script>
+<script src="js/arp/demo.js"></script>
+
+</body>
+</html>

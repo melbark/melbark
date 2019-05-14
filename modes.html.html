@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<!-- saved from url=(0092)https://mdn.mozillademos.org/en-US/docs/Web/API/Touch_events$samples/Example?revision=823467 -->
+<html>
+
+<script src="Synth_files/chroma.js"></script>
+ <script src="./Synthknob_files/jquery.min.js"></script>
+    <script src="./Synthknob_files/raphael-min.js"></script>
+<script src="./Synthknob_files/qwerty-hancock.js"></script>
+<script src="./Synthknob_files/jquery.knob.js"></script>
+ <style>
+      .knob {
+        float: left;
+        margin-right: 20px;
+      }
+    </style>
+<body style="background-color: black ">
+ <canvas id="canvas" width="2048" height="600" style=" background-color: black ;"></canvas>
+
+ <!--<div id="keyboard" style="font-size: 0px;"></div>-->
+
+
+
+    <div class="knob">
+      <h2>Delay</h2>
+      <div style="display:inline;width:100px;height:200px;"><canvas width="100" height="200px"></canvas><input class="delay" id="delay" data-width="100" data-angleoffset="-125" data-anglearc="250" data-fgcolor="blue" value="10" data-min="0" data-max="100" style="width: 54px; height: 33px; position: absolute; vertical-align: middle; margin-top: 33px; margin-left: -77px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(66, 300, 22); padding: 0px; -webkit-appearance: none; background: none;"></div>
+    </div>
+    <div class="knob">
+      <h2>Feedback</h2>
+      <div style="display:inline;width:100px;height:200px;"><canvas width="100" height="200px"></canvas><input class="feedback" id="feedback" data-width="100" data-angleoffset="-125" data-anglearc="250" data-fgcolor="blue" value="10" data-min="0" data-max="100" style="width: 54px; height: 33px; position: absolute; vertical-align: middle; margin-top: 33px; margin-left: -77px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(66, 300, 22); padding: 0px; -webkit-appearance: none; background: none;"></div>
+    </div>
+
+    <div class="knob">
+      <h2>Attack</h2>
+      <div style="display:inline;width:100px;height:200px;"><canvas width="100" height="200px"></canvas><input class="attack" id="attack" data-width="100" data-angleoffset="-125" data-anglearc="250" data-fgcolor="#66EE66" value="10" data-min="0" data-max="100" style="width: 54px; height: 33px; position: absolute; vertical-align: middle; margin-top: 33px; margin-left: -77px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(102, 238, 102); padding: 0px; -webkit-appearance: none; background: none;"></div>
+    </div>
+
+    <div class="knob">
+      <h2>Decay</h2>
+      <div style="display:inline;width:100px;height:200px;"><canvas width="100" height="200px"></canvas><input class="decay" id="decay" data-width="100" data-angleoffset="-125" data-anglearc="250" data-fgcolor="#66EE66" value="10" data-min="0" data-max="100" style="width: 54px; height: 33px; position: absolute; vertical-align: middle; margin-top: 33px; margin-left: -77px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(102, 238, 102); padding: 0px; -webkit-appearance: none; background: none;"></div>
+    </div>
+
+   <div class="knob">
+      <h2>Sustain</h2>
+      <div style="display:inline;width:100px;height:200px;"><canvas width="100" height="200px"></canvas><input class="sustain" id="sustain" data-width="100" data-angleoffset="-125" data-anglearc="250" data-fgcolor="#66EE66" value="10" data-min="0" data-max="100" style="width: 54px; height: 33px; position: absolute; vertical-align: middle; margin-top: 33px; margin-left: -77px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(102, 238, 102); padding: 0px; -webkit-appearance: none; background: none;"></div>
+    </div>
+
+    <div class="knob">
+      <h2>Release</h2>
+      <div style="display:inline;width:100px;height:200px;"><canvas width="100" height="200px"></canvas><input class="release" id="release" data-width="100" data-angleoffset="-125" data-anglearc="250" data-fgcolor="#66EE66" value="10" data-min="0" data-max="100" style="width: 54px; height: 33px; position: absolute; vertical-align: middle; margin-top: 33px; margin-left: -77px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(102, 238, 102); padding: 0px; -webkit-appearance: none; background: none;"></div>
+    </div>
+
+  
+<br>
+<button onclick="startup()">Initialize</button>
+<br>
+Log: <pre id="log"</pre>
+<script type="text/javascript">
+
+ var delay = 1
+  var feedback = 1
+  var attack = 1
+  var decay = 1
+  var sustain = 1
+  var release = 1
+  $(function() {
+      $(".delay").knob();
+  });
+
+    $(function() {
+      $(".feedback").knob();
+  });
+
+    $(function() {
+      $(".attack").knob();
+  });
+
+    $(function() {
+      $(".decay").knob();
+  });
+
+  $(function() {
+      $(".sustain").knob();
+  });
+
+    $(function() {
+      $(".release").knob();
+  });
+  
+
+  $(".delay").knob({
+        'change' : function (v) { delay = v/100; console.log(v/100);}
+    });
+
+
+ $(".feedback").knob({
+      'change' : function (v) { feedback = v/100; console.log(v/100)}
+  });
+
+  $(".attack").knob({
+        'change' : function (v) { attack = v/100; console.log(v/100);}
+    });
+
+
+ $(".decay").knob({
+      'change' : function (v) { decay = v/100; console.log(v/100)}
+  });
+
+  $(".sustain").knob({
+        'change' : function (v) { sustain = v/100; console.log(v/100);}
+    });
+
+
+ $(".release").knob({
+      'change' : function (v) { release = v/100; console.log(v/100)}
+  });
+
+
+
+$(function () {
+  var keyboard = qwertyHancock({id: 'keyboard', startNote: 'A4', octaves: 2});
+
+  keyboard.keyDown(function (note, frequency) {
+    var attackvalue = 0.4
+    jQuery.event.trigger('frequency', [frequency] );
+    jQuery.event.trigger('gateOn');
+      $("#attack").knob({
+    'change' : function (v) { attackvalue = v / 100; log("Attack:" & attackvalue); }
+  });
+
+    log("Attack:" & attackvalue);
+  });
+
+  keyboard.keyUp(function (_, _) { });
+
+  $("#attack").knob({
+    'release' : function (v) { jQuery.event.trigger('setAttack', v / 100); }
+  });
+
+  $("#release").knob({
+    'release' : function (v) { jQuery.event.trigger('setRelease', v / 100); }
+  });
+
+  var context = new AudioContext();
+
+  var VCO = (function(context) {
+    function VCO(){
+      this.oscillator = context.createOscillator();
+      this.oscillator.type = "square";
+      this.setFrequency(440);
+      this.oscillator.start(0);
+
+      this.input = this.oscillator;
+      this.output = this.oscillator;
+
+      var that = this;
+      $(document).bind('frequency', function (_, frequency) {
+        that.setFrequency(frequency);
+      });
+    };
+
+    VCO.prototype.setFrequency = function(frequency) {
+      this.oscillator.frequency.setValueAtTime(frequency, context.currentTime);
+    };
+
+    VCO.prototype.connect = function(node) {
+      if (node.hasOwnProperty('input')) {
+        this.output.connect(node.input);
+      } else {
+        this.output.connect(node);
+      };
+    }
+
+    return VCO;
+  })(context);
+
+  var VCA = (function(context) {
+    function VCA() {
+      this.gain = context.createGain();
+      this.gain.gain.value = 0;
+      this.input = this.gain;
+      this.output = this.gain;
+      this.amplitude = this.gain.gain;
+    };
+
+    VCA.prototype.connect = function(node) {
+      if (node.hasOwnProperty('input')) {
+        this.output.connect(node.input);
+      } else {
+        this.output.connect(node);
+      };
+    }
+
+    return VCA;
+  })(context);
+
+  var EnvelopeGenerator = (function(context) {
+    function EnvelopeGenerator() {
+      this.attackTime = 0.1;
+      this.releaseTime = 0.1;
+
+      var that = this;
+      $(document).bind('gateOn', function (_) {
+        that.trigger();
+      });
+      $(document).bind('setAttack', function (_, value) {
+        that.attackTime = value;
+      });
+      $(document).bind('setRelease', function (_, value) {
+        that.releaseTime = value;
+      });
+    };
+
+    EnvelopeGenerator.prototype.trigger = function() {
+      now = context.currentTime;
+      this.param.cancelScheduledValues(now);
+      this.param.setValueAtTime(0, now);
+      this.param.linearRampToValueAtTime(1, now + this.attackTime);
+      this.param.linearRampToValueAtTime(0, now + this.attackTime + this.releaseTime);
+    };
+
+    EnvelopeGenerator.prototype.connect = function(param) {
+      this.param = param;
+    };
+
+    return EnvelopeGenerator;
+  })(context);
+
+  var vco = new VCO;
+  var vca = new VCA;
+  var envelope = new EnvelopeGenerator;
+
+  /* Connections */
+  vco.connect(vca);
+  envelope.connect(vca.amplitude);
+  vca.connect(context.destination);
+ });
+//polyphonic synth
+
+  var context = new AudioContext();
+  var myAudioAnalyser = context.createAnalyser()
+  var ongoingTouches = []; 
+  var voices = [];
+  var voicetracker = {};
+
+
+
+
+
+function startup(context) {
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+  el.addEventListener("touchstart", handleStart, false);
+  el.addEventListener("touchend", handleEnd, false);
+  el.addEventListener("touchcancel", handleCancel, false);
+  el.addEventListener("touchleave", handleEnd, false);
+  el.addEventListener("touchmove", handleMove, false);
+  var emptytouch 
+  var context = new AudioContext();
+  tempaudio = context.createOscillator();
+  tempaudio.type = "sine";
+  tempaudio.frequency.value = 40;
+  tempaudio.start(0)
+  }
+var ongoingTouches = new Array;
+
+
+function handleStart(evt) {    
+//  log("touchstart.");
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+  var touches = evt.changedTouches;
+  var offset = findPos(el);
+  var touchLength = touches.length;
+  evt.preventDefault()  
+  var delay 
+  var feedback 
+  var attack 
+  var decay 
+  var sustain 
+  var release 
+
+  for (var i = 0; i < touchLength; i++) {
+
+    var frequencyx = touches[i].pageX-5;
+    var volumey = touches[i].pageY;
+    var voice = new Voice(frequencyx,volumey,delay,feedback,attack,decay,sustain,release,touches[i]);
+    voice.start();
+    voices.push(voice);
+  }
+}
+
+function handleEnd(evt) {
+//  log("touchend/touchleave.");
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+  var touches = evt.changedTouches;
+  var offset = findPos(el);
+  var touchLength = touches.length;
+  evt.preventDefault        
+  for (var i = 0; i < touchLength; i++) {
+    var idx = ongoingVoiceIndexById(touches[i].identifier);        
+    if (idx >= 0) {
+      voices[idx].stop(); 
+      voices.splice(idx, 1); // remove it; we're done
+    } else {
+      log("can't figure out which touch to end");
+    }  
+        }
+}
+function handleMove(evt) {  
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+  var touches = evt.changedTouches;
+  var offset = findPos(el);
+  var touchLength = touches.length;
+  for (var i = 0; i < touchLength; i++) {
+    evt.preventDefault();
+    var idx = ongoingVoiceIndexById(touches[i].identifier);    
+    if (idx >= 0) {
+        var voicex = touches[i].pageX-5
+        var voicey = touches[i].pageY
+        voices[idx].update(voicex,voicey);
+        log("voiceupdate:" + idx + ".");     
+    } else {
+      log("can't figure out which touch to continue");
+    }
+  
+        }
+}
+function handleCancel(evt) {
+//  log("touchend/touchleave.");
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+  var touches = evt.changedTouches;
+  var offset = findPos(el);
+  var touchLength = touches.length;
+  evt.preventDefault        
+  for (var i = 0; i < touchLength; i++) {
+    var idx = ongoingVoiceIndexById(touches[i].identifier);        
+    if (idx >= 0) {
+       log("voice:" + idx + ".");
+      voices[idx].stop(); 
+      voices.splice(idx, 1); // remove it; we're done
+      log("voicecancel:" + idx + ".");
+    } else {
+      log("can't figure out which touch to end");
+    }  
+        }
+}
+function colorForTouch(touch) {
+  var r = touch.identifier % 16;
+  var g = Math.floor(touch.identifier / 3) % 16;
+  var b = Math.floor(touch.identifier / 7) % 16;
+  r = r.toString(16); // make it a hex digit
+  g = g.toString(16); // make it a hex digit
+  b = b.toString(16); // make it a hex digit
+  var color = "#" + r + g + b;
+  log("color for touch with identifier " + touch.identifier + " = " + color);
+  return color;
+}
+function copyTouch(touch,voice,counter) {
+  return {identifier: touch.identifier, tracker: counter, clientX: touch.clientX,clientY: touch.clientY, vtrack: voice};
+}
+//function copyVoice(touch,voice,counter) {
+ // return {voiceid: {identifier: identifier: touch.identifier, counter: counter, clientX: touch.clientX,clientY: touch.clientY, voiceobj: voice}};
+//}
+function ongoingTouchIndexById(idToFind) {
+  for (var i = 0; i < ongoingTouches.length; i++) {
+    var id = ongoingTouches[i].identifier;
+    
+    if (id == idToFind) {
+      return i;
+    }
+  }
+  return -1; // not found
+}
+
+
+function ongoingVoiceIndexById(idToFind) {
+
+  var voicesLength = voices.length;
+  for (var i = 0; i < voicesLength; i++) {
+    var id = voices[i].identifier;
+    
+    if (id == idToFind) {
+      return i;
+    }
+  }
+  return -1; // not found
+}
+
+
+function log(msg) {
+  var p = document.getElementById('log');
+  p.innerHTML = msg + "\n" + p.innerHTML;
+}
+ 
+function findPos (obj) {
+    var curleft = 0,
+        curtop = 0;
+
+    if (obj.offsetParent) {
+        do {
+            curleft += obj.offsetLeft;
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+
+        return { x: curleft-document.body.scrollLeft, y: curtop-document.body.scrollTop };
+    }
+}
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@
+var Voice = function(context,touch) {   
+    function Voice(frequency,volume,delay,feedback,attack,decay,sustain,release,touch){
+      var lowNote = 0; // C4
+      var highNote = 7900; // B4
+      //this.attack = attack
+      //this.release = release
+      this.touch = touch
+      //log("continuing touch " + 2 ^ (frequency/68.26));
+      this.frequency = myLog(frequency)/8.15
+      this.volume = 1 - (600.1/volume)
+      this.oscillators = [];
+      this.gains = [];
+      //attaches voice to touch on press by equating to touch obejct id
+      this.identifier = touch.identifier;     
+    };
+     Voice.prototype.start = function() {
+      this.touch = touch   
+/* VCA */
+      var vca = context.createGain();
+      vca.gain.value = this.volume
+/* VCO */
+      var vco = context.createOscillator();
+      vco.type = "square";
+      vco.frequency.value = this.frequency;
+  
+      //envelope with 0.001 sec attack and 0.5 sec decay      
+      var envelope = context.createEnvelope(attack,decay,sustain,release);
+      envelope.trigger(1);
+      //feedback delay of 0.4 seconds with 0.5x feedback
+      var feedbackDelay = context.createFeedbackDelay(delay,feedback);
+      /* connections */
+      vco.connect(vca);    
+      vca.connect(envelope)      
+      envelope.connect(feedbackDelay)            
+      envelope.connect(context.destination)
+      feedbackDelay.connect(context.destination)
+      envelope.connect(myAudioAnalyser)
+      feedbackDelay.connect(myAudioAnalyser)
+      
+      vco.start(0);
+      //vca.connect(feedbackDelay);
+      //vca.connect(myAudioAnalyser)
+      //feedbackDelay.connect(context.destination);
+      //feedbackDelay.connect(myAudioAnalyser)
+      
+      
+      this.oscillators.push(vco); 
+      this.gains.push(vca)
+    };
+
+  // Update the note frequency.
+  Voice.prototype.updateFrequency = function(event) {
+    if (event.type == 'touchstart' || event.type == 'touchmove') {
+       var touch = event.touches[0];
+      voice.updateFreq(touch.pageX, touch.pageY);
+    } else if (event.type == 'touchstart' || event.type == 'touchmove') {
+      var touch = event.touches[0];
+      voice.calculateFrequency(touch.pageX, touch.pageY);
+    }
+  };
+  // Calculate the note frequency.
+  Voice.calculateNote = function(posX) {
+    var noteDifference = highNote - lowNote;
+    var noteOffset = (noteDifference / el.offsetWidth) * (posX - el.offsetLeft);
+    return lowNote + noteOffset;
+  };  
+  // Calculate the volume.
+  Voice.calculateVolume = function(posY) {
+    var volumeLevel = 1 - (((100 / el.offsetHeight) * (posY - el.offsetTop)) / 100);
+    return volumeLevel;
+  };
+    Voice.prototype.update = function(x,y) {
+      this.gains.forEach(function(g, _) {
+      g.gain.value = 1 - (600.1/y)
+
+     });
+      this.oscillators.forEach(function(oscillator, _) {
+      oscillator.frequency.value = myLog(x)/8.15;
+     });
+    }; 
+
+    Voice.prototype.stop = function() {     
+
+      this.oscillators.forEach(function(oscillator, _) {
+              oscillator.stop();
+      });  
+    };
+    return Voice;
+  }(context);
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+  /* NoiseGen */
+
+  function NoiseGenFactory(context, stereo, bufSize){
+    bufSize = bufSize || 4096;
+    var node = context.createJavaScriptNode(bufSize, 1, 2);
+    node.onaudioprocess = function(e){
+      var outBufferL = e.outputBuffer.getChannelData(0);
+      var outBufferR = e.outputBuffer.getChannelData(1);
+      for (var i = 0; i < bufSize; i++){
+        outBufferL[i] = Math.random() * 2 - 1;
+        outBufferR[i] = stereo ? Math.random() * 2 - 1 : outBufferL[i];
+      }
+    }
+    return node;
+  }
+
+  /* EnvelopeNode */
+
+  function EnvelopeNode(a, d, s, r){
+    this.gain.value = 0;
+    this.att = a;
+    this.dec = d;
+    this.sus = s;
+    this.rel = r;
+
+    this.trigger = function(length){
+      var now = this.context.currentTime;
+      var gain = this.gain;
+      gain.cancelScheduledValues(now);
+      gain.setValueAtTime(0, now);
+      gain.linearRampToValueAtTime(1.0, now + this.att);
+      now += this.att;
+      gain.linearRampToValueAtTime(this.sus, now + this.dec);
+      if (length){
+        var self = this;
+        setTimeout(function(){ self.release(); }, length * 1000);
+      }
+    };
+    this.release = function(){
+      var now = this.context.currentTime;
+      var gain = this.gain;
+      gain.cancelScheduledValues(now);
+      gain.setValueAtTime(gain.value, now);
+      gain.linearRampToValueAtTime(0, now + this.rel);
+    }
+  }
+
+  function EnvelopeFactory(context, a, d, s, r){
+    var gain = context.createGain();
+    EnvelopeNode.call(gain, a, d, s, r);
+    return gain;
+  }
+
+  /* FeedbackDelayNode */
+
+  function FeedbackDelayNode(context, delay, feedback){
+    this.delayTime.value = delay;
+    this.gain = context.createGain();
+    this.gain.gain.value = feedback;
+    this.connect(this.gain);
+    this.gain.connect(this);
+  }
+
+  function FeedbackDelayFactory(context, delayTime, feedback){
+    var delay = context.createDelay(delayTime + 1);
+    FeedbackDelayNode.call(delay, context, delayTime, feedback);
+    return delay;
+  }
+
+  /* ReverbNode */
+
+  function ReverbNodeFactory(context, seconds, options){
+    options = options || {};
+    var sampleRate = context.sampleRate;
+    var length = sampleRate * seconds;
+    var impulse = context.createBuffer(2, length, sampleRate);
+    var impulseL = impulse.getChannelData(0);
+    var impulseR = impulse.getChannelData(1);
+    var decay = options.decay || 2;
+    for (var i = 0; i < length; i++){
+      var n = options.reverse ? length - i : i;
+      impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
+      impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
+    }
+    var convolver = context.createConvolver();
+    convolver.buffer = impulse;
+    return convolver;
+  }
+
+  AudioContext.prototype.createNoiseGen = function(stereo, bufSize){ return NoiseGenFactory(this, stereo, bufSize); };
+  AudioContext.prototype.createEnvelope = function(a, s, d, r){ return EnvelopeFactory(this, a, s, d, r); };
+  AudioContext.prototype.createFeedbackDelay = function(delay, feedback){ return FeedbackDelayFactory(this, delay, feedback); };
+  AudioContext.prototype.createReverbNode = function(seconds, options){ return ReverbNodeFactory(this, seconds, options); };
+
+  /** INSTRUMENTS **/
+
+    /** INSTRUMENTS **/
+
+  function Drum(context){
+    var osc = this.osc = context.createOscillator();
+    osc.frequency.value = 45;
+    osc.type = osc.SINE;
+    var env = this.env = context.createEnvelope(0.001, 0.1, 0, 0.5);
+    osc.connect(env);
+  }
+
+  Drum.prototype.trigger = function(){
+    this.env.trigger(0.05);
+  }
+  Drum.prototype.connect = function(dest){
+    this.env.connect(dest);
+  }
+
+  function HiHat(context){
+    this.noiseGen = context.createNoiseGen();
+    this.filter = context.createBiquadFilter();
+    this.filter.type = this.filter.HIGHPASS;
+    this.filter.frequency.value = 5000;
+    this.noiseGen.connect(this.filter);
+    this.env = context.createEnvelope(0.001, 0.05, 0, 0.2);
+    this.filter.connect(this.env);
+  }
+
+  HiHat.prototype.trigger = function(){
+    this.env.trigger(0.025);
+  }
+  HiHat.prototype.connect = function(dest){
+    this.env.connect(dest);
+  }
+
+  AudioContext.prototype.createDrum = function(){ return new Drum(this); };
+  AudioContext.prototype.createHiHat = function(){ return new HiHat(this); };
+
+  /** LOOP **/
+
+  function Loop(){
+    this.tracks = {};
+    this.stopped = true;
+    this.interval = 500;
+    this.beatUnit = 1/4;
+    this.onPlay = function(){};
+  }
+
+  Loop.prototype.setInstruments = function(instruments){
+    each(instruments, function(inst, label){
+      this.tracks[label] = { instrument: inst };
+    }, this);
+  }
+
+  Loop.prototype.setSequences = function(seqs){
+    each(seqs, function(loop, label){
+      this.tracks[label].loop = typeof loop === "string" ? loop.split('') : loop;
+      this.tracks[label].loopPos = 0;
+    }, this);
+  }
+
+  Loop.prototype.setBPM = function(BPM){
+    this.interval = (60 / BPM) * 1000;
+  }
+
+  Loop.prototype.setBeatUnit = function(unit){
+    this.beatUnit = unit;
+  }
+
+  Loop.prototype.startLoop = function(){
+    this.stopped = false;
+    this.playNext();
+  }
+
+  Loop.prototype.playNext = function(){
+    if (this.stopped) return;
+    each(this.tracks, function(track, name){
+      var currNote = track.loop[track.loopPos];
+      if (currNote === '*'){
+        track.instrument.trigger();
+      }
+      this.onPlay(name, track.loopPos);
+      if (++track.loopPos >= track.loop.length){
+        track.loopPos = 0;
+      }
+    }, this);
+    var self = this;
+    setTimeout(function(){ self.playNext(); }, this.interval * this.beatUnit * 4);
+  }
+
+  Loop.prototype.stopLoop = function(){
+    this.stopped = true;
+  }
+
+  function each(obj, callback, context){
+    context = context || this;
+    for (var prop in obj){
+      if (obj.hasOwnProperty(prop)){
+        callback.call(context, obj[prop], prop);
+      }
+    }
+  }
+
+///////////////////////////////////////////////////////////////////////////////////
+
+
+
+    // create a temp canvas we use for copying
+    var tempCanvas = document.createElement("canvas"),
+        tempCtx = tempCanvas.getContext("2d");
+    tempCanvas.width=2048;
+    tempCanvas.height=600;
+
+// used for color distribution
+    var hot = new chroma.ColorScale({
+        colors:['#000000', '#ff0000', '#ffff00', '#ffffff'],
+        positions:[0, .25, .75, 1],
+        mode:'rgb',
+        limits:[0, 300]
+    });
+
+    // load the sound
+    setupAudioNodes();
+
+    function setupAudioNodes() {
+
+        // setup a javascript node
+        javascriptNode = context.createScriptProcessor(2048, 1, 1);
+        // connect to destination, else it isn't called
+        javascriptNode.connect(context.destination);
+
+        
+
+        // setup a analyzer
+        myAudioAnalyser = context.createAnalyser();
+        myAudioAnalyser.smoothingTimeConstant = 0;
+        myAudioAnalyser.fftSize = 16384;
+//        var array = new Uint8Array(myAudioAnalyser.frequencyBinCount);
+//        myAudioAnalyser.getByteFrequencyData(array);
+
+        myAudioAnalyser.connect(javascriptNode);        
+    }
+
+  
+    javascriptNode.onaudioprocess = function () {
+
+        // get the average for the first channel
+
+        var array = new Uint8Array(myAudioAnalyser.frequencyBinCount);
+        myAudioAnalyser.getByteFrequencyData(array);
+              drawSpectrogram(array);
+    }
+// var scale = 1024;
+// linear
+//for(var i = 0; i <= 1; i += 0.1) ctx.fillRect(i * scale, 0, 2, 20);
+// logarithmic
+//for(var i = 0; i <= 1; i += 0.1) ctx.fillRect(myLog(i) * scale, 35, 2, 20);
+    function myLog(x) {return (Math.log(1.1)^(x)/Math.log(1.1))};   // some log function, just an example
+    
+    function drawSpectrogram(array) {
+        // copy the current canvas onto the temp canvas
+      var el = document.getElementsByTagName("canvas")[0];
+      var ctx = el.getContext("2d");
+      tempCtx.drawImage(canvas, 0, 0, 2048, 600);
+        // iterate over the elements from the array
+      var arrayLength = array.length
+      for (var i = 0; i < arrayLength; i++) {
+          // draw each pixel with the specific color
+          var value = array[i];
+          ctx.fillStyle = hot.getColor(value).hex();
+            ctx.fillRect(myLog(i)/5, 600 - 1, myLog(i+1)/5-myLog(i)/5, 1);
+        }
+        // set translate on the canvas
+        ctx.translate(0, -1);
+        // draw the copied image
+        ctx.drawImage(tempCanvas, 0, 0, 2048, 600, 0, 0, 2048, 600);
+        // reset the transformation matrix
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+    }
+            </script>
+            
+</body></html>

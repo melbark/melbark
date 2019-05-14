@@ -1,0 +1,6372 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Spectral Pool</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.3.8/Tone.min.js"></script>
+    <script src=https://melbark.com/js/jquery-2.0.3.min.js></script>
+
+    <script src="https://melbark.com/js/chroma.js"></script>
+    <script src='https://melbark.com/js/teoria.js'></script>
+
+	<!DOCTYPE html>
+	<html lang="en">
+	  <head>
+		<meta charset="utf-8">
+		<title>Spectral Pool</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+	
+		<!-- Le styles -->
+		
+	  </head>
+	
+	 <style>
+	
+	 * {
+		margin:0;
+	}
+	
+	
+	
+	
+	#dat-gui-container
+	{
+	  position: relative;
+	  z-index: 4;
+	 /* left: 0px;
+	  top: 40px;*/
+	
+	}  
+	
+	#canvas
+	{
+	  background-color: black;
+	  cursor: crosshair;
+	  position: relative;
+	  z-index: 1;
+	  left: 300px;
+	  top: 40px;
+	  width: 2048px; height: 1000px; float:left;
+		padding:0px;  border:0px;position: absolute; 
+	}
+	
+	
+	
+	#speccanvas
+	{
+		background-color: black;
+		cursor:crosshair;
+		z-index: 2;
+		left:300px;
+		top:1040px;
+	
+		width: 2048px; height: 200px; float:left;
+		padding:0px;  border:0px;position: absolute;
+	
+	}
+	
+	/* 
+	#content1
+	{
+		cursor:crosshair;
+		z-index: 3;
+		left:300px;
+		top:40px;
+	
+		width: 2048px; height: 1000px; float:left;
+		padding:0px;  border:0px;position: absolute;
+	
+	} */
+	
+	
+	#content
+	{
+		cursor:crosshair;
+		z-index: 3;
+		left:300px;
+		top:40px;
+	
+		width: 2048px; height: 1000px; float:left;
+		padding:0px;  border:0px;position: absolute;
+	
+	}
+	
+	#contentprint
+	{
+		cursor:crosshair;
+		z-index: 2;
+		left:300px;
+		top:40px;
+	
+		width: 2048px; height: 1000px; float:left;
+		padding:0px;  border:0px;position: absolute;
+	
+	}
+	
+	#c
+	{width: 2048px; height: 700px;}
+	
+		 #dat-gui-container > div{min-height: 27px; height: 27px; width: 100%; } 
+	/*            #dat-gui-container > div > ul  {position: left; z-index: 0;}
+				#dat-gui-container > div > ul { display: table-row;  }
+				#dat-gui-container > div > ul > li { display: table-cell; min-width: 180px ;padding-left: 0px;padding-right:1px}
+				#dat-gui-container > div > ul > li.cr { background: none; line-height: normal; vertical-align: top; border-left: 0px !important;border-bottom: 0px}
+				#dat-gui-container > div > ul > li.cr >div { background: #1a1a1a; height: 27px !important;padding-left: 6px;}
+				#dat-gui-container > div > ul > li.cr > div > span.property-name{padding-top: 6px; }
+				#dat-gui-container > div > ul > li.cr.string >div { border-left:4px solid green; }
+				#dat-gui-container > div > ul > li.cr.number >div { border-left:4px solid blue;}
+				#dat-gui-container > div > ul > li.cr.function >div { border-left:4px solid red;}
+				#dat-gui-container > div > ul > li.cr.color >div { border-left:4px solid orange;}
+				#dat-gui-container > div > ul > li.cr.boolean>div { border-left:4px solid purple;}
+				#dat-gui-container .close-button { display:none;}      
+	*/
+	
+	.soundBite input {
+	 margin-right: 4px;}
+	
+	
+	
+	</style>
+	
+		<link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+	
+		<!-- Le fav and touch icons -->
+		<link rel="shortc ut icon" href="bootstrap/ico/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="bootstrap/ico/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="bootstrap/ico/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="bootstrap/ico/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="bootstrap/ico/apple-touch-icon-57-precomposed.png">
+	
+		
+		<script src=https://melbark.com/js/jquery-2.0.3.min.js></script>
+		<!-- <script src="https://code.jquery.com/jquery-1.11.1.js"></script> -->
+		<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+		<script src="https://code.jquery.com/pep/0.4.1/pep.js"></script>
+		<!-- <script src="./js/teoria.js"></script> -->
+	
+	
+	
+		<script src="https://melbark.com/js/chroma.js"></script>
+		<script src="https://melbark.com/js/Synthknob_files/raphael-min.js"></script>
+		<script src="https://melbark.com/js/Synthknob_files/qwerty-hancock.js"></script>
+		<!-- <script src="https://melbark.com/js/Synthknob_files/jquery.knob.js"></script> -->
+	   
+		<script src="https://melbark.com/js/tuna-master/tuna.js"></script>
+		<script src="https://melbark.com/js/stats.js-master/src/Stats.js"></script>
+	
+		<script src="https://melbark.com/js/lib/recorder.js"></script>
+		<script src="https://melbark.com/js/recordLive.js"></script> 
+		<script src='https://melbark.com/js/teoria.js'></script>
+	
+	
+	
+	
+	
+	
+	<script src="https://melbark.com/js/dat.gui-master/build/dat.gui.min.js"></script>
+	 
+	
+		
+		<script src="js/arp/initials.js"></script>
+	<script src="js/arp/key-code-notes.js"></script>
+	<script src="js/arp/utils.js"></script>
+	<script src="js/arp/arp-board.js"></script>
+	<script src="js/arp/arp-button.js"></script>
+	<script src="js/arp/tone.js"></script>
+	<script src="js/arp/keyboard-key.js"></script>
+	<script src="js/arp/voice.js"></script>
+	<script src="js/arp/instrument.js"></script>
+	<script src="js/arp/demo.js"></script>
+	<link rel="stylesheet" href="/js/arp/demo.css" />
+	<!-- <link rel="stylesheet" href="/css/style.css" /> -->
+	
+	<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script> -->
+	<script src="https://melbark.com/js/jQuery-Kontrol-master/js/jquery.kontrol.js"></script>
+	
+	
+	
+	
+	
+	
+	
+	<!-- Latest compiled and minified CSS -->
+	
+	<body style="background-color: black;">
+	
+	
+	
+		<div id="dat-gui-container"></div>
+		<div>
+	
+	   
+		<canvas id="canvas" width="2048" height="1000"></canvas>
+		<canvas width="2048" height="1000" id="content"></canvas>
+		<!-- <canvas width="2048" height="1000" id="content1"></canvas> -->
+		<canvas width="2048" height="1000" id="contentprint"></canvas>
+		<canvas id="speccanvas" width="2048" height="250" position="absolute" right="300"></canvas>
+		</div>
+	
+<!-- 	
+	<head>
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			<script>
+			  (adsbygoogle = window.adsbygoogle || []).push({
+				google_ad_client: "ca-pub-7366613914907932",
+				enable_page_level_ads: true
+			  });
+			</script>
+
+
+	</head>
+	 -->
+	
+	
+	<div id="header">
+	 
+	
+	</div>
+	
+	<div id="nav">
+	<canvas width="300" height="1250"></canvas>   
+	<!-- <button onclick="openWin()">Open "myWindow"</button>
+	<button onclick="closeWin()">Close "myWindow"</button> -->
+	<!-- <button id="connect">Connect to MIDI</button> -->
+	
+	
+	
+	
+	
+	<footer>
+	   
+			,
+			<script>
+				$(function() {
+					var $all = $(".dial, .bars1, .bars2, .pad ")
+				  , $body = $("body");
+	
+					// $(".bars1").bars({
+					//                     fgColor:"#222222"
+					//                     , bgColor:"#EEEEEE"
+					//                     , change : function (value) {
+					//                         console.log("change : ", value);
+										   
+					//                     }
+					//                     , draw : function () {
+					//                         console.log(this.o);
+					//                     }
+					//                 });
+			  
+				
+				var $delaywetdrypad = $(".delaywetdrypad")
+								.xy({
+										displayPrevious:false
+										, min : -100
+										, max : 100
+										, fgColor:"#222222"
+										, bgColor:"#EEEEEE"
+										
+										, change : function (value) {
+											masterdelay.dryLevel = (value[0]+100)/200
+									   ,    masterdelay.wetLevel = (value[1]+100)/200
+										}
+									})
+								.css({'border':'5px solid #BBB'});
+	
+	
+	
+				var $delayfeedbackpad = $(".delayfeedbackpad")
+				.xy({
+						displayPrevious:false
+						, min : -100
+						, max : 100
+						, fgColor:"#222222"
+						, bgColor:"#EEEEEE"
+						, change : function (value) {
+							masterdelay.feedback = (value[1]+100)/200
+							masterdelay.delayTime = (value[0]+100)*2000/200
+						}
+					})
+				.css({'border':'5px solid #BBB'});
+	
+	
+				$(".dial_masterdelaycutoff")
+						  .dial({
+								  fgColor:"#222222"
+								  , bgColor:"#EEEEEE"
+								  , thickness : .3
+								  , change : function (value) {
+									masterdelay.cutoff = value
+									//   console.log("change : ", value);
+								  }
+							  })
+						  .css({display:'inline',padding:'0px 10px'});
+	
+					
+	
+	
+				
+				
+				// var $delaywetdrypad = $(".delaywetdrypad")
+				// .xy({
+				//         displayPrevious:false
+				//         , min : 0
+				//         , max : 100.0
+				//         , fgColor:"#222222"
+				//         , bgColor:"#EEEEEE"
+				//         , change : function (value) {
+				//             masterdelay.dryLevel = value[0]/100
+				//             masterdelay.wetLevel = value[1]/100
+				//         //   console.log("change : ", value[0]);
+				//         }
+				//     })
+				// .css({'border':'5px solid #BBB'});   
+	
+					$(".dial_systemvolume")
+						.dial({
+								fgColor:"#222222"
+								, bgColor:"#EEEEEE"
+								, thickness : .3
+								, change : function (value) {
+								systemvolume.gain.value = value/100
+									// console.log("change : ", value);
+								}
+							})
+						.css({display:'inline',padding:'0px 10px'});   
+						
+						
+						$(".bars_volumecontrol").bars({
+										fgColor:"#222222"
+										, bgColor:"#EEEEEE"
+										, change : function (value) {
+										   
+											changekey = Object.keys(value)[0]
+											console.log(changekey +  value[changekey]/100)
+	
+											switch(Object.keys(value)[0]) {
+												case '0':
+													systemvolume.gain.value = value[changekey]/100
+													console.log("hi")
+													break;
+												case '1':
+													mastervolume.gain.value = value[changekey]/100
+													break;
+												case '2':
+													synthvolume.gain.value = value[changekey]/100
+													break;
+												case '3':
+													midivolume.gain.value = value[changekey]/100
+													break;
+												case '4':
+													arpvolume
+													.gain.value = value[changekey]/100
+													break;    
+												case '5':
+													inputvolume.gain.value = value[changekey]/100
+												} 
+	
+											
+	
+	
+									   
+											
+											// if (value[changekey] == 0){
+											//     syntheffect['synthreal'+changekey] = 0
+											//     syntheffect['synthi'+changekey] = 0
+	
+											// }
+											// else {
+											//     // changekey = Object.keys(value)[0]
+											//     syntheffect['synthreal'+changekey] = valuelog
+											//     syntheffect['synthi'+changekey] = valuelog
+	
+											// }
+	
+									 
+										   
+										}
+									
+										
+										, draw : function () {
+											
+											// console.log(this.o);
+											// changekey = Object.keys(value)[0]
+											// syntheffect['synthreal'+changekey] = value[changekey]/100
+											// syntheffect['synthi'+changekey] = value[changekey]/100
+											// changekey = Object.keys(value)[0]
+											// syntheffect['synthreal'+changekey] = value[changekey]/100
+											// syntheffect['synthi'+changekey] = value[changekey]/100
+										}
+									});
+	
+	
+	
+						$(".bars_addsynth20").bars({
+										fgColor:"#222222"
+										, bgColor:"#EEEEEE"
+										, change : function (value) {
+											// console.log("change : ", value);
+											changekey = Object.keys(value)[0]
+											// valuelog = Math.log10(value[changekey]/10)
+											syntheffect['synthreal'+changekey] = value[changekey]/100
+											syntheffect['synthi'+changekey] =  value[changekey]/100
+											
+											// if (value[changekey] == 0){
+											//     syntheffect['synthreal'+changekey] = 0
+											//     syntheffect['synthi'+changekey] = 0
+	
+											// }
+											// else {
+											//     // changekey = Object.keys(value)[0]
+											//     syntheffect['synthreal'+changekey] = valuelog
+											//     syntheffect['synthi'+changekey] = valuelog
+	
+											// }
+	
+									 
+										   
+										}
+										
+										, draw : function () {
+											
+											// console.log(this.o);
+											// changekey = Object.keys(value)[0]
+											// syntheffect['synthreal'+changekey] = value[changekey]/100
+											// syntheffect['synthi'+changekey] = value[changekey]/100
+											// changekey = Object.keys(value)[0]
+											// syntheffect['synthreal'+changekey] = value[changekey]/100
+											// syntheffect['synthi'+changekey] = value[changekey]/100
+										}
+									});
+	
+	
+									
+					$(".bars_addsynth500").bars({
+									fgColor:"#222222"
+									, bgColor:"#EEEEEE"
+									, change : function (value) {
+										// console.log("change : ", value);
+										changekey = Object.keys(value)[0]
+										// valuelog = Math.log10(value[changekey]/10)
+										syntheffect['synthreal'+changekey] = value[changekey]/100
+										syntheffect['synthi'+changekey] =  value[changekey]/100
+	
+										// }
+										// else {
+										//     // changekey = Object.keys(value)[0]
+										//     syntheffect['synthreal'+changekey] = valuelog
+										//     syntheffect['synthi'+changekey] = valuelog
+	
+										// }
+	
+									
+										
+									}
+									
+									, draw : function () {
+										
+										// console.log(this.o);
+										// changekey = Object.keys(value)[0]
+										// syntheffect['synthreal'+changekey] = value[changekey]/100
+										// syntheffect['synthi'+changekey] = value[changekey]/100
+										// changekey = Object.keys(value)[0]
+										// syntheffect['synthreal'+changekey] = value[changekey]/100
+										// syntheffect['synthi'+changekey] = value[changekey]/100
+									}
+								});
+	
+	
+					/*$(".bars2").bars({
+										fgColor:"#222222"
+										, bgColor:"#EEEEEE"
+									});*/
+	
+					var $pad = $(".pad")
+								.xy({
+										displayPrevious:false
+										, min : -100
+										, max : 100
+										, fgColor:"#222222"
+										, bgColor:"#EEEEEE"
+										/*, change : function (value) {
+											console.log("change : ", value);
+										}*/
+									})
+								.css({'border':'5px solid #BBB'});
+	
+					$(".dial")
+								.dial({
+										fgColor:"#222222"
+										, bgColor:"#EEEEEE"
+										, thickness : .3
+										/*, change : function (value) {
+											console.log("change : ", value);
+										}*/
+									})
+								.css({display:'inline',padding:'0px 10px'});
+	
+					var skins = {
+						skin0 : {
+							kontrol : {
+								fgColor:"#87CEEB"
+								, bgColor:"#EEEEEE"
+							}
+							, rack : {
+								"background-color":"#FFFFFF"
+								, "color":"#87CEEB"
+							}
+						}
+						, skin1 : {
+							kontrol : {
+								fgColor:"#222222"
+								, bgColor:"#EEEEEE"
+							}
+							, rack : {
+								"background-color":"#FFFFFF"
+								, "color":"#222222"
+							}
+						}
+						, skin2 : {
+							kontrol : {
+								fgColor:"#FFFFFF"
+								, bgColor:"#444444"
+							}
+							, rack : {
+								"background-color":"#222222"
+								, "color":"#FFFFFF"
+							}
+						}
+						, skin3 : {
+							kontrol : {
+								fgColor:"#00FF00"
+								, bgColor:"#DDDDDD"
+							}
+							, rack : {
+								"background-color":"#FFFFFF"
+								, "color":"#00FF00"
+							}
+						}
+						, skin4 : {
+							kontrol : {
+								fgColor:"#FF0000"
+								, bgColor:"#DDDDDD"
+							}
+							, rack : {
+								"background-color":"#EEEEEE"
+								, "color":"#FF0000"
+							}
+						}
+					};
+	
+					var changeSkin = function(skin) {
+						$body.css(skin.rack);
+						$all.trigger(
+								"configure"
+								, skin.kontrol
+								);
+					}
+					
+					$('#skin').bind(
+						'change'
+						, function(e) {
+							changeSkin(skins[$(this).find('option:selected').val()]);
+						}
+					);
+	
+					$('#displayPrevious').bind(
+						'change'
+						, function(e) {
+							$all.trigger("configure", {displayPrevious:parseInt($(this).find('option:selected').val())});
+						}
+					);
+	
+					$('#cursor').bind(
+						'change'
+						, function(e) {
+							$all.trigger("configure", {cursor:parseInt($(this).find('option:selected').val())});
+						}
+					);
+					
+					$(".height").bind(
+						'click'
+						, function(e) {
+							$all.trigger("configure", {height:100});
+						}
+					);
+	
+	
+					var $animBars = $(".bars_addsynth20"), timeout;
+					$("#animate").bind(
+						'click',
+						function() {
+							if($(this).is(':checked')) {
+								var  v =  0, s = 'up', i = 0;
+								var redraw = function () {
+	
+									if(v==500 || v==0) i++;
+									s = v==500?'down':(v==0?'up':s);
+									s=='up'?v++:v--;
+	
+									$animBars
+										.find('input:eq('+v+')')
+										.val(Math.floor(Math.sin(i+v*i)*100))
+										.trigger('change');
+										
+									changekey =i
+									syntheffect['synthreal'+changekey] =Math.floor(Math.sin(i+v*i))
+									syntheffect['synthi'+changekey] = Math.floor(Math.sin(i+v*i))
+									timeout = window.setTimeout(redraw, 1000/60);
+								};
+								redraw();
+							} else {
+								window.clearTimeout(timeout);
+							}
+						});
+				});
+			</script>
+	
+			<style>
+				/* body{
+				  padding: 0;
+				  margin: 0;
+				  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+				  font-weight: 300;
+				  text-rendering: optimizelegibility;
+				} */
+				p{font-size: 10px; line-height: 30px}
+				div.demo{text-align: center; width: 300px; float: left}
+				div.demo > p{font-size: 20px}
+	
+				.rack{font:bold 14px;}
+				.opt{
+					background:#FFF;
+					-webkit-box-shadow: inset 0 4px 4px -2px #888, inset 0 -4px 4px -2px #888;
+					-moz-box-shadow: inset 0 4px 4px -2px #888, inset 0 -4px 4px -2px #888;
+					box-shadow: inset 0 4px 4px -2px #888, inset 0 -4px 4px -2px #888;
+				}
+				.opt div{
+					padding:0px 10px;
+					color:#AAA; font:10px Arial;
+				}
+				select {
+				   width: 100px;
+				   padding: 5px;font-size: 16px;
+				   border: 1px solid #ccc;height: 34px;
+				}
+			</style>
+	
+		<!-- <body style="color:#222;background-color:#FFF"> -->
+			   
+	
+	
+			   
+					<div class="opt" style="height:50px;padding:15px 50px">
+							<div style="float:left">colors<br>
+								<select id="skin">
+									<option value="skin0">default</option>
+									<option value="skin1" selected>black</option>
+									<option value="skin2">white</option>
+									<option value="skin3">green</option>
+									<option value="skin4">red</option>
+								</select>
+							</div>
+							<div style="float:left">cursor<br>
+								<select id="cursor">
+									<option value=0>no</option>
+									<option value=10>10</option>
+									<option value=40>40</option>
+									<option value=80>80</option>
+								</select>
+							</div>
+							<div style="float:left">displayPrevious<br>
+								<select id="displayPrevious">
+									<option value=0>false</option>
+									<option value=1>true</option>
+								</select>
+							</div>
+							<input id="files" type="file" id="files" name="files[]" multiple />
+							<input id="play" type="button" value="play" />
+						  
+						</div>
+	
+	
+				<table>
+						<tr>
+				
+							   
+						<!-- <div class="rack" style="padding:0px 40px"> -->
+	
+								<div style="float:left;width:300px;padding:30px"">
+										<!-- <div style="margin-bottom:10px">Bars (<input type="checkbox" id="animate" style=""> animate !)</div> -->
+										<fieldset class="bars_volumecontrol " data-width="300" data-cols="6" data-min="0" data-max="100">
+											<legend>Master        PreMaster       Synth       Midi      Arp      Input </legend>
+											<p1>Master &nbsp&nbsp&nbsp&nbsp Pre &nbsp&nbsp&nbsp&nbsp Synth &nbsp&nbsp&nbsp&nbsp Midi &nbsp&nbsp&nbsp&nbsp&nbsp Arp &nbsp&nbsp&nbsp&nbsp Input </p1>
+											<input value=99>
+											<!-- <p1>Master  </p1> -->
+											<input value=99>
+											<input value=99>
+											<input value=99>
+											<input value=99>
+											<input value=99>
+								
+										</fieldset>
+									</div>
+	
+									<div style="float:left;width:200px;padding:30px">
+											<div style="margin-bottom:10px">system volume</div>
+											<input class="dial_systemvolume" data-width="180" data-height="180" data-min=0 data-max=200 value="100">
+										</div>
+										<div style="float:left;width:200px;padding:30px">
+											<div style="margin-bottom:10px">XY</div>
+											<fieldset class="delayfeedbackpad" data-width="180" data-height="180">
+												<legend>XY Pad</legend>
+												time : <input name="delay" value=0>
+												feed : <input name="feedback" value=0>
+											</fieldset>
+										</div>
+										<div style="float:left;width:200px;padding:30px">
+												<div style="margin-bottom:10px">XY</div>
+												<fieldset class="delaywetdrypad" data-width="180" data-height="180">
+													<legend>XY Pad</legend>
+													wet : <input name="wet" value=0>
+													dry : <input name="dry" value=0>
+												</fieldset>
+											</div>
+											<div style="float:left;width:200px;padding:30px">
+													<div style="margin-bottom:10px">XY</div>
+													<fieldset class="pad" data-width="180" data-height="180">
+														<legend>XY Pad</legend>
+														x : <input name="x" value=27>
+														y : <input name="y" value=80>
+													</fieldset>
+												</div>
+										<div style="float:left;width:200px;padding:30px">
+											<div style="margin-bottom:10px">delay cutoff</div>
+											<input class="dial_masterdelaycutoff" data-width="180" data-height="180" data-min=0 data-max=20000 data-angleOffset="-125" data-angleArc="250" value="0">
+										</div>
+							  
+				
+	
+		</tr>
+	  
+		<tr>
+				<td>
+		
+					
+						<div style="float:left;width:2500px;padding:30px"">
+								<div style="margin-bottom:10px">Bars (<input type="checkbox" id="animate" style=""> animate !)</div>
+								<fieldset class="bars_addsynth500" data-width="2500" data-cols="300" data-min="0" data-max="100">
+									<legend>1st 20 harmonics</legend>
+									<input value=100>
+	
+										
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+	
+									 
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+	
+									 
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+	
+									 
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+	
+									 
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									
+	
+										
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+	
+									 
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+	
+									 
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+	
+									 
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+	
+									 
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+	
+									 
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+	
+									 
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+	
+									 
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+	
+									 
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+		
+									
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+									<input value=0>
+	
+									
+		
+		
+		
+		
+								</fieldset>
+							</div>
+		
+					<!-- <div style="float:left;width:720px;padding:30px"">
+							<div style="margin-bottom:10px">Bars (<input type="checkbox" id="animate" style=""> animate !)</div>
+							<fieldset class="bars1" data-width="720" data-cols="16" data-min="-100" data-max="100">
+								<legend>16 tracks</legend>
+								<input value=90>
+								<input value=40>
+								<input value=-10>
+								<input value=-10>
+								<input value=-20>
+								<input value=-20>
+								<input value=-20>
+								<input value=-100>
+								<input value=-100>
+								<input value=-20>
+								<input value=-20>
+								<input value=-20>
+								<input value=-10>
+								<input value=-10>
+								<input value=40>
+								<input value=90>
+							</fieldset>
+						</div> -->
+		
+		
+		
+		
+				</td>
+		
+				
+		
+		
+			</tr>
+		
+	</table> 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	  <div class=playground>
+		<div class=content-wide>
+			<!-- <div class="widget widget-vis" id=vis-div>
+				<p>Choose a loop or press play to get started.</p>
+				<canvas id=vis></canvas>
+			</div> -->
+			<div class="widget widget-loops">
+				<h3>Loop</h3>
+				<div class=widget-items>
+					<button id=button-loop-1 type=button form=form value=1 data-name=1 class=loading disabled>loading</button>
+					<button id=button-loop-2 type=button form=form value=2 data-name=2 class=loading disabled>loading</button>
+					<button id=button-loop-3 type=button form=form value=3 data-name=3 class=loading disabled>loading</button>
+					<button id=button-loop-1 type=button form=form value=4 data-name=4 class=loading disabled>loading</button>
+					<button id=button-loop-2 type=button form=form value=5 data-name=5 class=loading disabled>loading</button>
+					<button id=button-loop-3 type=button form=form value=6 data-name=6 class=loading disabled>loading</button>
+				</div>
+			</div>
+			<div class="widget widget-controls">
+				<h3>Controls</h3>
+				<div class=widget-items>
+					<input id=master-volume value=Volume data-value=93 disabled>
+					<button id=button-play type=button form=form disabled>Play</button>
+					<button id=button-stop type=button form=form disabled>Stop</button>
+				</div>
+			</div>
+			<div class="widget widget-effects">
+				<h3>Effects</h3>
+				<div class=widget-items>
+					<button id=effect-1 type=button form=form value=1 data-name=Cave class=loading disabled>loading</button>
+					<button id=effect-2 type=button form=form value=2 data-name=Lodge class=loading disabled>loading</button>
+					<button id=effect-3 type=button form=form value=3 data-name="Parking Garage" disabled>loading</button>
+				</div>
+			</div>
+		</div>
+	</div>
+		<p class="top-info">
+		  Web Audio Arpeggiator,
+		  made by Dave DeSandro.
+		  <a href="https://github.com/desandro/arpeggiator">Code on GitHub</a>.
+		  May I also recommend:
+		  <a href="https://isotope.metafizzy.co">Isotope</a>,
+		  <a href="https://flickity.metafizzy.co">Flickity</a>, &amp;
+		  <a href="https://packery.metafizzy.co">Packery</a>
+		</p>
+		
+		<div class="controls">
+		
+		  <table class="option-table">
+			<tr>
+			  <th>Attack</th>
+			  <td><input class="attack-range" type="range" min="0" max="1" value="0.0" step="0.01" /></td>
+			</tr>
+			<tr>
+			  <th>Hold</th>
+			  <td><input class="hold-range" type="range" min="0" max="1" value="1" step="0.01" /></td>
+			</tr>
+			<tr>
+			  <th>Release</th>
+			  <td><input class="release-range" type="range" min="0" max="1" value="0.0" step="0.01" /></td>
+			</tr>
+			<tr>
+			  <th>Filter</th>
+			  <td><input class="filter-range" type="range" min="0" max="1" value="0.3" step="0.01" /></td>
+			</tr>
+			<tr>
+			  <th>Resonance</th>
+			  <td><input class="res-range" type="range" min="0" max="1" value="0" step="0.01" /></td>
+			</tr>
+			<tr>
+			  <th>Speed</th>
+			  <td><input class="bpm-range" type="range" min="40" max="400" value="120" /></td>
+			</tr>
+			<tr>
+			  <th>Shape</th>
+			  <td>
+				<select class="shape-select">
+				  <option value="square" selected>square</option>
+				  <option value="sawtooth">sawtooth</option>
+				  <option value="triangle">triangle</option>
+				  <option value="sine">sine</option>
+				</select>
+			  </td>
+			</tr>
+		  </table>
+		
+		  <div class="arp-board-container">
+		
+		  </div>
+		
+		  <div class="arp-button-list">
+		  </div>
+		
+		</div>
+		
+		<div class="keyboard">
+		  <div class="keyboard__row">
+			<kbd class="keyboard__key keyboard__key--81" data-note="C5">Q</kbd>
+			<kbd class="keyboard__key keyboard__key--87" data-note="D5">W</kbd>
+			<kbd class="keyboard__key keyboard__key--69" data-note="E5">E</kbd>
+			<kbd class="keyboard__key keyboard__key--82" data-note="F5">R</kbd>
+			<kbd class="keyboard__key keyboard__key--84" data-note="G5">T</kbd>
+			<kbd class="keyboard__key keyboard__key--89" data-note="A5">Y</kbd>
+			<kbd class="keyboard__key keyboard__key--85" data-note="B5">U</kbd>
+			<kbd class="keyboard__key keyboard__key--73" data-note="C6">I</kbd>
+			<kbd class="keyboard__key keyboard__key--79" data-note="D6">O</kbd>
+			<kbd class="keyboard__key keyboard__key--80" data-note="E6">P</kbd>
+			<kbd class="keyboard__key keyboard__key--219" data-note="F6">[</kbd>
+			<kbd class="keyboard__key keyboard__key--221" data-note="G6">]</kbd>
+		  </div>
+		  <div class="keyboard__row">
+			<kbd class="keyboard__key keyboard__key--65" data-note="C4">A</kbd>
+			<kbd class="keyboard__key keyboard__key--83" data-note="D4">S</kbd>
+			<kbd class="keyboard__key keyboard__key--68" data-note="E4">D</kbd>
+			<kbd class="keyboard__key keyboard__key--70" data-note="F4">F</kbd>
+			<kbd class="keyboard__key keyboard__key--71" data-note="G4">G</kbd>
+			<kbd class="keyboard__key keyboard__key--72" data-note="A4">H</kbd>
+			<kbd class="keyboard__key keyboard__key--74" data-note="B4">J</kbd>
+			<kbd class="keyboard__key keyboard__key--75">K</kbd>
+			<kbd class="keyboard__key keyboard__key--76">L</kbd>
+			<kbd class="keyboard__key keyboard__key--186">;</kbd>
+			<kbd class="keyboard__key keyboard__key--222">'</kbd>
+			<kbd class="keyboard__key"></kbd>
+		  </div>
+		  <div class="keyboard__row">
+			<kbd class="keyboard__key keyboard__key--90" data-note="C3">Z</kbd>
+			<kbd class="keyboard__key keyboard__key--88" data-note="D3">X</kbd>
+			<kbd class="keyboard__key keyboard__key--67" data-note="E3">C</kbd>
+			<kbd class="keyboard__key keyboard__key--86" data-note="F3">V</kbd>
+			<kbd class="keyboard__key keyboard__key--66" data-note="G3">B</kbd>
+			<kbd class="keyboard__key keyboard__key--78" data-note="A3">N</kbd>
+			<kbd class="keyboard__key keyboard__key--77" data-note="B3">M</kbd>
+			<kbd class="keyboard__key keyboard__key--188">,</kbd>
+			<kbd class="keyboard__key keyboard__key--190">.</kbd>
+			<kbd class="keyboard__key keyboard__key--191">/</kbd>
+			<kbd class="keyboard__key"></kbd>
+			<kbd class="keyboard__key"></kbd>
+		  </div>
+		</div>
+		
+		
+		
+		</footer>
+	<script>
+	// var myWindow;
+	
+	// function openWin() {
+	//     myWindow = window.open("", "myWindow", "width=200, height=100");
+	//     myWindow.document.write(<p>We make most of our music these days based on a boring old 12 dimensional hypercube. The piano is to the cube as the Spectral Pool is to a sphere.
+	// As you play on the Spectral Pool the harmonics are visualised; using the ripples drawn on the spectrum you can visualise and manipulate the scale you wish to play.
+	
+	// Spectral Pool is an audio visual multitouch polyphonic sound recording studio right in your web browser. It allows you to visualise and interpret all things sound. You can use your microphone, sound card stereomix,usb guitar, midi keyboard, to build and record your own tracks by yourself of with your friends. You can see what you play and interact by using a spectral analysis and a multitouch polyphonic theremin. The theremin and spectral analysis can be controlled via paramaeters, allowing them to aligned or offset, this allows you to paint a canvas of sound in real time. Using the tuna effects in the controller you can mix the color and shape of the sound you are creating.<p>);
+	// }
+	
+	// function closeWin() {
+	//     myWindow.close();
+	// }
+	</script>   
+	<!-- 
+	 <div class="content">
+	 
+		  
+		<div class="playground">
+			<div class="content-wide">
+				<div class="widget widget-vis" id="vis-div">
+					 
+				</div>
+				<div class="widget widget-loops">
+					<h3>Loop</h3>
+					<div class="widget-items">
+						<button id="button-loop-1" type="button" form="form" value="1" data-name="1" class="">1</button>
+						<button id="button-loop-2" type="button" form="form" value="2" data-name="2" class="">2</button>
+						<button id="button-loop-3" type="button" form="form" value="3" data-name="3" class="">3</button>
+					</div>
+				</div>
+				<div class="widget widget-controls">
+					<h3>Controls</h3>
+					<div class="widget-items">
+						<div style="display: inline; width: 104px; height: 104px;">
+							<canvas width="104" height="104"></canvas>
+							<input id="master-volume" value="Volume" data-value="93" style="width: 56px; height: 34px; display: inline-block; position: absolute; vertical-align: middle; margin-top: 34px; margin-left: -80px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(135, 206, 235); padding: 0px; -webkit-appearance: none; background: none;">
+						</div>
+						<button id="button-play" type="button" form="form">Play</button>
+						<button id="button-stop" type="button" form="form">Stop</button>
+					</div>
+				</div>
+				<div class="widget widget-effects">
+					<h3>Effects</h3>
+					<div class="widget-items">
+						<button id="effect-1" type="button" form="form" value="1" data-name="Cave" class="">Cave</button>
+						<button id="effect-2" type="button" form="form" value="2" data-name="Lodge" class="">Lodge</button>
+						<button id="effect-3" type="button" form="form" value="3" data-name="Parking Garage">Parking
+							<br>Garage</button>
+					</div>
+				</div>
+			</div>
+	
+	
+	
+	<div id="controller" > 
+	
+	
+	</div> -->
+	
+	 
+	
+	
+	 <!--
+	<div id="footer">
+	Log: <pre id="log"</pre>
+	</div>-->
+	   
+	 <!--<div id="keyboard" style="font-size: 0px;"></div>-->
+	
+	
+	<script type="text/javascript">
+	
+	
+	
+	// var obj = {
+	//     x:5,
+	//     y:5,
+	 
+	//     'Z Translate': 0.5,
+	//     Color:"rgba(228,30,0,0.3)",
+	//     Interpolation : 0,
+	//     Yes: true
+	// };
+	
+	
+	   
+	// var FizzyText = function() {
+	//   this.message = 'dat.gui';
+	//   this.speed = 0.8;
+	//   this.maxsize = 0.8;
+	//   this.displayOutline = false;
+	//   this.explode = function() {getLiveInput()};
+	//   // Define render logic ...
+	// };
+	// var socket = io.connect('https://melbark.com')
+	
+	// socket.on('connect', function(){
+	//    var sessionid = socket.io.engine.id;
+	//    // console.log(sessionid)
+	// });
+	
+	var Synthojb = function() {  
+	  //this.linein = function() {getLiveInput()}
+	  this.volume = 0.99        /* function  -> click run function */   
+	  this.input_delay = 0.40 ;           
+	  this.input_feedback = 0.20;
+		  /* VarType  |  Display             */    
+	  this.delay = 400 ;           
+	  this.feedback = 0.50; 
+	  this.wetLevel = 0.5 ;           
+	  this.dryLevel = 0.5 ; 
+	  this.cutoff = 16000 ;           
+	  this.bypass = 1; 
+	
+	   this.chorus_rate = 1.50;
+	   this.chorus_feedback = 0.20;
+	   this.chorus_delay = 0.004;
+	   this.chorus_bypass = 1;
+	
+	   this.phaser_rate = 1.20;                     //0.01 to 8 is a decent range; but higher values are possible
+	   this.phaser_depth= 0.30;                    //0 to 1
+	   this.phaser_feedback= 0.20;                 //0 to 1+
+	   this.phaser_stereoPhase= 30;               //0 to 180
+	   this.phaser_baseModulationFrequency= 700;  //500 to 1500
+	   this.phaser_bypass= 1;
+	
+	
+	   this.over_outputGain= 0.50;         //0 to 1+
+	   this.over_drive=0.70;              //0 to 1
+	   this.over_curveAmount= 1;          //0 to 1
+	   this.over_algorithmIndex= 0;       //0 to 5; selects one of our drive algorithms
+	   this.over_bypass=1;
+	
+	   this.comp_threshold= -50;    //-100 to 0
+	   this.comp_makeupGain= 1.0;     //0 and up
+	   this.comp_attack= 1;         //0 to 1000
+	   this.comp_release= 0;        //0 to 3000
+	   this.comp_ratio= 4;          //1 to 20
+	   this.comp_knee= 5;           //0 to 40
+	   this.comp_automakeup= true;  //true/false
+	   this.comp_bypass= 0  ;      /* numbers -> cursor               */
+	 
+	
+	  this.filter_frequency= 440; //20 to 22050
+	  this.filter_Q= 0.001; //0.001 to 100
+	  this.filter_gain= 0; //-40 to 40
+	  this.filter_filterType= "lowpass"; //lowpass; highpass; bandpass; lowshelf; highshelf; peaking; notch; allpass
+	  this.filter_bypass= 0;
+	
+	  this.cabinet_makeupGain= 1;                                 //0 to 20
+	  this.cabinet_impulsePath= "impulses/impulse_guitar.wav";    //path to your speaker impulse
+	  this.cabinet_bypass= 0;
+	
+	  this.tremolo_intensity= 0.3;    //0 to 1
+	  this.tremolo_rate= 4;         //0.001 to 8
+	  this.tremolo_stereoPhase= 0;    //0 to 180
+	  this.tremolo_bypass= 0;
+	
+	  this.WahWah_automode= true;                //true/false
+	  this.WahWah_baseFrequency= 0.5;            //0 to 1
+	  this.WahWah_excursionOctaves= 2;           //1 to 6
+	  this.WahWah_sweep= 0.2;                    //0 to 1
+	  this.WahWah_resonance= 10;                 //1 to 100
+	  this.WahWah_sensitivity= 0.5;              //-1 to 1
+	  this.WahWah_bypass= 0;
+	
+	  this.spectrumRatio = 0.89;
+	  this.specratio1 = 0.867;
+	  this.specratio2 = 5.61;
+	  this.minf = 5;
+	  this.maxf = 6000;
+	  this.logscale = 2;
+	  this.specpxoffset = 0;
+	  this.fftmult = 4096;
+	  this.pxmult = 1.303;
+	
+	  this.source_delay = 10
+	  this.source_feedback = 0.7
+	  this.source_attack = 0.1
+	  this.source_decay = 4
+	
+	  this.truefalse = false;         /* yes-no    -> checkbox           */
+	  this.synthreal0 = 1
+	  this.synthreal1 = 1
+	this.synthreal2 = 0
+	this.synthreal3 = 0
+	this.synthreal4 = 0
+	this.synthreal5 = 0
+	this.synthreal6 = 0
+	this.synthreal7 = 0
+	this.synthreal8 = 0
+	this.synthreal9 = 0
+	this.synthreal10 = 0
+	this.synthreal11 = 0
+	this.synthreal12 = 0
+	this.synthreal13 = 0
+	this.synthreal14 = 0
+	this.synthreal15 = 0
+	this.synthreal16 = 0
+	this.synthreal17 = 0
+	this.synthreal18 = 0
+	this.synthreal19 = 0
+	this.synthreal20 = 0
+	this.synthreal21 = 0
+	this.synthreal22 = 0
+	this.synthreal23 = 0
+	this.synthreal24 = 0
+	this.synthreal25 = 0
+	this.synthreal26 = 0
+	this.synthreal27 = 0
+	this.synthreal28 = 0
+	this.synthreal29 = 0
+	this.synthreal30 = 0
+	this.synthreal31 = 0
+	this.synthreal32 = 0
+	this.synthreal33 = 0
+	this.synthreal34 = 0
+	this.synthreal35 = 0
+	this.synthreal36 = 0
+	this.synthreal37 = 0
+	this.synthreal38 = 0
+	this.synthreal39 = 0
+	this.synthreal40 = 0
+	this.synthreal41 = 0
+	this.synthreal42 = 0
+	this.synthreal43 = 0
+	this.synthreal44 = 0
+	this.synthreal45 = 0
+	this.synthreal46 = 0
+	this.synthreal47 = 0
+	this.synthreal48 = 0
+	this.synthreal49 = 0
+	this.synthreal50 = 0
+	this.synthreal51 = 0
+	this.synthreal52 = 0
+	this.synthreal53 = 0
+	this.synthreal54 = 0
+	this.synthreal55 = 0
+	this.synthreal56 = 0
+	this.synthreal57 = 0
+	this.synthreal58 = 0
+	this.synthreal59 = 0
+	this.synthreal60 = 0
+	this.synthreal61 = 0
+	this.synthreal62 = 0
+	this.synthreal63 = 0
+	this.synthreal64 = 0
+	this.synthreal65 = 0
+	this.synthreal66 = 0
+	this.synthreal67 = 0
+	this.synthreal68 = 0
+	this.synthreal69 = 0
+	this.synthreal70 = 0
+	this.synthreal71 = 0
+	this.synthreal72 = 0
+	this.synthreal73 = 0
+	this.synthreal74 = 0
+	this.synthreal75 = 0
+	this.synthreal76 = 0
+	this.synthreal77 = 0
+	this.synthreal78 = 0
+	this.synthreal79 = 0
+	this.synthreal80 = 0
+	this.synthreal81 = 0
+	this.synthreal82 = 0
+	this.synthreal83 = 0
+	this.synthreal84 = 0
+	this.synthreal85 = 0
+	this.synthreal86 = 0
+	this.synthreal87 = 0
+	this.synthreal88 = 0
+	this.synthreal89 = 0
+	this.synthreal90 = 0
+	this.synthreal91 = 0
+	this.synthreal92 = 0
+	this.synthreal93 = 0
+	this.synthreal94 = 0
+	this.synthreal95 = 0
+	this.synthreal96 = 0
+	this.synthreal97 = 0
+	this.synthreal98 = 0
+	this.synthreal99 = 0
+	this.synthreal100 = 0
+	this.synthreal101 = 0
+	this.synthreal102 = 0
+	this.synthreal103 = 0
+	this.synthreal104 = 0
+	this.synthreal105 = 0
+	this.synthreal106 = 0
+	this.synthreal107 = 0
+	this.synthreal108 = 0
+	this.synthreal109 = 0
+	this.synthreal110 = 0
+	this.synthreal111 = 0
+	this.synthreal112 = 0
+	this.synthreal113 = 0
+	this.synthreal114 = 0
+	this.synthreal115 = 0
+	this.synthreal116 = 0
+	this.synthreal117 = 0
+	this.synthreal118 = 0
+	this.synthreal119 = 0
+	this.synthreal120 = 0
+	this.synthreal121 = 0
+	this.synthreal122 = 0
+	this.synthreal123 = 0
+	this.synthreal124 = 0
+	this.synthreal125 = 0
+	this.synthreal126 = 0
+	this.synthreal127 = 0
+	this.synthreal128 = 0
+	this.synthreal129 = 0
+	this.synthreal130 = 0
+	this.synthreal131 = 0
+	this.synthreal132 = 0
+	this.synthreal133 = 0
+	this.synthreal134 = 0
+	this.synthreal135 = 0
+	this.synthreal136 = 0
+	this.synthreal137 = 0
+	this.synthreal138 = 0
+	this.synthreal139 = 0
+	this.synthreal140 = 0
+	this.synthreal141 = 0
+	this.synthreal142 = 0
+	this.synthreal143 = 0
+	this.synthreal144 = 0
+	this.synthreal145 = 0
+	this.synthreal146 = 0
+	this.synthreal147 = 0
+	this.synthreal148 = 0
+	this.synthreal149 = 0
+	this.synthreal150 = 0
+	this.synthreal151 = 0
+	this.synthreal152 = 0
+	this.synthreal153 = 0
+	this.synthreal154 = 0
+	this.synthreal155 = 0
+	this.synthreal156 = 0
+	this.synthreal157 = 0
+	this.synthreal158 = 0
+	this.synthreal159 = 0
+	this.synthreal160 = 0
+	this.synthreal161 = 0
+	this.synthreal162 = 0
+	this.synthreal163 = 0
+	this.synthreal164 = 0
+	this.synthreal165 = 0
+	this.synthreal166 = 0
+	this.synthreal167 = 0
+	this.synthreal168 = 0
+	this.synthreal169 = 0
+	this.synthreal170 = 0
+	this.synthreal171 = 0
+	this.synthreal172 = 0
+	this.synthreal173 = 0
+	this.synthreal174 = 0
+	this.synthreal175 = 0
+	this.synthreal176 = 0
+	this.synthreal177 = 0
+	this.synthreal178 = 0
+	this.synthreal179 = 0
+	this.synthreal180 = 0
+	this.synthreal181 = 0
+	this.synthreal182 = 0
+	this.synthreal183 = 0
+	this.synthreal184 = 0
+	this.synthreal185 = 0
+	this.synthreal186 = 0
+	this.synthreal187 = 0
+	this.synthreal188 = 0
+	this.synthreal189 = 0
+	this.synthreal190 = 0
+	this.synthreal191 = 0
+	this.synthreal192 = 0
+	this.synthreal193 = 0
+	this.synthreal194 = 0
+	this.synthreal195 = 0
+	this.synthreal196 = 0
+	this.synthreal197 = 0
+	this.synthreal198 = 0
+	this.synthreal199 = 0
+	this.synthreal200 = 0
+	this.synthreal201 = 0
+	this.synthreal202 = 0
+	this.synthreal203 = 0
+	this.synthreal204 = 0
+	this.synthreal205 = 0
+	this.synthreal206 = 0
+	this.synthreal207 = 0
+	this.synthreal208 = 0
+	this.synthreal209 = 0
+	this.synthreal210 = 0
+	this.synthreal211 = 0
+	this.synthreal212 = 0
+	this.synthreal213 = 0
+	this.synthreal214 = 0
+	this.synthreal215 = 0
+	this.synthreal216 = 0
+	this.synthreal217 = 0
+	this.synthreal218 = 0
+	this.synthreal219 = 0
+	this.synthreal220 = 0
+	this.synthreal221 = 0
+	this.synthreal222 = 0
+	this.synthreal223 = 0
+	this.synthreal224 = 0
+	this.synthreal225 = 0
+	this.synthreal226 = 0
+	this.synthreal227 = 0
+	this.synthreal228 = 0
+	this.synthreal229 = 0
+	this.synthreal230 = 0
+	this.synthreal231 = 0
+	this.synthreal232 = 0
+	this.synthreal233 = 0
+	this.synthreal234 = 0
+	this.synthreal235 = 0
+	this.synthreal236 = 0
+	this.synthreal237 = 0
+	this.synthreal238 = 0
+	this.synthreal239 = 0
+	this.synthreal240 = 0
+	this.synthreal241 = 0
+	this.synthreal242 = 0
+	this.synthreal243 = 0
+	this.synthreal244 = 0
+	this.synthreal245 = 0
+	this.synthreal246 = 0
+	this.synthreal247 = 0
+	this.synthreal248 = 0
+	this.synthreal249 = 0
+	this.synthreal250 = 0
+	this.synthreal251 = 0
+	this.synthreal252 = 0
+	this.synthreal253 = 0
+	this.synthreal254 = 0
+	this.synthreal255 = 0
+	this.synthreal256 = 0
+	this.synthreal257 = 0
+	this.synthreal258 = 0
+	this.synthreal259 = 0
+	this.synthreal260 = 0
+	this.synthreal261 = 0
+	this.synthreal262 = 0
+	this.synthreal263 = 0
+	this.synthreal264 = 0
+	this.synthreal265 = 0
+	this.synthreal266 = 0
+	this.synthreal267 = 0
+	this.synthreal268 = 0
+	this.synthreal269 = 0
+	this.synthreal270 = 0
+	this.synthreal271 = 0
+	this.synthreal272 = 0
+	this.synthreal273 = 0
+	this.synthreal274 = 0
+	this.synthreal275 = 0
+	this.synthreal276 = 0
+	this.synthreal277 = 0
+	this.synthreal278 = 0
+	this.synthreal279 = 0
+	this.synthreal280 = 0
+	this.synthreal281 = 0
+	this.synthreal282 = 0
+	this.synthreal283 = 0
+	this.synthreal284 = 0
+	this.synthreal285 = 0
+	this.synthreal286 = 0
+	this.synthreal287 = 0
+	this.synthreal288 = 0
+	this.synthreal289 = 0
+	this.synthreal290 = 0
+	this.synthreal291 = 0
+	this.synthreal292 = 0
+	this.synthreal293 = 0
+	this.synthreal294 = 0
+	this.synthreal295 = 0
+	this.synthreal296 = 0
+	this.synthreal297 = 0
+	this.synthreal298 = 0
+	this.synthreal299 = 0
+	this.synthreal300 = 0
+	this.synthreal301 = 0
+	this.synthreal302 = 0
+	this.synthreal303 = 0
+	this.synthreal304 = 0
+	this.synthreal305 = 0
+	this.synthreal306 = 0
+	this.synthreal307 = 0
+	this.synthreal308 = 0
+	this.synthreal309 = 0
+	this.synthreal310 = 0
+	this.synthreal311 = 0
+	this.synthreal312 = 0
+	this.synthreal313 = 0
+	this.synthreal314 = 0
+	this.synthreal315 = 0
+	this.synthreal316 = 0
+	this.synthreal317 = 0
+	this.synthreal318 = 0
+	this.synthreal319 = 0
+	this.synthreal320 = 0
+	this.synthreal321 = 0
+	this.synthreal322 = 0
+	this.synthreal323 = 0
+	this.synthreal324 = 0
+	this.synthreal325 = 0
+	this.synthreal326 = 0
+	this.synthreal327 = 0
+	this.synthreal328 = 0
+	this.synthreal329 = 0
+	this.synthreal330 = 0
+	this.synthreal331 = 0
+	this.synthreal332 = 0
+	this.synthreal333 = 0
+	this.synthreal334 = 0
+	this.synthreal335 = 0
+	this.synthreal336 = 0
+	this.synthreal337 = 0
+	this.synthreal338 = 0
+	this.synthreal339 = 0
+	this.synthreal340 = 0
+	this.synthreal341 = 0
+	this.synthreal342 = 0
+	this.synthreal343 = 0
+	this.synthreal344 = 0
+	this.synthreal345 = 0
+	this.synthreal346 = 0
+	this.synthreal347 = 0
+	this.synthreal348 = 0
+	this.synthreal349 = 0
+	this.synthreal350 = 0
+	this.synthreal351 = 0
+	this.synthreal352 = 0
+	this.synthreal353 = 0
+	this.synthreal354 = 0
+	this.synthreal355 = 0
+	this.synthreal356 = 0
+	this.synthreal357 = 0
+	this.synthreal358 = 0
+	this.synthreal359 = 0
+	this.synthreal360 = 0
+	this.synthreal361 = 0
+	this.synthreal362 = 0
+	this.synthreal363 = 0
+	this.synthreal364 = 0
+	this.synthreal365 = 0
+	this.synthreal366 = 0
+	this.synthreal367 = 0
+	this.synthreal368 = 0
+	this.synthreal369 = 0
+	this.synthreal370 = 0
+	this.synthreal371 = 0
+	this.synthreal372 = 0
+	this.synthreal373 = 0
+	this.synthreal374 = 0
+	this.synthreal375 = 0
+	this.synthreal376 = 0
+	this.synthreal377 = 0
+	this.synthreal378 = 0
+	this.synthreal379 = 0
+	this.synthreal380 = 0
+	this.synthreal381 = 0
+	this.synthreal382 = 0
+	this.synthreal383 = 0
+	this.synthreal384 = 0
+	this.synthreal385 = 0
+	this.synthreal386 = 0
+	this.synthreal387 = 0
+	this.synthreal388 = 0
+	this.synthreal389 = 0
+	this.synthreal390 = 0
+	this.synthreal391 = 0
+	this.synthreal392 = 0
+	this.synthreal393 = 0
+	this.synthreal394 = 0
+	this.synthreal395 = 0
+	this.synthreal396 = 0
+	this.synthreal397 = 0
+	this.synthreal398 = 0
+	this.synthreal399 = 0
+	this.synthreal400 = 0
+	this.synthreal401 = 0
+	this.synthreal402 = 0
+	this.synthreal403 = 0
+	this.synthreal404 = 0
+	this.synthreal405 = 0
+	this.synthreal406 = 0
+	this.synthreal407 = 0
+	this.synthreal408 = 0
+	this.synthreal409 = 0
+	this.synthreal410 = 0
+	this.synthreal411 = 0
+	this.synthreal412 = 0
+	this.synthreal413 = 0
+	this.synthreal414 = 0
+	this.synthreal415 = 0
+	this.synthreal416 = 0
+	this.synthreal417 = 0
+	this.synthreal418 = 0
+	this.synthreal419 = 0
+	this.synthreal420 = 0
+	this.synthreal421 = 0
+	this.synthreal422 = 0
+	this.synthreal423 = 0
+	this.synthreal424 = 0
+	this.synthreal425 = 0
+	this.synthreal426 = 0
+	this.synthreal427 = 0
+	this.synthreal428 = 0
+	this.synthreal429 = 0
+	this.synthreal430 = 0
+	this.synthreal431 = 0
+	this.synthreal432 = 0
+	this.synthreal433 = 0
+	this.synthreal434 = 0
+	this.synthreal435 = 0
+	this.synthreal436 = 0
+	this.synthreal437 = 0
+	this.synthreal438 = 0
+	this.synthreal439 = 0
+	this.synthreal440 = 0
+	this.synthreal441 = 0
+	this.synthreal442 = 0
+	this.synthreal443 = 0
+	this.synthreal444 = 0
+	this.synthreal445 = 0
+	this.synthreal446 = 0
+	this.synthreal447 = 0
+	this.synthreal448 = 0
+	this.synthreal449 = 0
+	this.synthreal450 = 0
+	this.synthreal451 = 0
+	this.synthreal452 = 0
+	this.synthreal453 = 0
+	this.synthreal454 = 0
+	this.synthreal455 = 0
+	this.synthreal456 = 0
+	this.synthreal457 = 0
+	this.synthreal458 = 0
+	this.synthreal459 = 0
+	this.synthreal460 = 0
+	this.synthreal461 = 0
+	this.synthreal462 = 0
+	this.synthreal463 = 0
+	this.synthreal464 = 0
+	this.synthreal465 = 0
+	this.synthreal466 = 0
+	this.synthreal467 = 0
+	this.synthreal468 = 0
+	this.synthreal469 = 0
+	this.synthreal470 = 0
+	this.synthreal471 = 0
+	this.synthreal472 = 0
+	this.synthreal473 = 0
+	this.synthreal474 = 0
+	this.synthreal475 = 0
+	this.synthreal476 = 0
+	this.synthreal477 = 0
+	this.synthreal478 = 0
+	this.synthreal479 = 0
+	this.synthreal480 = 0
+	this.synthreal481 = 0
+	this.synthreal482 = 0
+	this.synthreal483 = 0
+	this.synthreal484 = 0
+	this.synthreal485 = 0
+	this.synthreal486 = 0
+	this.synthreal487 = 0
+	this.synthreal488 = 0
+	this.synthreal489 = 0
+	this.synthreal490 = 0
+	this.synthreal491 = 0
+	this.synthreal492 = 0
+	this.synthreal493 = 0
+	this.synthreal494 = 0
+	this.synthreal495 = 0
+	this.synthreal496 = 0
+	this.synthreal497 = 0
+	this.synthreal498 = 0
+	this.synthreal499 = 0
+	this.synthreal500 = 0
+	
+	this.synthi0 = 1
+	this.synthi1 = 1
+	this.synthi2 = 0
+	this.synthi3 = 0
+	this.synthi4 = 0
+	this.synthi5 = 0
+	this.synthi6 = 0
+	this.synthi7 = 0
+	this.synthi8 = 0
+	this.synthi9 = 0
+	this.synthi10 = 0
+	this.synthi11 = 0
+	this.synthi12 = 0
+	this.synthi13 = 0
+	this.synthi14 = 0
+	this.synthi15 = 0
+	this.synthi16 = 0
+	this.synthi17 = 0
+	this.synthi18 = 0
+	this.synthi19 = 0
+	this.synthi20 = 0
+	this.synthi21 = 0
+	this.synthi22 = 0
+	this.synthi23 = 0
+	this.synthi24 = 0
+	this.synthi25 = 0
+	this.synthi26 = 0
+	this.synthi27 = 0
+	this.synthi28 = 0
+	this.synthi29 = 0
+	this.synthi30 = 0
+	this.synthi31 = 0
+	this.synthi32 = 0
+	this.synthi33 = 0
+	this.synthi34 = 0
+	this.synthi35 = 0
+	this.synthi36 = 0
+	this.synthi37 = 0
+	this.synthi38 = 0
+	this.synthi39 = 0
+	this.synthi40 = 0
+	this.synthi41 = 0
+	this.synthi42 = 0
+	this.synthi43 = 0
+	this.synthi44 = 0
+	this.synthi45 = 0
+	this.synthi46 = 0
+	this.synthi47 = 0
+	this.synthi48 = 0
+	this.synthi49 = 0
+	this.synthi50 = 0
+	this.synthi51 = 0
+	this.synthi52 = 0
+	this.synthi53 = 0
+	this.synthi54 = 0
+	this.synthi55 = 0
+	this.synthi56 = 0
+	this.synthi57 = 0
+	this.synthi58 = 0
+	this.synthi59 = 0
+	this.synthi60 = 0
+	this.synthi61 = 0
+	this.synthi62 = 0
+	this.synthi63 = 0
+	this.synthi64 = 0
+	this.synthi65 = 0
+	this.synthi66 = 0
+	this.synthi67 = 0
+	this.synthi68 = 0
+	this.synthi69 = 0
+	this.synthi70 = 0
+	this.synthi71 = 0
+	this.synthi72 = 0
+	this.synthi73 = 0
+	this.synthi74 = 0
+	this.synthi75 = 0
+	this.synthi76 = 0
+	this.synthi77 = 0
+	this.synthi78 = 0
+	this.synthi79 = 0
+	this.synthi80 = 0
+	this.synthi81 = 0
+	this.synthi82 = 0
+	this.synthi83 = 0
+	this.synthi84 = 0
+	this.synthi85 = 0
+	this.synthi86 = 0
+	this.synthi87 = 0
+	this.synthi88 = 0
+	this.synthi89 = 0
+	this.synthi90 = 0
+	this.synthi91 = 0
+	this.synthi92 = 0
+	this.synthi93 = 0
+	this.synthi94 = 0
+	this.synthi95 = 0
+	this.synthi96 = 0
+	this.synthi97 = 0
+	this.synthi98 = 0
+	this.synthi99 = 0
+	this.synthi100 = 0
+	this.synthi101 = 0
+	this.synthi102 = 0
+	this.synthi103 = 0
+	this.synthi104 = 0
+	this.synthi105 = 0
+	this.synthi106 = 0
+	this.synthi107 = 0
+	this.synthi108 = 0
+	this.synthi109 = 0
+	this.synthi110 = 0
+	this.synthi111 = 0
+	this.synthi112 = 0
+	this.synthi113 = 0
+	this.synthi114 = 0
+	this.synthi115 = 0
+	this.synthi116 = 0
+	this.synthi117 = 0
+	this.synthi118 = 0
+	this.synthi119 = 0
+	this.synthi120 = 0
+	this.synthi121 = 0
+	this.synthi122 = 0
+	this.synthi123 = 0
+	this.synthi124 = 0
+	this.synthi125 = 0
+	this.synthi126 = 0
+	this.synthi127 = 0
+	this.synthi128 = 0
+	this.synthi129 = 0
+	this.synthi130 = 0
+	this.synthi131 = 0
+	this.synthi132 = 0
+	this.synthi133 = 0
+	this.synthi134 = 0
+	this.synthi135 = 0
+	this.synthi136 = 0
+	this.synthi137 = 0
+	this.synthi138 = 0
+	this.synthi139 = 0
+	this.synthi140 = 0
+	this.synthi141 = 0
+	this.synthi142 = 0
+	this.synthi143 = 0
+	this.synthi144 = 0
+	this.synthi145 = 0
+	this.synthi146 = 0
+	this.synthi147 = 0
+	this.synthi148 = 0
+	this.synthi149 = 0
+	this.synthi150 = 0
+	this.synthi151 = 0
+	this.synthi152 = 0
+	this.synthi153 = 0
+	this.synthi154 = 0
+	this.synthi155 = 0
+	this.synthi156 = 0
+	this.synthi157 = 0
+	this.synthi158 = 0
+	this.synthi159 = 0
+	this.synthi160 = 0
+	this.synthi161 = 0
+	this.synthi162 = 0
+	this.synthi163 = 0
+	this.synthi164 = 0
+	this.synthi165 = 0
+	this.synthi166 = 0
+	this.synthi167 = 0
+	this.synthi168 = 0
+	this.synthi169 = 0
+	this.synthi170 = 0
+	this.synthi171 = 0
+	this.synthi172 = 0
+	this.synthi173 = 0
+	this.synthi174 = 0
+	this.synthi175 = 0
+	this.synthi176 = 0
+	this.synthi177 = 0
+	this.synthi178 = 0
+	this.synthi179 = 0
+	this.synthi180 = 0
+	this.synthi181 = 0
+	this.synthi182 = 0
+	this.synthi183 = 0
+	this.synthi184 = 0
+	this.synthi185 = 0
+	this.synthi186 = 0
+	this.synthi187 = 0
+	this.synthi188 = 0
+	this.synthi189 = 0
+	this.synthi190 = 0
+	this.synthi191 = 0
+	this.synthi192 = 0
+	this.synthi193 = 0
+	this.synthi194 = 0
+	this.synthi195 = 0
+	this.synthi196 = 0
+	this.synthi197 = 0
+	this.synthi198 = 0
+	this.synthi199 = 0
+	this.synthi200 = 0
+	this.synthi201 = 0
+	this.synthi202 = 0
+	this.synthi203 = 0
+	this.synthi204 = 0
+	this.synthi205 = 0
+	this.synthi206 = 0
+	this.synthi207 = 0
+	this.synthi208 = 0
+	this.synthi209 = 0
+	this.synthi210 = 0
+	this.synthi211 = 0
+	this.synthi212 = 0
+	this.synthi213 = 0
+	this.synthi214 = 0
+	this.synthi215 = 0
+	this.synthi216 = 0
+	this.synthi217 = 0
+	this.synthi218 = 0
+	this.synthi219 = 0
+	this.synthi220 = 0
+	this.synthi221 = 0
+	this.synthi222 = 0
+	this.synthi223 = 0
+	this.synthi224 = 0
+	this.synthi225 = 0
+	this.synthi226 = 0
+	this.synthi227 = 0
+	this.synthi228 = 0
+	this.synthi229 = 0
+	this.synthi230 = 0
+	this.synthi231 = 0
+	this.synthi232 = 0
+	this.synthi233 = 0
+	this.synthi234 = 0
+	this.synthi235 = 0
+	this.synthi236 = 0
+	this.synthi237 = 0
+	this.synthi238 = 0
+	this.synthi239 = 0
+	this.synthi240 = 0
+	this.synthi241 = 0
+	this.synthi242 = 0
+	this.synthi243 = 0
+	this.synthi244 = 0
+	this.synthi245 = 0
+	this.synthi246 = 0
+	this.synthi247 = 0
+	this.synthi248 = 0
+	this.synthi249 = 0
+	this.synthi250 = 0
+	this.synthi251 = 0
+	this.synthi252 = 0
+	this.synthi253 = 0
+	this.synthi254 = 0
+	this.synthi255 = 0
+	this.synthi256 = 0
+	this.synthi257 = 0
+	this.synthi258 = 0
+	this.synthi259 = 0
+	this.synthi260 = 0
+	this.synthi261 = 0
+	this.synthi262 = 0
+	this.synthi263 = 0
+	this.synthi264 = 0
+	this.synthi265 = 0
+	this.synthi266 = 0
+	this.synthi267 = 0
+	this.synthi268 = 0
+	this.synthi269 = 0
+	this.synthi270 = 0
+	this.synthi271 = 0
+	this.synthi272 = 0
+	this.synthi273 = 0
+	this.synthi274 = 0
+	this.synthi275 = 0
+	this.synthi276 = 0
+	this.synthi277 = 0
+	this.synthi278 = 0
+	this.synthi279 = 0
+	this.synthi280 = 0
+	this.synthi281 = 0
+	this.synthi282 = 0
+	this.synthi283 = 0
+	this.synthi284 = 0
+	this.synthi285 = 0
+	this.synthi286 = 0
+	this.synthi287 = 0
+	this.synthi288 = 0
+	this.synthi289 = 0
+	this.synthi290 = 0
+	this.synthi291 = 0
+	this.synthi292 = 0
+	this.synthi293 = 0
+	this.synthi294 = 0
+	this.synthi295 = 0
+	this.synthi296 = 0
+	this.synthi297 = 0
+	this.synthi298 = 0
+	this.synthi299 = 0
+	this.synthi300 = 0
+	this.synthi301 = 0
+	this.synthi302 = 0
+	this.synthi303 = 0
+	this.synthi304 = 0
+	this.synthi305 = 0
+	this.synthi306 = 0
+	this.synthi307 = 0
+	this.synthi308 = 0
+	this.synthi309 = 0
+	this.synthi310 = 0
+	this.synthi311 = 0
+	this.synthi312 = 0
+	this.synthi313 = 0
+	this.synthi314 = 0
+	this.synthi315 = 0
+	this.synthi316 = 0
+	this.synthi317 = 0
+	this.synthi318 = 0
+	this.synthi319 = 0
+	this.synthi320 = 0
+	this.synthi321 = 0
+	this.synthi322 = 0
+	this.synthi323 = 0
+	this.synthi324 = 0
+	this.synthi325 = 0
+	this.synthi326 = 0
+	this.synthi327 = 0
+	this.synthi328 = 0
+	this.synthi329 = 0
+	this.synthi330 = 0
+	this.synthi331 = 0
+	this.synthi332 = 0
+	this.synthi333 = 0
+	this.synthi334 = 0
+	this.synthi335 = 0
+	this.synthi336 = 0
+	this.synthi337 = 0
+	this.synthi338 = 0
+	this.synthi339 = 0
+	this.synthi340 = 0
+	this.synthi341 = 0
+	this.synthi342 = 0
+	this.synthi343 = 0
+	this.synthi344 = 0
+	this.synthi345 = 0
+	this.synthi346 = 0
+	this.synthi347 = 0
+	this.synthi348 = 0
+	this.synthi349 = 0
+	this.synthi350 = 0
+	this.synthi351 = 0
+	this.synthi352 = 0
+	this.synthi353 = 0
+	this.synthi354 = 0
+	this.synthi355 = 0
+	this.synthi356 = 0
+	this.synthi357 = 0
+	this.synthi358 = 0
+	this.synthi359 = 0
+	this.synthi360 = 0
+	this.synthi361 = 0
+	this.synthi362 = 0
+	this.synthi363 = 0
+	this.synthi364 = 0
+	this.synthi365 = 0
+	this.synthi366 = 0
+	this.synthi367 = 0
+	this.synthi368 = 0
+	this.synthi369 = 0
+	this.synthi370 = 0
+	this.synthi371 = 0
+	this.synthi372 = 0
+	this.synthi373 = 0
+	this.synthi374 = 0
+	this.synthi375 = 0
+	this.synthi376 = 0
+	this.synthi377 = 0
+	this.synthi378 = 0
+	this.synthi379 = 0
+	this.synthi380 = 0
+	this.synthi381 = 0
+	this.synthi382 = 0
+	this.synthi383 = 0
+	this.synthi384 = 0
+	this.synthi385 = 0
+	this.synthi386 = 0
+	this.synthi387 = 0
+	this.synthi388 = 0
+	this.synthi389 = 0
+	this.synthi390 = 0
+	this.synthi391 = 0
+	this.synthi392 = 0
+	this.synthi393 = 0
+	this.synthi394 = 0
+	this.synthi395 = 0
+	this.synthi396 = 0
+	this.synthi397 = 0
+	this.synthi398 = 0
+	this.synthi399 = 0
+	this.synthi400 = 0
+	this.synthi401 = 0
+	this.synthi402 = 0
+	this.synthi403 = 0
+	this.synthi404 = 0
+	this.synthi405 = 0
+	this.synthi406 = 0
+	this.synthi407 = 0
+	this.synthi408 = 0
+	this.synthi409 = 0
+	this.synthi410 = 0
+	this.synthi411 = 0
+	this.synthi412 = 0
+	this.synthi413 = 0
+	this.synthi414 = 0
+	this.synthi415 = 0
+	this.synthi416 = 0
+	this.synthi417 = 0
+	this.synthi418 = 0
+	this.synthi419 = 0
+	this.synthi420 = 0
+	this.synthi421 = 0
+	this.synthi422 = 0
+	this.synthi423 = 0
+	this.synthi424 = 0
+	this.synthi425 = 0
+	this.synthi426 = 0
+	this.synthi427 = 0
+	this.synthi428 = 0
+	this.synthi429 = 0
+	this.synthi430 = 0
+	this.synthi431 = 0
+	this.synthi432 = 0
+	this.synthi433 = 0
+	this.synthi434 = 0
+	this.synthi435 = 0
+	this.synthi436 = 0
+	this.synthi437 = 0
+	this.synthi438 = 0
+	this.synthi439 = 0
+	this.synthi440 = 0
+	this.synthi441 = 0
+	this.synthi442 = 0
+	this.synthi443 = 0
+	this.synthi444 = 0
+	this.synthi445 = 0
+	this.synthi446 = 0
+	this.synthi447 = 0
+	this.synthi448 = 0
+	this.synthi449 = 0
+	this.synthi450 = 0
+	this.synthi451 = 0
+	this.synthi452 = 0
+	this.synthi453 = 0
+	this.synthi454 = 0
+	this.synthi455 = 0
+	this.synthi456 = 0
+	this.synthi457 = 0
+	this.synthi458 = 0
+	this.synthi459 = 0
+	this.synthi460 = 0
+	this.synthi461 = 0
+	this.synthi462 = 0
+	this.synthi463 = 0
+	this.synthi464 = 0
+	this.synthi465 = 0
+	this.synthi466 = 0
+	this.synthi467 = 0
+	this.synthi468 = 0
+	this.synthi469 = 0
+	this.synthi470 = 0
+	this.synthi471 = 0
+	this.synthi472 = 0
+	this.synthi473 = 0
+	this.synthi474 = 0
+	this.synthi475 = 0
+	this.synthi476 = 0
+	this.synthi477 = 0
+	this.synthi478 = 0
+	this.synthi479 = 0
+	this.synthi480 = 0
+	this.synthi481 = 0
+	this.synthi482 = 0
+	this.synthi483 = 0
+	this.synthi484 = 0
+	this.synthi485 = 0
+	this.synthi486 = 0
+	this.synthi487 = 0
+	this.synthi488 = 0
+	this.synthi489 = 0
+	this.synthi490 = 0
+	this.synthi491 = 0
+	this.synthi492 = 0
+	this.synthi493 = 0
+	this.synthi494 = 0
+	this.synthi495 = 0
+	this.synthi496 = 0
+	this.synthi497 = 0
+	this.synthi498 = 0
+	this.synthi499 = 0
+	this.synthi500 = 0
+	
+	
+	  this.ratio1 = .4
+	  this.ratio2 = .5
+	  this.scaleradius = 125
+	
+	
+	};
+	//A lo-fi bitcrusher effect.
+	
+	
+	
+	
+	  // var text = new FizzyText();
+	
+	var syntheffect = new Synthojb();
+	var inputeffect = new Synthojb();
+	var midieffect = new Synthojb()
+	
+	
+	
+	var  gui = new dat.GUI({autoPlace: false});
+	gui.remember(syntheffect);
+	var ControlMain = function() {  
+	  //this.linein = function() {getLiveInput()}
+		this.Microphone = false;
+		this.Audio = false;
+		this.Synth = false;
+	};
+	
+	var controlmain = new ControlMain();
+	// var  gui = new dat.GUI({autoPlace: true});
+	  
+	   var CB1Controller = gui.add(controlmain, 'Audio').onChange(function(value){    
+			controlmain.Audio =! value
+				console.log("You changed me to " + value);
+				if (controlmain.Audio = true) {
+				//   loadSound("sedan.mp3");
+				 
+				   controlmain.Audio = true
+				  
+				}
+				else if (controlmain.Audio = false) {
+				  // sourceNode.stop(0);
+				   controlmain.Audio = false
+				 
+				  
+				}
+			   
+		});
+		
+		var CB2Controller = gui.add(controlmain, 'Microphone').onChange(function(value){
+			   controlmain.Microphone =! value
+				console.log("You changed me to " + value);
+			  
+					if (controlmain.Microphone = true) {
+				  getLiveInput() 
+				//   controlmain.Microphone = true
+				}
+				else if (controlmain.Microphone = false) {
+					endLiveInput() 
+				//   controlmain.Microphone = false
+				}
+	   
+		});
+	  
+		var CB3Controller = gui.add(controlmain, 'Synth').onChange(function(value){
+			controlmain.Synth =! value
+				console.log("You changed me to " + value);
+				if (controlmain.Synth = true) {
+				  startup()
+				//   controlmain.Synth = true
+				}
+				else if (controlmain.Synth = false) {
+				  delete context
+				//   controlmain.Synth = false
+				}
+	   
+		});
+	 var controller = gui.add(syntheffect, 'volume', 0, 1.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 systemvolume.gain.value = newValue;
+	   });    
+	
+	  controller.onChange(function(value) {
+	 //volume
+	  // Fires on every change, drag, keypress, etc.
+	  });
+	
+	  controller.onFinishChange(function(value) {
+	  // Fires when a controller loses focus.
+	  console.log("The new value is " + value);
+	  });
+	
+	
+	var f2 = gui.addFolder('Spectrum');
+	var i1 = gui.addFolder('Input');
+	
+	fspectrum = f2.addFolder('spectrumRatio');
+	  fspectrum.add(syntheffect, 'spectrumRatio' , 0, 2.000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		pr = newValue
+	  });
+	
+	  fspectrum.add(syntheffect, 'specratio1' , 0, 2.000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		specratio1 = newValue
+	  });
+	
+	fspectrum.add(syntheffect, 'specratio2' , 0, 10.000).onChange(function(newValue) {
+	 console.log("You changed me to " + newValue);
+	  specratio2 = newValue
+	});
+	
+	  fspectrum.add(syntheffect, 'minf' , 0, 22050).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		minf = newValue
+	  });
+	
+	fspectrum.add(syntheffect, 'maxf' , 0, 22050).onChange(function(newValue) {
+	 console.log("You changed me to " + newValue);
+	  maxf = newValue
+	});
+	fspectrum.add(syntheffect, 'logscale' , 0, 20).onChange(function(newValue) {
+	 console.log("You changed me to " + newValue);
+	  logscale = newValue
+	});
+	fspectrum.add(syntheffect, 'specpxoffset' , -1000 , 1000).onChange(function(newValue) {
+	 console.log("You changed me to " + newValue);
+	  specpxoffset = newValue
+	});
+	fspectrum.add(syntheffect, 'fftmult' ,  { 1024: 1024, 2048: 2048, 4096: 4096, 8192: 8192 , 16384: 16384, 32768: 32768 }).onChange(function(newValue) {
+	 console.log("You changed me to " + newValue);
+	  fftmult = newValue
+	  myAudioAnalyser.fftSize = fftmult
+	
+	});
+	fspectrum.add(syntheffect, 'pxmult' , 0, 6.000).onChange(function(newValue) {
+	 console.log("You changed me to " + newValue);
+	  pxmult = newValue
+	});
+	
+	
+	
+	var f1 = gui.addFolder('Synth');
+	
+	fenvdelay = f1.addFolder('EnvDelay');
+	  fenvdelay.add(syntheffect, 'source_delay', 0, 1000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthdelay.source_delay = newValue
+	  });
+	  fenvdelay.add(syntheffect, 'source_feedback', 0, 1000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthdelay.source_feedback = newValue
+	  });
+	
+	
+	  fenvdelay.add(syntheffect, 'source_attack', 0, 100).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthdelay.source_attack = newValue
+	  });
+	  fenvdelay.add(syntheffect, 'source_decay', 0, 100).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthdelay.source_decay = newValue
+	  });
+	
+	  fenvdelay.add(syntheffect, 'scaleradius', 0, 1000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthdelay.scaleradius = newValue
+	  });
+	  fenvdelay.add(syntheffect, 'ratio1', 0, 1000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthdelay.ratio1 = newValue
+	  });
+	  fenvdelay.add(syntheffect, 'ratio2', 0, 1000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthdelay.ratio2 = newValue
+	  });
+	
+	
+	
+	
+	fdelay = f1.addFolder('Delay');
+	  fdelay.add(syntheffect, 'delay', 0, 10000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthdelay.delayTime = newValue
+	  });
+	  fdelay.add(syntheffect, 'feedback', 0, 2).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthdelay.feedback = newValue
+	  });
+	
+	  fdelay.add(syntheffect, 'wetLevel', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthdelay.wetLevel = newValue
+	  });
+	  fdelay.add(syntheffect, 'dryLevel', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthdelay.dryLevel = newValue
+	  });
+	  fdelay.add(syntheffect, 'cutoff', 0, 16000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthdelay.cutoff = newValue
+	  });
+	  fdelay.add(syntheffect, 'bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthdelay.bypass = newValue
+	  });
+	
+	  fchorus = f1.addFolder('Chorus');
+	  fchorus.add(syntheffect, 'chorus_rate', 0, 8).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthchorus.rate = newValue
+	  });
+	  fchorus.add(syntheffect, 'chorus_feedback', 0, 2).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthchorus.feedback = newValue
+	  });
+	
+	  fchorus.add(syntheffect, 'chorus_delay', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthchorus.delay = newValue
+	  });
+	  fchorus.add(syntheffect, 'chorus_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthchorus.bypass = newValue
+	  });
+	
+	
+	fphaser = f1.addFolder('Phaser');
+	  fphaser.add(syntheffect, 'phaser_rate', 0, 5).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthphaser.rate = newValue
+	  });
+	  fphaser.add(syntheffect, 'phaser_depth', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthphaser.depth = newValue
+	  });
+	
+	  fphaser.add(syntheffect, 'phaser_feedback', 0, 2).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthphaser.feedback = newValue
+	  });
+	  fphaser.add(syntheffect, 'phaser_stereoPhase', 0, 30).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthphaser.stereoPhase = newValue
+	  });
+	  fphaser.add(syntheffect, 'phaser_baseModulationFrequency', 0, 700).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthphaser.baseModulationFrequency = newValue
+	  });
+	  fphaser.add(syntheffect, 'phaser_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthphaser.bypass = newValue
+	  });
+	
+	foverdrive = f1.addFolder('Overdrive');
+	  foverdrive.add(syntheffect, 'over_outputGain', 0, 11.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthoverdrive.outputGain = newValue
+	  });
+	  foverdrive.add(syntheffect, 'over_drive', 0, 1.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthoverdrive.odrive = newValue
+	  });
+	
+	  foverdrive.add(syntheffect, 'over_curveAmount', 0, 1.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthoverdrive.curveAmount = newValue
+	  });
+	  foverdrive.add(syntheffect, 'over_algorithmIndex', 0,5).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthoverdrive.algorithmIndex = newValue
+	  });
+	
+	  foverdrive.add(syntheffect, 'over_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthoverdrive.bypass = newValue
+	  });
+	
+	
+	fsynthcompressor = f1.addFolder('Synthcompressor');
+	  fsynthcompressor.add(syntheffect, 'comp_threshold', -100, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthcompressor.threshold = newValue
+	  });
+	  fsynthcompressor.add(syntheffect, 'comp_makeupGain', 0, 3).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthdelay.makeupGain = newValue
+	  });
+	
+	  fsynthcompressor.add(syntheffect, 'comp_attack', 0, 1000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthdelay.attack = newValue
+	  });
+	  fsynthcompressor.add(syntheffect, 'comp_release', 0, 3000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthdelay.release = newValue
+	  });
+	  fsynthcompressor.add(syntheffect, 'comp_ratio', 1, 20).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthdelay.ratio = newValue
+	  });
+		fsynthcompressor.add(syntheffect, 'comp_knee', 0, 40).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthdelay.knee = newValue
+	  });
+	
+	  fsynthcompressor.add(syntheffect, 'comp_automakeup', true, false).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthdelay.automakeup = newValue
+	  });
+	  fsynthcompressor.add(syntheffect, 'comp_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthdelay.bypass = newValue
+	  });
+	
+	
+	ffilter = f1.addFolder('Filter');
+	  ffilter.add(syntheffect, 'filter_frequency', 20, 22050).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthcompressor.frequency = newValue
+	  });
+	  ffilter.add(syntheffect, 'filter_Q', 0.001, 100).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthfilter.Q = newValue
+	  });
+	
+	  ffilter.add(syntheffect, 'filter_gain', 0.00, 1.00).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthfilter.gain = newValue
+	  });
+	
+	
+	  ffilter.add(syntheffect, 'filter_filterType',{lowpass:'lowpass', highpass:'highpass', bandpass:'bandpass',
+							 lowshelf:'lowshelf', highshelf:'highshelf', peaking:'peaking', notch:'notch', allpass:'allpass'}).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthfilter.filterType = newValue
+	  });
+	
+	  ffilter.add(syntheffect, 'filter_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthfilter.bypass = newValue
+	  });
+	
+	
+	
+	
+	
+	fcabinet = f1.addFolder('Caibnet');
+	  fcabinet.add(syntheffect, 'cabinet_makeupGain', 0, 20).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthcabinet.makeupGain = newValue
+	  });
+	  fcabinet.add(syntheffect, 'cabinet_impulsePath',"impulses/impulse_guitar.wav").onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthcabinet.impulsePath = newValue
+	  });
+	  fcabinet.add(syntheffect, 'cabinet_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthcabinet.bypass = newValue
+	  });
+	
+	
+	ftremolo = f1.addFolder('Tremolo');
+	  ftremolo.add(syntheffect, 'tremolo_intensity', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthtremolo.intensity = newValue
+	  });
+	  ftremolo.add(syntheffect, 'tremolo_rate',.001, 8.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthtremolo.rate = newValue
+	  });
+	
+	  ftremolo.add(syntheffect, 'tremolo_stereoPhase', 0, 180).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthtremolo.stereoPhase = newValue
+	  });
+	
+	
+	  ftremolo.add(syntheffect, 'tremolo_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthtremolo.bypass = newValue
+	  });
+	
+	
+	
+	fwahwah = f1.addFolder('WahWah');
+	  fwahwah.add(syntheffect, 'WahWah_automode', true).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthwahwah.automode = newValue
+	  });
+	  fwahwah.add(syntheffect, 'WahWah_baseFrequency', 0, 1.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthwahwah.baseFrequency = newValue
+	  });
+	
+	  fwahwah.add(syntheffect, 'WahWah_excursionOctaves', 0, 6.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthwahwah.excursionOctaves = newValue
+	  });
+	  fwahwah.add(syntheffect, 'WahWah_sweep', 0, 1.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthwahwah.sweep = newValue
+	  });
+	  fwahwah.add(syntheffect, 'WahWah_resonance', 1, 100).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		synthwahwah.resonance = newValue
+	  });
+		fwahwah.add(syntheffect, 'WahWah_sensitivity', -1, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthwahwah.sensitivity = newValue
+	  });
+	
+	  fwahwah.add(syntheffect, 'WahWah_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 synthwahwah.bypass = newValue
+	  });
+	
+	  
+	
+	
+	var AddSynth = f1.addFolder('AddSynth');
+	  AddSynth.add(syntheffect, 'synthreal0', 0,1.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		syntheffect.synthreal0 = newValue
+	  })
+	
+	
+	  for (var i = 1; i < 200; i++) {
+		  
+		  
+		  AddSynth.add(syntheffect, 'synthreal'+i, 0,1.0).onChange(function(newValue) {
+		  console.log("You changed me to " + newValue);
+			  syntheffect['synthreal'+i] = newValue
+		  })
+	}
+	
+	
+	
+	  var AddSynthi = f1.addFolder('AddSynthi');
+	  AddSynthi.add(syntheffect, 'synthi0', 0,1.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		syntheffect.synthi0 = newValue
+	  })
+	
+	  
+	  for (var i = 1; i < 200; i++) {
+		  
+		  
+		  AddSynthi.add(syntheffect, 'synthi'+i, 0,1.0).onChange(function(newValue) {
+		  console.log("You changed me to " + newValue);
+			  syntheffect['synthi'+i] = newValue
+		  })
+	}
+	
+	
+	
+	
+	
+	fdelay = i1.addFolder('Delay');
+	  fdelay.add(inputeffect, 'delay', 0, 10000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputdelay.delayTime = newValue
+	  });
+	  fdelay.add(inputeffect, 'feedback', 0, 2).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputdelay.feedback = newValue
+	  });
+	
+	  fdelay.add(inputeffect, 'wetLevel', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputdelay.wetLevel = newValue
+	  });
+	  fdelay.add(inputeffect, 'dryLevel', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputdelay.dryLevel = newValue
+	  });
+	  fdelay.add(inputeffect, 'cutoff', 0, 16000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputdelay.cutoff = newValue
+	  });
+	  fdelay.add(inputeffect, 'bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputdelay.bypass = newValue
+	  });
+	
+	  fchorus = i1.addFolder('Chorus');
+	  fchorus.add(inputeffect, 'chorus_rate', 0, 8).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputchorus.rate = newValue
+	  });
+	  fchorus.add(inputeffect, 'chorus_feedback', 0, 2).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputchorus.feedback = newValue
+	  });
+	
+	  fchorus.add(inputeffect, 'chorus_delay', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputchorus.delay = newValue
+	  });
+	  fchorus.add(inputeffect, 'chorus_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputchorus.bypass = newValue
+	  });
+	
+	
+	fphaser = i1.addFolder('Phaser');
+	  fphaser.add(inputeffect, 'phaser_rate', 0, 5).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputphaser.rate = newValue
+	  });
+	  fphaser.add(inputeffect, 'phaser_depth', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputphaser.depth = newValue
+	  });
+	
+	  fphaser.add(inputeffect, 'phaser_feedback', 0, 2).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputphaser.feedback = newValue
+	  });
+	  fphaser.add(inputeffect, 'phaser_stereoPhase', 0, 30).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputphaser.stereoPhase = newValue
+	  });
+	  fphaser.add(inputeffect, 'phaser_baseModulationFrequency', 0, 700).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputphaser.baseModulationFrequency = newValue
+	  });
+	  fphaser.add(inputeffect, 'phaser_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputphaser.bypass = newValue
+	  });
+	
+	foverdrive = i1.addFolder('Overdrive');
+	  foverdrive.add(inputeffect, 'over_outputGain', 0, 11.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputoverdrive.outputGain = newValue
+	  });
+	  foverdrive.add(inputeffect, 'over_drive', 0, 1.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputoverdrive.odrive = newValue
+	  });
+	
+	  foverdrive.add(inputeffect, 'over_curveAmount', 0, 1.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputoverdrive.curveAmount = newValue
+	  });
+	  foverdrive.add(inputeffect, 'over_algorithmIndex', 0 ,5).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputoverdrive.algorithmIndex = newValue
+	  });
+	
+	  foverdrive.add(inputeffect, 'over_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputoverdrive.bypass = newValue
+	  });
+	
+	
+	finputcompressor = i1.addFolder('inputcompressor');
+	  finputcompressor.add(inputeffect, 'comp_threshold', -100, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputcompressor.threshold = newValue
+	  });
+	  finputcompressor.add(inputeffect, 'comp_makeupGain', 0, 3).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputdelay.makeupGain = newValue
+	  });
+	
+	  finputcompressor.add(inputeffect, 'comp_attack', 0, 1000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputdelay.attack = newValue
+	  });
+	  finputcompressor.add(inputeffect, 'comp_release', 0, 3000).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputdelay.release = newValue
+	  });
+	  finputcompressor.add(inputeffect, 'comp_ratio', 1, 20).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputdelay.ratio = newValue
+	  });
+		finputcompressor.add(inputeffect, 'comp_knee', 0, 40).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputdelay.knee = newValue
+	  });
+	
+	  finputcompressor.add(inputeffect, 'comp_automakeup', true, false).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputdelay.automakeup = newValue
+	  });
+	  finputcompressor.add(inputeffect, 'comp_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputdelay.bypass = newValue
+	  });
+	
+	
+	ffilter = i1.addFolder('Filter');
+	  ffilter.add(inputeffect, 'filter_frequency', 20, 22050).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputcompressor.frequency = newValue
+	  });
+	  ffilter.add(inputeffect, 'filter_Q', 0.001, 100).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputfilter.Q = newValue
+	  });
+	
+	  ffilter.add(inputeffect, 'filter_gain', -40, 40).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputfilter.gain = newValue
+	  });
+	//   ffilter.add(inputeffect, 'filter_filterType',"lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass").onChange(function(newValue) {
+	//    console.log("You changed me to " + newValue);
+	//      inputfilter.filterType = newValue
+	//   });
+	
+	  
+	  ffilter.add(inputeffect, 'filter_filterType',{lowpass:'lowpass', highpass:'highpass', bandpass:'bandpass',
+							 lowshelf:'lowshelf', highshelf:'highshelf', peaking:'peaking', notch:'notch', allpass:'allpass'}).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputfilter.filterType = newValue
+	  });
+	
+	  ffilter.add(inputeffect, 'filter_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputfilter.bypass = newValue
+	  });
+	
+	
+	
+	
+	
+	fcabinet = i1.addFolder('Caibnet');
+	  fcabinet.add(inputeffect, 'cabinet_makeupGain', 0, 20).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputcabinet.makeupGain = newValue
+	  });
+	  fcabinet.add(inputeffect, 'cabinet_impulsePath',"impulses/impulse_guitar.wav").onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputcabinet.impulsePath = newValue
+	  });
+	  fcabinet.add(inputeffect, 'cabinet_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputcabinet.bypass = newValue
+	  });
+	
+	
+	ftremolo = i1.addFolder('Tremolo');
+	  ftremolo.add(inputeffect, 'tremolo_intensity', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputtremolo.intensity = newValue
+	  });
+	  ftremolo.add(inputeffect, 'tremolo_rate',.001, 8.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputtremolo.rate = newValue
+	  });
+	
+	  ftremolo.add(inputeffect, 'tremolo_stereoPhase', 0, 180).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputtremolo.stereoPhase = newValue
+	  });
+	
+	
+	  ftremolo.add(inputeffect, 'tremolo_bypass', 0, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputtremolo.bypass = newValue
+	  });
+	
+	
+	
+	fwahwah = i1.addFolder('WahWah');
+	  fwahwah.add(inputeffect, 'WahWah_automode', true).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputwahwah.automode = newValue
+	  });
+	  
+	fwahwah.add(inputeffect, 'WahWah_baseFrequency', 0, 1.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputwahwah.baseFrequency = newValue
+	  });
+	
+	  fwahwah.add(inputeffect, 'WahWah_excursionOctaves', 0, 6.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputwahwah.excursionOctaves = newValue
+	  });
+	  fwahwah.add(inputeffect, 'WahWah_sweep', 0, 1.0).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputwahwah.sweep = newValue
+	  });
+	  fwahwah.add(inputeffect, 'WahWah_resonance', 1, 100).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		inputwahwah.resonance = newValue
+	  });
+		fwahwah.add(inputeffect, 'WahWah_sensitivity', -1, 1).onChange(function(newValue) {
+	   console.log("You changed me to " + newValue);
+		 inputwahwah.sensitivity = newValue
+	  });
+	
+	
+	
+	
+	
+		
+	var dat_container = document.getElementById('dat-gui-container');
+	dat_container.appendChild(gui.domElement);
+	
+	 
+	  //getLiveInput(); 
+	
+	
+	
+	 // gui.remember(syntheffect);
+	
+		 /* Add a save menu, @localstorage */
+	
+	
+	
+	
+			   /* Add a save menu, @localstorage */
+	
+	
+	///////////////
+	  var delayvalue = 2000
+	  var feedbackvalue = 0.8
+	  var inputdelay = 0.2
+	  var inputfeedback = 0.3
+	  var attack = 1
+	  var decay = 1
+	  var sustain = 1
+	  var release = 1
+	
+	 
+	  var context = new AudioContext(
+		  {
+	  latencyHint: 'interactive',
+	  sampleRate: 11025,
+	//   sampleRate: 22050,
+	}
+	);
+	  var myAudioAnalyser = context.createAnalyser()
+	
+	  var voices = [];
+	  var voices1 = [];
+	  var mousevoices = []
+	  var mousevoices1 = []
+	  var mousevoices2 = []
+	  //var voicetracker = {};
+	
+		var tuna = new Tuna(context);
+	
+	
+	
+		 var synthchorus = new tuna.Chorus({
+		rate: 1.5,         //0.01 to 8+
+		feedback: 0.2,     //0 to 1+
+		delay: 0.0045,     //0 to 1
+		bypass: 1          //the value 1 starts the effect as bypassed, 0 or 1
+	});
+	//A delay effect with feedback and a lowpass filter applied to the delayed signal.
+	
+	var synthdelay = new tuna.Delay({
+		feedback: 1,    //0 to 1+
+		delayTime: 2000 ,   //how many milliseconds should the wet signal be delayed?
+		wetLevel: 0.25,    //0 to 1+
+		dryLevel: 1,       //0 to 1+
+		cutoff: 16000,      //cutoff frequency of the built in lowpass-filter. 20 to 22050
+		bypass: 1
+	});
+	//A basic phaser effect.
+	
+	var synthphaser = new tuna.Phaser({
+		rate: 1.2,                     //0.01 to 8 is a decent range, but higher values are possible
+		depth: 0.3,                    //0 to 1
+		feedback: 0.2,                 //0 to 1+
+		stereoPhase: 30,               //0 to 180
+		baseModulationFrequency: 700,  //500 to 1500
+		bypass: 1
+	});
+	//A basic overdrive effect.
+	
+	var synthoverdrive = new tuna.Overdrive({
+		outputGain: 0.5,         //0 to 1+
+		drive: 0.7,              //0 to 1
+		curveAmount: 1,          //0 to 1
+		algorithmIndex: 0,       //0 to 5, selects one of our drive algorithms
+		bypass: 1
+	});
+	//A compressor with the option to use automatic makeup gain.
+	
+	var synthcompressor = new tuna.Compressor({
+		threshold: 0.5,    //-100 to 0
+		makeupGain: 1,     //0 and up
+		attack: 1,         //0 to 1000
+		release: 0,        //0 to 3000
+		ratio: 4,          //1 to 20
+		knee: 5,           //0 to 40
+		automakeup: true,  //true/false
+		bypass: 1
+	});
+	//A convolver with high- and lowcut. You can find a lot of impulse resonses here, or by searching for "free impulse response files".
+	
+	var synthconvolver = new tuna.Convolver({
+		highCut: 22050,                         //20 to 22050
+		lowCut: 20,                             //20 to 22050
+		dryLevel: 1,                            //0 to 1+
+		wetLevel: 1,                            //0 to 1+
+		level: 1,                               //0 to 1+, adjusts total output of both wet and dry
+		impulse: "impulses/impulse_rev.wav",    //the path to your impulse response
+		bypass: 1
+	});
+	//A basic filter.
+	
+	var synthfilter = new tuna.Filter({
+		frequency: 440, //20 to 22050
+		Q: 1, //0.001 to 100
+		gain: 0, //-40 to 40
+		filterType: "lowpass", //lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass
+		bypass: 1
+	});
+	//A cabinet/speaker emulator.
+	
+	var synthcabinet = new tuna.Cabinet({
+		makeupGain: 1,                                 //0 to 20
+		impulsePath: "impulses/impulse_guitar.wav",    //path to your speaker impulse
+		bypass: 1
+	});
+	//A basic tremolo.
+	
+	var synthtremolo = new tuna.Tremolo({
+		intensity: 0.3,    //0 to 1
+		rate: 4,         //0.001 to 8
+		stereoPhase: 0,    //0 to 180
+		bypass: 1
+	});
+	//A wahwah with an auto wah option.
+	
+	var synthwahwah = new tuna.WahWah({
+		automode: true,                //true/false
+		baseFrequency: 0.5,            //0 to 1
+		excursionOctaves: 2,           //1 to 6
+		sweep: 0.2,                    //0 to 1
+		resonance: 10,                 //1 to 100
+		sensitivity: 0.5,              //-1 to 1
+		bypass: 1
+	});
+	//A lo-fi bitcrusher effect.
+	
+	var synthbitcrusher = new tuna.Bitcrusher({
+		bits: 4,          //1 to 16
+		normfreq: 0.1,    //0 to 1
+		bufferSize: 4096  //256 to 16384
+	});
+	//A resonant, analog-sounding filter.
+	
+	var synthmoog = new tuna.MoogFilter({
+		cutoff: 0.065,    //0 to 1
+		resonance: 3.5,   //0 to 4
+		bufferSize: 4096  //256 to 16384
+	});
+	
+	
+	
+	 var inputchorus = new tuna.Chorus({
+		rate: 1.5,         //0.01 to 8+
+		feedback: 0.2,     //0 to 1+
+		delay: 0.0045,     //0 to 1
+		bypass: 1          //the value 1 starts the effect as bypassed, 0 or 1
+	});
+	//A delay effect with feedback and a lowpass filter applied to the delayed signal.
+	
+	var inputdelay = new tuna.Delay({
+		feedback: 1,    //0 to 1+
+		delayTime: 2000 ,   //how many milliseconds should the wet signal be delayed?
+		wetLevel: 0.25,    //0 to 1+
+		dryLevel: 1,       //0 to 1+
+		cutoff: 16000,      //cutoff frequency of the built in lowpass-filter. 20 to 22050
+		bypass: 1
+	});
+	//A basic phaser effect.
+	
+	var inputphaser = new tuna.Phaser({
+		rate: 1.2,                     //0.01 to 8 is a decent range, but higher values are possible
+		depth: 0.3,                    //0 to 1
+		feedback: 0.2,                 //0 to 1+
+		stereoPhase: 30,               //0 to 180
+		baseModulationFrequency: 700,  //500 to 1500
+		bypass: 1
+	});
+	//A basic overdrive effect.
+	
+	var inputoverdrive = new tuna.Overdrive({
+		outputGain: 0.5,         //0 to 1+
+		drive: 0.7,              //0 to 1
+		curveAmount: 1,          //0 to 1
+		algorithmIndex: 0,       //0 to 5, selects one of our drive algorithms
+		bypass: 1
+	});
+	//A compressor with the option to use automatic makeup gain.
+	
+	var inputcompressor = new tuna.Compressor({
+		threshold: 0.5,    //-100 to 0
+		makeupGain: 1,     //0 and up
+		attack: 1,         //0 to 1000
+		release: 0,        //0 to 3000
+		ratio: 4,          //1 to 20
+		knee: 5,           //0 to 40
+		automakeup: true,  //true/false
+		bypass: 1
+	});
+	//A convolver with high- and lowcut. You can find a lot of impulse resonses here, or by searching for "free impulse response files".
+	
+	var inputconvolver = new tuna.Convolver({
+		highCut: 22050,                         //20 to 22050
+		lowCut: 20,                             //20 to 22050
+		dryLevel: 1,                            //0 to 1+
+		wetLevel: 1,                            //0 to 1+
+		level: 1,                               //0 to 1+, adjusts total output of both wet and dry
+		impulse: "impulses/impulse_rev.wav",    //the path to your impulse response
+		bypass: 1
+	});
+	//A basic filter.
+	
+	var inputfilter = new tuna.Filter({
+		frequency: 440, //20 to 22050
+		Q: 1, //0.001 to 100
+		gain: 0, //-40 to 40
+		filterType: "lowpass", //lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass
+		bypass: 1
+	});
+	//A cabinet/speaker emulator.
+	
+	var inputcabinet = new tuna.Cabinet({
+		makeupGain: 1,                                 //0 to 20
+		impulsePath: "impulses/impulse_guitar.wav",    //path to your speaker impulse
+		bypass: 1
+	});
+	//A basic tremolo.
+	
+	var inputtremolo = new tuna.Tremolo({
+		intensity: 0.3,    //0 to 1
+		rate: 4,         //0.001 to 8
+		stereoPhase: 0,    //0 to 180
+		bypass: 1
+	});
+	//A wahwah with an auto wah option.
+	
+	var inputwahwah = new tuna.WahWah({
+		automode: true,                //true/false
+		baseFrequency: 0.5,            //0 to 1
+		excursionOctaves: 2,           //1 to 6
+		sweep: 0.2,                    //0 to 1
+		resonance: 10,                 //1 to 100
+		sensitivity: 0.5,              //-1 to 1
+		bypass: 1
+	});
+	//A lo-fi bitcrusher effect.
+	
+	var inputbitcrusher = new tuna.Bitcrusher({
+		bits: 4,          //1 to 16
+		normfreq: 0.1,    //0 to 1
+		bufferSize: 4096  //256 to 16384
+	});
+	//A resonant, analog-sounding filter.
+	
+	var inputmoog = new tuna.MoogFilter({
+		cutoff: 0.065,    //0 to 1
+		resonance: 3.5,   //0 to 4
+		bufferSize: 4096  //256 to 16384
+	});
+	
+	//A delay that bounces between the left and right channel.
+	
+	//var glitch = new tuna.PingPongDelay({
+		//wetLevel: 0.5, //0 to 1
+	  //  feedback: 0.3, //0 to 1
+	//delayTimeLeft: 150, //1 to 10000 (milliseconds)
+	  //  delayTimeRight: 200 //1 to 10000 (milliseconds)
+	//});
+	
+	
+	
+	
+	
+	var masterdelay = new tuna.Delay({
+		feedback: .3,    //0 to 1+
+		delayTime: 3500,    //how many milliseconds should the wet signal be delayed?
+		wetLevel: 0.5,    //0 to 1+
+		dryLevel: 0.5,       //0 to 1+
+		cutoff: 3000,      //cutoff frequency of the built in lowpass-filter. 20 to 22050
+		bypass: 0
+		});
+	
+		  
+	
+	
+	// systemvolume
+	
+	// systemdelay
+	// systemfilter
+	// systemcompressor
+	// systemequaliser
+	
+	
+	// mastervolume
+	
+	
+	// spectralpoolsynth0
+	
+	// spectralpoolsynth_delay
+	
+	
+	// spectralpoolsynth1
+	
+	// spectralpoolsynth_delay1
+	
+	// spectralpoolsynth2
+	
+	// spectralpoolsynth_delay2
+	
+	
+	
+	
+	
+	
+	//final vca
+	var audio_context = context;
+	
+	
+	var systemvolume = context.createGain();
+	systemvolume.gain.value = 0.9999
+	systemvolume.connect(context.destination)
+	systemvolume.connect(myAudioAnalyser)
+	// var recorder = new Recorder(systemvolume);
+	
+	
+	var mastervolume = context.createGain();
+	mastervolume.gain.value = 0.9999
+	mastervolume.connect(masterdelay)
+	masterdelay.connect(systemvolume)
+	
+	var inputvolume = context.createGain();
+	inputvolume.gain.value = 0.9999
+	inputvolume.connect(mastervolume)
+	
+	// var arpvolume = context.createGain();
+	// arpvolume.gain.value = 0.9999
+	// arpvolume.connect(mastervolume)
+	
+	var synthvolume = context.createGain();
+	synthvolume.gain.value = 0.9999
+	synthvolume.connect(mastervolume)
+	
+	var midivolume = context.createGain();
+	midivolume.gain.value = 0.9999
+	midivolume.connect(mastervolume)
+		
+	
+
+
+	
+	
+	// var systemvolume = context.createGain();
+	// systemvolume.gain.value = 0.9999
+	// systemvolume.connect(context.destination)
+	// var recorder = new Recorder(systemvolume);
+	
+	
+	
+	///
+	
+	
+	///
+	
+	
+	
+	
+	function startup(context) {
+	  var el = document.getElementsByTagName("canvas")[0];
+	  var ctx = el.getContext("2d"); 
+	
+		  var c = document.getElementById("content");
+		  var co = c.getContext("2d");
+		 var c1 = document.getElementById("contentprint");
+		  var co1 = c.getContext("2d");
+	
+	
+	  // c.addEventListener('mousedown', handleStart,false);
+	  // $( "#content" ).mousedown(handleStart);
+	  // $( "#content" ).mousemove(handleStart);
+	  // $( "#content" ).mouseup(handleStart);
+	  // $( "#content" ).mouseleave(handleStart);
+	  // $( "#content" ).touchstart(handleStart);
+	  // $( "#content" ).touchend(handleStart);
+	  // $( "#content" ).touchcancel(handleStart);
+	  // $( "#content" ).touchleave(handleStart);
+	  // $( "#content" ).touchmove(handleStart);
+	
+	
+	// /
+	  pointervoices = []
+	  var vizCanvas = document.getElementById("speccanvas");
+		  // var vizCanvas = document.getElementsByTagName("canvas")[0];
+	  var ctxosc1 = vizCanvas.getContext("2d");
+	  c.addEventListener('pointerdown', handleStart,false);
+	  c.addEventListener('pointermove', handleMove,false);
+	  c.addEventListener('pointerup', handleEnd,false);
+	  c.addEventListener('pointerleave', handleCancel,false);
+	
+	  vizCanvas.addEventListener('pointerdown', handleStart,false);
+	  vizCanvas.addEventListener('pointermove', handleMove,false);
+	  vizCanvas.addEventListener('pointerup', handleEnd,false);
+	  vizCanvas.addEventListener('pointerleave', handleCancel,false);
+	
+	  
+	  c.addEventListener('mousedown', handleStart,false);
+	  c.addEventListener('mousemove', handleMove,false);
+	  c.addEventListener('mouseup', handleEnd,false);
+	  c.addEventListener('mouseleave', handleCancel,false);
+	  c.addEventListener("touchstart", handleStart, false);
+	  c.addEventListener("touchend", handleEnd, false);
+	  c.addEventListener("touchcancel", handleCancel, false);
+	  c.addEventListener("touchleave", handleEnd, false);
+	  c.addEventListener("touchmove", handleMove, false);
+	
+	  // //tempaudio = context.createOscillator();
+	  //tempaudio.type = "sine";
+	  //tempaudio.frequency.value = 0;
+	  //tempaudio.start(0)
+	  
+	  
+	  }
+	
+	//var ongoingTouches = new Array;
+	
+	
+	function getX (x) {return(x-rect.left - root.scrollLeft)} 
+	function getY (y) {return(y - rect.top - root.scrollTop)} 
+	
+	function handleStart(evt,el) {   
+	evt.preventDefault(); 
+	   var el = document.getElementsByTagName("canvas")[0];
+	  var ctx = el.getContext("2d"); 
+	
+	
+			  var rect = el.getBoundingClientRect(), root = document.documentElement;
+			// return relative mouse position
+			//   var mouseX =evt.clientX  - rect.left - root.scrollLeft
+			//   var mouseY = evt.clientY - rect.top - root.scrollTop
+			  
+			//   masterdelay.delayTime = (mousetilty+100)*2000/200
+	
+	
+	
+	
+	  var c = document.getElementsByTagName("content");
+	   var offset = findPos(c);
+	
+		
+	// var voicefreqoffset = 0
+	// var voicefreqoffsetmult = 1
+	// var voicefreqoffsetvalue = voicefreqoffset*voicefreqoffsetmult
+	
+	// var voicefreqoffset1 = 0
+	// var voicefreqoffsetmult1 = 1
+	// var voicefreqoffsetvalue1 = voicefreqoffset1*voicefreqoffsetmult1
+	
+	// var voicefreqoffset2 = 0
+	// var voicefreqoffsetmult2 = 1
+	// var voicefreqoffsetvalue2 = voicefreqoffset2*voicefreqoffsetmult2
+	
+	
+	  if (evt.type == 'pointerdown' || evt.type == 'pointerdown') {
+	
+		var mouseX =evt.clientX  - rect.left
+			  var mouseY = evt.clientY - rect.top
+			  var mousepressure = evt.pressure
+			  var voicefreqoffsetvalue1 = evt.tiltX
+			  var voicefreqoffsetvalue2 = evt.tiltY
+	
+			  synthdelay.feedbackvalue = (mousepressure+0.2)/2
+	
+	
+		var frequencyx = px_to_frequency(mouseX)
+		var volumey = mouseY;
+		
+		// var feedbackvalue = syntheffect.synthfeedback
+		// var delayvalue = syntheffect.delayvalue
+	
+		 //log(evt.pageX + ";" + evt.x + ";" + evt.clientX + ";" + evt.posX + ";" + UIEvent.pageX)
+	
+		var voicespecpool = new Voicespecpool(frequencyx,volumey,delayvalue,feedbackvalue,attack,decay,sustain,release,1000); 
+		// var voicespecpool = new Voicespecpool(frequencyx,volumey,delayvalue,feedbackvalue,decay,sustain,release,1000);   
+		voicespecpool.start();
+		// var voicespecpool1 = new Voicespecpool(frequencyx+voicefreqoffsetvalue1,volumey,delayvalue,feedbackvalue,attack,decay,sustain,release,1000);   
+		// voicespecpool1.start();
+		// var voicespecpool2 = new Voicespecpool(frequencyx+voicefreqoffsetvalue2,volumey,delayvalue,feedbackvalue,attack,decay,sustain,release,1000);   
+		// voicespecpool2.start();
+		mousevoices.push(voicespecpool);
+		// mousevoices1.push(voicespecpool1);
+		// mousevoices2.push(voicespecpool2);
+		drawcrossprint(mouseX,mouseY,frequencyx)
+		// drawcrossprint(mouseX,mouseY,frequencyx*2.5)
+	  } if (evt.type == 'touchstart' || evt.type == 'touchstart') {
+		 var touches = evt.changedTouches;
+		 var touchLength = touches.length;
+	  for (var i = 0; i < touchLength; i++) {
+		//log("touchstart.");  
+			  var touchX = touches[i].pageX  - rect.left - root.scrollLeft;
+			  var touchY = touches[i].pageY- rect.top - root.scrollTop;
+	
+		var frequencyx =  px_to_frequency( touchX);
+		var volumey = touchY;
+		var voicespecpool = new Voicespecpool(frequencyx,volumey,delayvalue,feedbackvalue,attack,decay,sustain,release,touches[i]);
+		voicespecpool.start();
+		voices.push(voicespecpool);
+		drawcrossprint(touchX,touchY,frequencyx)
+	  }
+	  } 
+	}
+	
+	
+	function handleEnd(evt) {
+	  evt.preventDefault();
+	  //log("touchend.");
+	  var el = document.getElementsByTagName("canvas")[0];
+	  var ctx = el.getContext("2d");
+		var c = document.getElementsByTagName("content");
+	   var offset = findPos(c);
+	
+	  
+	
+		 var rect = el.getBoundingClientRect(), root = document.documentElement;
+			// return relative mouse position
+			var mouseX =evt.clientX  - rect.left
+			  var mouseY = evt.clientY - rect.top
+	
+	
+	  if (evt.type == 'mouseup' || evt.type == 'pointerup') {
+		
+		for (var i = 0; i < mousevoices.length; i++) {
+		   mousevoices[i].stop(); 
+		   mousevoices.splice(i, 1); // remove it; we're done 
+		//    mousevoices1[i].stop(); 
+		//    mousevoices1.splice(i, 1); // remove it; we're done 
+		//    mousevoices2[i].stop(); 
+		//    mousevoices2.splice(i, 1); // remove it; we're done 
+		   drawcrossprint(mouseX,mouseY,px_to_frequency(mouseX))  
+		}
+	 
+	  } else if (evt.type == 'touchend' || evt.type == 'touchend') {
+		 var touches = evt.changedTouches;
+		 var touchLength = touches.length;
+		for (var i = 0; i < touchLength; i++) {
+			var idx = ongoingVoiceIndexById(touches[i].identifier);        
+			if (idx >= 0) {
+			  voices[idx].stop(); 
+			  voices.splice(idx, 1); // remove it; we're done
+			} else {
+			  //log("can't figure out which touch to end");
+	  }
+	  }
+	   }
+	}
+	
+	function handleMove(evt) {
+	evt.preventDefault();    
+	  var el = document.getElementsByTagName("canvas")[0];
+	  var ctx = el.getContext("2d");
+		var c = document.getElementsByTagName("content");
+	   var offset = findPos(c);
+	
+	
+		   
+	// var voicefreqoffset = 0
+	// var voicefreqoffsetmult = 1
+	// var voicefreqoffsetvalue = voicefreqoffset*voicefreqoffsetmult
+	
+	// var voicefreqoffset1 = 0
+	// var voicefreqoffsetmult1 = 1
+	// var voicefreqoffsetvalue1 = voicefreqoffset1*voicefreqoffsetmult1
+	
+	// var voicefreqoffset2 = 0
+	// var voicefreqoffsetmult2 = 1
+	// var voicefreqoffsetvalue2 = voicefreqoffset2*voicefreqoffsetmult2
+	
+	
+	  evt.preventDefault();   
+	
+			  var rect = el.getBoundingClientRect(), root = document.documentElement;
+			// return relative mouse position
+	//    drawcross(mouseX,mouseY,frequencyx)
+	 
+	  if (evt.type == 'pointermove' || evt.type == 'pointermove') {
+		var mouseX =evt.clientX  - rect.left
+			  var mouseY = evt.clientY - rect.top
+			  var mousepressure = evt.pressure
+			  var voicefreqoffsetvalue1 = evt.tiltX
+			  var voicefreqoffsetvalue2 = evt.tiltY
+			//   console.log(evt.tiltX+0)
+			  
+			//   masterdelay.feedback = mousepressure
+			//   console.log(mousepressure)
+			//   masterdelay.delayTime = (mousetilty+100)*2000/200
+	
+	
+	
+			//   syntheffect.delay.feedbackvalue = (mousetiltx+100)/200
+			//   syntheffect.delay.delayTime = (mousetilty+100)/200*100
+			  
+			  
+			//   var mousepressure = evt.pressure/10
+	
+			//   var mousetiltx = evt.tiltx
+			//   var mousetilty = evt.tilty
+	
+			//   syntheffect.delay.feedbackvalue = (mousetiltx+100)/200
+			//   syntheffect.delay.delayTime = (mousetilty+100)/200*1000
+			  
+	
+			//   console.log(evt.pressure)
+			  var frequencyx = px_to_frequency(mouseX)
+			  var volumey = mouseY;
+	
+		  
+		   for (var i = 0; i < mousevoices.length; i++) {
+			 
+			 mousevoices[i].update(frequencyx,volumey);
+			//  mousevoices1[i].update(frequencyx+voicefreqoffsetvalue1,volumey);
+			//  mousevoices2[i].update(frequencyx+voicefreqoffsetvalue2,volumey);
+			//  drawcross(mouseX,mouseY,frequencyx)S
+		   }
+	
+		
+	
+	  } else if (evt.type == 'touchmove' || evt.type == 'touchmove') {
+		var touches = evt.changedTouches;
+		 var touchLength = touches.length;
+		for (var i = 0; i < touchLength; i++) {
+		  
+		  var idx = ongoingVoiceIndexById(touches[i].identifier);    
+		  if (idx >= 0) {
+			  var touchX = touches[i].pageX  - rect.left - root.scrollLeft;
+			  var touchY = touches[i].pageY- rect.top - root.scrollTop;
+	
+	
+			  var voicex =  px_to_frequency(touchX)
+			  var voicey = touchY
+			  voices[idx].update(voicex,voicey);
+				//  drawcross( touchX,touchY,voicex)
+			  //log("voiceupdate:" + idx + ".");     
+		  } else {
+		   // log("can't figure out which touch to continue");
+		  }
+		}
+	   } 
+	}
+	function handleCancel(evt) {
+	//  log("touchend/touchleave.");
+	  var el = document.getElementsByTagName("canvas")[0];
+	  var ctx = el.getContext("2d");
+	  var c = document.getElementsByTagName("content");
+	   var offset = findPos(c);
+	
+		if (evt.type == 'mouseleave' || evt.type == 'mouseleave') {
+		
+		for (var i = 0; i < mousevoices.length; i++) {
+		   mousevoices[i].stop(); 
+		   mousevoices.splice(i, 1); // remove it; we're done   
+		//    mousevoices1[i].stop(); 
+		//    mousevoices1.splice(i, 1); // remove it; we're done   
+		//    mousevoices2[i].stop(); 
+		//    mousevoices2.splice(i, 1); // remove it; we're done  
+		}
+	 
+	  } else if (evt.type == 'touchcancel' || evt.type == 'touchcancel') {
+		 var touches = evt.changedTouches;
+		 var touchLength = touches.length;
+	
+	  for (var i = 0; i < touchLength; i++) {
+		var idx = ongoingVoiceIndexById(touches[i].identifier);        
+		if (idx >= 0) {
+		 //  log("voice:" + idx + ".");
+		  voices[idx].stop(); 
+		  voices.splice(idx, 1); // remove it; we're done
+		//  log("voicecancel:" + idx + ".");
+		} else {
+		//  log("can't figure out which touch to end");
+		  }
+		}
+	   } 
+	}
+	
+	
+	
+	function colorForTouch(touch) {
+	  var r = touch.identifier % 16;
+	  var g = Math.floor(touch.identifier / 3) % 16;
+	  var b = Math.floor(touch.identifier / 7) % 16;
+	  r = r.toString(16); // make it a hex digit
+	  g = g.toString(16); // make it a hex digit
+	  b = b.toString(16); // make it a hex digit
+	  var color = "#" + r + g + b;
+	  //log("color for touch with identifier " + touch.identifier + " = " + color);
+	  return color;
+	}
+	function copyTouch(touch,voice,counter) {
+	  return {identifier: touch.identifier, tracker: counter, clientX: touch.clientX,clientY: touch.clientY, vtrack: voice};
+	}
+	//function copyVoice(touch,voice,counter) {
+	 // return {voiceid: {identifier: identifier: touch.identifier, counter: counter, clientX: touch.clientX,clientY: touch.clientY, voiceobj: voice}};
+	//}
+	function ongoingTouchIndexById(idToFind) {
+	  for (var i = 0; i < ongoingTouches.length; i++) {
+		var id = ongoingTouches[i].identifier;
+		
+		if (id == idToFind) {
+		  return i;
+		}
+	  }
+	  return -1; // not found
+	}
+	
+	
+	function ongoingVoiceIndexById(idToFind) {
+	
+	  var voicesLength = voices.length;
+	  for (var i = 0; i < voicesLength; i++) {
+		var id = voices[i].identifier;
+		
+		if (id == idToFind) {
+		  return i;
+		}
+	  }
+	  return -1; // not found
+	}
+	
+	
+	function log(msg) {
+	  var p = document.getElementById('log');
+	  p.innerHTML = msg + "\n" + p.innerHTML;
+	}
+	 
+	function findPos (obj) {
+		var curleft = 0,
+			curtop = 0;
+	
+		if (obj.offsetParent) {
+			do {
+				curleft += obj.offsetLeft;
+				curtop += obj.offsetTop;
+			} while (obj = obj.offsetParent);
+	
+			return { x: curleft-document.canvas.scrollLeft, y: curtop-document.canvas.scrollTop };
+		}
+	}
+	//@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	var Voicespecpool = function(context,touch) {   
+		function Voicespecpool(frequency,volume,delay,feedback,attack,decay,sustain,release,touch){
+		  var lowNote = 0; // C4
+		  var highNote = 7900; // B4
+		  //this.attack = attack
+		  //this.release = release
+	
+		  
+			this.touch = touch
+			this.identifier = touch.identifier;
+			 
+		  
+		  //log("continuing touch " + 2 ^ (frequency/68.26));
+		  this.frequency = frequency
+		  this.frequency54 = frequency*2.5
+		  this.volume = (1-(volume/701))
+	 
+		  this.oscillators = [];
+		  this.gains = [];
+		 
+	
+	 };
+			   
+	
+	 Voicespecpool.prototype.start = function() {
+	
+	
+	
+		var real = new Float32Array(2000);
+		  var imag = new Float32Array(2000);  
+	
+	  
+	
+		for (var i = 0; i < 500; i++) {
+	
+		real[i] = syntheffect['synthreal'+i]
+		imag[i] = syntheffect['synthi'+i]
+		}
+	
+	//     for (var i = 501; i < 2000; i++) {
+	
+	//     real[i] = 0
+	//     imag[i] = 0
+	//     }
+	
+	//     for (var i = 0; i < 2; i++) {
+	
+	// real[i] = 1
+	// imag[i] = 1
+	// }
+	
+		
+		 
+	
+	
+		   
+		 // var imag = new Float32Array(real.length);
+		  var hornTable = context.createPeriodicWave(real, imag);
+		  this.touch = touch    
+	 /* VCA */
+		  var vca = context.createGain();
+		  vca.gain.value = this.volume
+	/* VCO */
+		  var vco = context.createOscillator();
+		  //vco.type = "square";
+		  vco.setPeriodicWave(hornTable);
+		  vco.frequency.value = this.frequency;
+	
+		//       var vco54 = context.createOscillator();
+		//   //vco.type = "square";
+		//   vco54.setPeriodicWave(hornTable);
+	  
+		//   vco54.frequency.value = this.frequency54;
+	  
+	  
+		  //envelope with 0.001 sec attack and 0.5 sec decay      
+		  //var envelope = context.createEnvelope(attack,decay,sustain,release);
+	
+	
+		  //var noiseGen = context.createNoiseGen(0,4096)
+		  //noiseGen.connect(context.destination)
+		  //noiseGen.connect(myAudioAnalyser)
+		  //envelope.trigger(0.01);
+		  //feedback delay of 0.4 seconds with 0.5x feedback
+			   /* connections */
+		   vco.connect(vca)
+		//    vco54.connect(vca)
+		  //vca.connect(feedbackDelay);   
+		  //vco.connect(context.destination)
+		  // vca.connect(context.destination) 
+		  //vca.connect(envelope)  
+	
+		  vco.start(0);  
+		   //vco54.start(0);      
+	
+	
+		  //var delay = new tuna.Delay({
+			//feedback: .7,    //0 to 1+
+			//delayTime: 350,    //how many milliseconds should the wet signal be delayed?
+			//wetLevel: 0.6,    //0 to 1+
+			//dryLevel: .4,       //0 to 1+
+			//cutoff: 300,      //cutoff frequency of the built in lowpass-filter. 20 to 22050
+			//bypass: 0
+		  //});
+	
+	  
+	
+		var now = context.currentTime;
+		vca.gain.cancelScheduledValues( now );
+		vca.gain.setValueAtTime(0, now)
+		vca.gain.linearRampToValueAtTime(vca.gain.value, now + syntheffect.source_attack)
+	
+		 // envelope.connect(context.destination)      
+		  //vca.connect(context.destination);
+		  vca.connect(synthphaser);
+		  synthphaser.connect(synthtremolo)
+		  synthtremolo.connect(synthchorus)
+		  synthchorus.connect(synthoverdrive)
+		  synthoverdrive.connect(synthfilter)
+		  synthfilter.connect(synthcabinet)
+		  synthcabinet.connect(synthdelay)
+		  synthdelay.connect(synthcompressor)
+		  synthcompressor.connect(synthvolume)
+		//   systemvolume.connect(context.destination)
+		//   systemvolume.connect(myAudioAnalyser)
+	
+	   
+		
+		  this.oscillators.push(vco); 
+		  this.gains.push(vca)
+	
+		};
+	
+	  // Update the note frequency.
+	  Voicespecpool.prototype.updateFrequency = function(event) {
+		if (event.type == 'touchstart' || event.type == 'touchmove') {
+		   var touch = event.touches[0];
+		  voice.updateFreq(touch.pageX, touch.pageY);
+		} else if (event.type == 'touchstart' || event.type == 'touchmove') {
+		  var touch = event.touches[0];
+		  voice.calculateFrequency(touch.pageX, touch.pageY);
+	
+		}
+	  };
+	  // Calculate the note frequency.
+	  Voicespecpool.calculateNote = function(posX) {
+		var noteDifference = highNote - lowNote;
+		var noteOffset = (noteDifference / el.offsetWidth) * (posX - el.offsetLeft);
+		return lowNote + noteOffset;
+	  };  
+	  // Calculate the volume.
+	  Voicespecpool.calculateVolume = function(posY) {
+		var volumeLevel = 1 - (((100 / el.offsetHeight) * (posY - el.offsetTop)) / 100);
+		return volumeLevel;
+	  };
+	  Voicespecpool.prototype.update = function(x,y) {
+		  this.gains.forEach(function(g, _) {
+		  g.gain.value = (1-(y/701))
+		 // log("touch" + touch + "; " +  g.gain.value)
+		 });
+		  this.oscillators.forEach(function(oscillator, _) {
+		  oscillator.frequency.value =  x
+		  oscillator.frequency.setValueAtTime(x,20)
+		  //log("touch" + touch + "; " + oscillator.frequency.value)
+		 });
+	
+		}; 
+		Voicespecpool.prototype.stop = function() {     
+		var now = context.currentTime;
+	
+		  this.gains.forEach(function(vcagain, _) {
+				  
+				  vcagain.gain.cancelScheduledValues( now );
+				  vcagain.gain.setValueAtTime(vcagain.gain.value, now)     
+				
+				  vcagain.gain.linearRampToValueAtTime(0, now + syntheffect.source_decay) 
+				  setTimeout(function() { 
+					  
+				//     // oscillator.stop(now + syntheffect.source_decay+0.0001);
+					// oscillator.disconnect(); 
+					// delete oscillator
+				//   oscillator.stop(now + syntheffect.source_decay+0.0001);
+				// delete oscillatorNode;
+				}, syntheffect.source_decay+200);    
+			//  })
+			
+				//   vcagain.disconnect()   
+				//   vcagain.onended = function() {
+				//     vcagain.disconnect()
+				//     //   console.log("disconnected")
+				//   }          
+		  });          
+	
+	 
+		//   this.oscillators.forEach(function(oscillator, _) {
+			   
+		//           oscillator.stop(now + syntheffect.source_decay+100);
+		//         //   oscillator.disconnect(); 
+		//         // setTimeout(function() { 
+		//         //     // oscillator.stop(now + syntheffect.source_decay+0.0001);
+		//         //     oscillator.disconnect(); 
+		//         //   oscillator.stop(now + syntheffect.source_decay+0.0001);
+		//         // delete oscillatorNode;
+		//         // }, syntheffect.source_decay+100);    
+		//     // }
+	
+		//         //   oscillator.onended = function() {
+		//             //   oscillator.disconnect()
+		//             //   console.log("disconnected")
+		//         //   }
+		//         //   oscillator.disconnect()
+		//   });
+	
+		
+	
+		//   this.oscillators.forEach(function(oscillator, _) {
+			   
+		//        oscillator.onended = function() {
+		//        oscillator.disconnect();
+		// };
+			 //   oscillator.disconnect()
+	//    });
+	
+	
+		//   this.oscillators.onended = function() {
+		//     oscillators.disconnect();
+			// delete this.oscillators
+			// delete this.gains
+		// };
+	
+		 
+		//   this.oscillators.disconnect()
+		//   this.gains.disconnect()
+		};
+		return Voicespecpool;
+	  }(context);
+	
+	///////////////////////////////////////////////////////////////////////////////////////
+	
+	
+	  /* NoiseGen */
+	
+	  function NoiseGenFactory(context, stereo, bufSize){
+		bufSize = bufSize || 512;
+		var node = context.createScriptProcessor(bufSize, 1, 2);
+		node.onaudioprocess = function(e){
+		  var outBufferL = e.outputBuffer.getChannelData(0);
+		  var outBufferR = e.outputBuffer.getChannelData(1);
+		  for (var i = 0; i < bufSize; i++){
+			outBufferL[i] = Math.random() * 2 - 1;
+			outBufferR[i] = stereo ? Math.random() * 2 - 1 : outBufferL[i];
+		  }
+		}
+		return node;
+	  }
+		/** INSTRUMENTS **/
+	
+	  function Drum(context){
+		var osc = this.osc = context.createOscillator();
+		osc.frequency.value = 45;
+		osc.type = osc.SINE;
+		var env = this.env = context.createEnvelope(0.001, 0.1, 0, 0.5);
+		osc.connect(env);
+	  }
+	
+	  Drum.prototype.trigger = function(){
+		this.env.trigger(0.05);
+	  }
+	  Drum.prototype.connect = function(dest){
+		this.env.connect(dest);
+	  }
+	
+	  function HiHat(context){
+		this.noiseGen = context.createNoiseGen();
+		this.filter = context.createBiquadFilter();
+		this.filter.type = this.filter.HIGHPASS;
+		this.filter.frequency.value = 5000;
+		this.noiseGen.connect(this.filter);
+		this.env = context.createEnvelope(0.001, 0.05, 0, 0.2);
+		this.filter.connect(this.env);
+	  }
+	
+	  HiHat.prototype.trigger = function(){
+		this.env.trigger(0.025);
+	  }
+	  HiHat.prototype.connect = function(dest){
+		this.env.connect(dest);
+	  }
+	
+	  AudioContext.prototype.createDrum = function(){ return new Drum(this); };
+	  AudioContext.prototype.createHiHat = function(){ return new HiHat(this); };
+	
+	  /** LOOP **/
+	
+	  function Loop(){
+		this.tracks = {};
+		this.stopped = true;
+		this.interval = 500;
+		this.beatUnit = 1/4;
+		this.onPlay = function(){};
+	  }
+	
+	  Loop.prototype.setInstruments = function(instruments){
+		each(instruments, function(inst, label){
+		  this.tracks[label] = { instrument: inst };
+		}, this);
+	  }
+	
+	  Loop.prototype.setSequences = function(seqs){
+		each(seqs, function(loop, label){
+		  this.tracks[label].loop = typeof loop === "string" ? loop.split('') : loop;
+		  this.tracks[label].loopPos = 0;
+		}, this);
+	  }
+	
+	  Loop.prototype.setBPM = function(BPM){
+		this.interval = (60 / BPM) * 1000;
+	  }
+	
+	  Loop.prototype.setBeatUnit = function(unit){
+		this.beatUnit = unit;
+	  }
+	
+	  Loop.prototype.startLoop = function(){
+		this.stopped = false;
+		this.playNext();
+	  }
+	
+	  Loop.prototype.playNext = function(){
+		if (this.stopped) return;
+		each(this.tracks, function(track, name){
+		  var currNote = track.loop[track.loopPos];
+		  if (currNote === '*'){
+			track.instrument.trigger();
+		  }
+		  this.onPlay(name, track.loopPos);
+		  if (++track.loopPos >= track.loop.length){
+			track.loopPos = 0;
+		  }
+		}, this);
+		var self = this;
+		setTimeout(function(){ self.playNext(); }, this.interval * this.beatUnit * 4);
+	  }
+	
+	  Loop.prototype.stopLoop = function(){
+		this.stopped = true;
+	  }
+	
+	  function each(obj, callback, context){
+		context = context || this;
+		for (var prop in obj){
+		  if (obj.hasOwnProperty(prop)){
+			callback.call(context, obj[prop], prop);
+		  }
+		}
+	  }
+	
+	//////////////////   //playSoundCloud();
+	
+	function  playSoundCloud(context) {
+	
+		var context 
+		audio = new Audio(),
+		source,
+		// `stream_url` you'd get from 
+		// requesting https://api.soundcloud.com/tracks/6981096.json
+		url = 'https://api.soundcloud.com/tracks/6981096/stream' +
+			  '?client_id=27d0d20680464016e65074ccc5bd0244';
+	
+	audio.src = url;
+	source = context.createMediaElementSource(audio);
+	source.connect(context.destination);
+	source.mediaElement.play();
+	
+	};
+	
+	
+	// function doMath(){<!--from  w w w .  j  ava  2 s .  c  om-->
+	// var inputNum=document.soundcloudurl.input.value;
+	
+	// var result = inputNum;
+	// document.soundcloudurl.answer.value = result;
+	// } 
+	
+	
+	
+	
+	
+	var source;
+	function playSound(arraybuffer) {
+		context.decodeAudioData(arraybuffer, function (buffer) {
+			source = context.createBufferSource();
+			source.connect(context.destination);
+			source.connect(systemvolume)
+			source.connect(myAudioAnalyser)
+			source.buffer = buffer;
+			source.start(0);
+		});
+	}
+	
+	function handleFileSelect(evt) {
+		var files = evt.target.files; // FileList object
+		playFile(files[0]);
+	}
+	
+	function playFile(file) {
+		var freader = new FileReader();
+	
+		freader.onload = function (e) {
+			console.log(e.target.result);
+			playSound(e.target.result);
+		};
+		freader.readAsArrayBuffer(file);
+	}
+	
+	player = document.getElementById('player');
+	document.getElementById('files').addEventListener('change', handleFileSelect, false);
+	document.getElementById('play').onclick = function () {
+		player.play();
+	};
+	
+	// // load the specified sound
+	// function loadSound(url) {
+	//     var request = new XMLHttpRequest();
+	//     request.open('GET', file, true);
+	//     request.responseType = 'arraybuffer';
+	
+	//     // When loaded decode the data
+	//     request.onload = function () {
+	
+	//         // decode the data
+	//         context.decodeAudioData(request.response, function (buffer) {
+	//             // when the audio is decoded play the sound
+	//             playSound(buffer);
+	//         }, onError);
+	//     }
+	//     request.send();
+	// }
+	//     // log if an error occurs
+	//     function onError(e) {
+	//         console.log(e);
+	//     }
+	
+	
+	// function playSound(buffer) {
+	//     sourceNode.buffer = buffer;
+	//     sourceNode.start(0);
+	//     sourceNode.loop = false;
+	// }
+	
+	
+	/////////////////////////
+	
+	
+	
+	  // Only get the audio stream.
+	
+	
+	function getLiveInput() {
+	  // navigator.getUserMedia = navigator.getUserMedia ||
+	  //                        navigator.webkitGetUserMedia ||
+	  //                        navigator.mediaDevices.getUserMedia||
+	  //                        navigator.mozGetUserMedia;
+	  // // Only get the audio stream.
+	  navigator.mediaDevices.getUserMedia({audio: true}).then(onStream);
+	};
+	
+	function endLiveInput() {
+	  // Only get the audio stream.
+		input.disconnect(contex.destination)
+	  
+	  //vca.connect(context.destination)
+	};
+	
+	function onStream(stream) {
+	  // Wrap a MediaStreamSourceNode around the live input stream.
+	  var input = context.createMediaStreamSource(stream);
+	  // Connect the input to a filter.
+	
+	
+	  var vca = context.createGain();
+	  vca.gain.value = 1
+	
+	
+	  // Connect graph.
+	  // input.connect(inputdelay)
+	  // inputdelay.connect(context.destination)
+	  // inputdelay.connect(myAudioAnalyser)
+	
+	
+		//   input.connect(inputphaser);
+		//   inputphaser.connect(inputtremolo)
+		//   inputtremolo.connect(inputchorus)
+		//   inputchorus.connect(inputoverdrive)
+		//   inputoverdrive.connect(inputfilter)
+		//   inputfilter.connect(inputcabinet)
+		//   inputcabinet.connect(inputdelay)
+		//   inputdelay.connect(inputcompressor)
+		//   inputcompressor.connect(systemvolume)
+		//   systemvolume.connect(context.destination)
+		//   systemvolume.connect(myAudioAnalyser)
+	
+		//   input.connect(inputphaser);
+		  // inputphaser.connect(inputtremolo)
+		  // inputtremolo.connect(inputchorus)
+		  // inputchorus.connect(inputoverdrive)
+		  // inputoverdrive.connect(inputfilter)
+		  // inputfilter.connect(inputcabinet)
+		  // inputcabinet.connect(inputdelay)
+		  // inputdelay.connect(inputcompressor)
+		  // inputcompressor.connect(systemvolume)
+		  // input.connect(inputvolume)
+		  input.connect(myAudioAnalyser)
+	
+	  //input.connect(myAudioAnalyser);
+	
+	  // Set up an animation.
+	  //requestAnimationFrame(render);
+	};
+	
+	function onStreamError(e) {
+	  console.error(e);
+	};
+	
+	
+	
+	///////////////
+	
+	
+	
+		// create a temp canvas we use for copying
+		const tempCanvas = document.createElement("canvas"),
+			tempCtx = tempCanvas.getContext("2d");
+		tempCanvas.width=2048;
+		tempCanvas.height=1000;
+	
+	
+	var fft_colour1 = 'black'
+	var fft_colour2 = 'darkblue'
+	var fft_colour3 = 'green'
+	var fft_colour4 = 'orange'
+	var fft_colour5 = 'red'
+	
+	var fft_pos1 = 0
+	var fft_pos2 = 0.00001
+	var fft_pos3 = 0.2
+	var fft_pos4 = 0.8
+	var fft_pos5 = 1.2
+	
+	var fft_min = 0
+	var fft_max = 300
+	
+	// used for color distribution
+		var hot = new chroma.ColorScale({
+				colors:['#000000', 'darkblue', 'green', 'red','orange'],
+			positions:[0, .025, .5, .75, .98],
+			mode:'rgb',
+			limits:[0, 300]
+		});
+	
+	
+		// load the sound
+		var fftmult = syntheffect.fftmult
+		setupAudioNodes();
+		var sourceNode;
+		var systemvolume;
+		
+	
+		
+		function setupAudioNodes() {
+	
+			// setup a javascript node
+			javascriptNode = context.createScriptProcessor(4096, 1, 1);
+			// connect to destination, else it isn't called
+			javascriptNode.connect(context.destination);
+	
+			
+	
+			// setup a analyzer
+			myAudioAnalyser = context.createAnalyser();
+			myAudioAnalyser.smoothingTimeConstant = 0;
+			myAudioAnalyser.fftSize = syntheffect.fftmult
+	
+	//        var array = new Uint8Array(myAudioAnalyser.frequencyBinCount);
+	//        myAudioAnalyser.getByteFrequencyData(array);
+	
+	
+			// source = context.createBufferSource();
+			// source.connect(myAudioAnalyser);
+			// source.connect(systemvolume)
+	
+			// sourceNode = context.createBufferSource();
+			// sourceNode.connect(myAudioAnalyser);
+			// sourceNode.connect(systemvolume)
+			myAudioAnalyser.connect(javascriptNode);
+	
+			//sourceNode.connect(context.destination);
+			systemvolume.connect(context.destination)
+			// systemvolume.connect(myAudioAnalyser)
+			recorder = new Recorder(systemvolume);
+	
+	
+	
+	
+		}
+	
+	  
+		javascriptNode.onaudioprocess = function () {
+	
+			// get the average for the first channel
+	
+			var array = new Uint8Array(myAudioAnalyser.frequencyBinCount);
+			myAudioAnalyser.getByteFrequencyData(array);
+				  drawSpectrogram(array);
+			// array = []    
+	
+		}
+		
+	// var scale = 1024;
+	// linear
+	//for(var i = 0; i <= 1; i += 0.1) ctx.fillRect(i * scale, 0, 2, 20);
+	// logarithmic
+	//for(var i = 0; i <= 1; i += 0.1) ctx.fillRect(myLog(i) * scale, 35, 2, 20);
+	var pr = syntheffect.spectrumRatio
+	var logscale = syntheffect.logscale
+	var specratio1 = syntheffect.specratio1
+	var specratio2 = syntheffect.specratio2
+	var specpxoffset = syntheffect.specpxoffset
+	var minf = syntheffect.minf
+	var maxf = syntheffect.maxf
+	var pxmult = syntheffect.pxmult
+	var log2 = Math.log(2)
+	
+	
+		function myLog(x) {return (Math.log(specratio1)^(x)/Math.log(specratio2))};   // some log function, just an example
+	var width_px = 2048
+	
+	
+	function frequencty_to_px(frequency) {
+		var min_f = Math.log(minf) / log2,
+			max_f = Math.log(maxf) / log2,
+			range = max_f - min_f,
+			position_px = (Math.log(frequency) / log2 - min_f) / (range) * width_px
+	
+			return  position_px * pr
+	}
+	
+	function px_to_frequency(px) {
+		var min_f = Math.log(minf) / log2,
+			max_f = Math.log(maxf) / log2,
+			range = max_f - min_f,    
+			position_frequency = Math.exp(( specratio1 * range * (px- specpxoffset)/width_px)* log2+min_f);
+			
+			return  position_frequency * specratio2
+	}
+	
+	
+		function drawBoard(){
+			var bw = 2048;
+			var bh = 700;
+			var p = 10;
+	
+			for (var x = 0; x <= bw; x += 40) {
+				ctx.moveTo(0.5 + x + p, p);
+				ctx.lineTo(0.5 + x + p, bh + p);
+			}
+	
+	
+			for (var x = 0; x <= bh; x += 40) {
+				ctx.moveTo(p, 0.5 + x + p);
+				ctx.lineTo(bw + p, 0.5 + x + p);
+			}
+	
+			ctx.strokeStyle = "green";
+			ctx.stroke();
+			}
+	
+	
+	
+	// var audio = {
+	//     analyser: {},
+	//     buffer: {},
+	//     buffer_effects: {},
+	//     compatibility: {},
+	//     convolver: {},
+	//     effects: ["claire.mp3", "rainbow.mp3", "pink.ogg"],
+	//     files: ["claire.mp3", "rainbow.mp3", "pink.ogg"],
+	//     frequencyData: {},
+	//     gain: {},
+	//     gain_loop: {},
+	//     gain_once: {},
+	//     message: {
+	//         quote: ["I like audio loops... better than I like you.<br>~ Dr. McCoy to Spock", "There is the theory of the mobius, a twist in the fabric of space where time becomes a loop...<br>~ Worf", "Hey doll, is this audio boring you? Come and talk to me. I'm from a different planet.<br>~ Zaphod Beeblebrox", "I need your headphones, your record player and your glowsticks.<br>~ Arnold Schwarzenegger", "I'm the synthesizer. Are you the keymaster?<br>~ Sigourney Weaver", "Flash? Where we're going, we don't need flash.<br>~ Doc Brown", "I'll be history.back()<br>~ Arnold Schwarzenegger", "I don't want one loop, I want all loops!<br>~ Ruby Rhod", "If it reads, we can stream it.<br>~ Arnold Schwarzenegger"],
+	//         quote_last: -1
+	//     },
+	//     pause_vis: true,
+	//     playing: 0,
+	//     proceed: true,
+	//     source_loop: {},
+	//     source_once: {},
+	//     volume_fade_time: .7
+	// };
+	// audio.findSync = function(n) {
+	//     var first = 0,
+	//         current = 0,
+	//         offset = 0;
+	//     for (var i in audio.source_loop) {
+	//         current = audio.source_loop[i]._startTime;
+	//         if (current > 0) {
+	//             if (current < first || first === 0) {
+	//                 first = current
+	//             }
+	//         }
+	//     }
+	//     if (audio.context.currentTime > first) {
+	//         var duration = audio.buffer[n].duration;
+	//         offset = (audio.context.currentTime - first) % duration
+	//     }
+	//     return offset
+	// };
+	// audio.message.random = function() {
+	//     var num;
+	//     do {
+	//         num = Math.floor(Math.random() * audio.message.quote.length)
+	//     } while (num === audio.message.quote_last);
+	//     audio.message.quote_last = num;
+	//     return audio.message.quote[num]
+	// };
+	// audio.play = function(n, playOnly) {
+	//     if (audio.source_loop[n]._playing) {
+	//         if (!playOnly) {
+	//             audio.stop(n)
+	//         }
+	//     } else {
+	//         audio.source_loop[n] = audio.context.createBufferSource();
+	//         audio.source_loop[n].buffer = audio.buffer[n];
+	//         audio.source_loop[n].connect(audio.gain_loop[n]);
+	//         audio.source_loop[n].loop = true;
+	//         audio.source_loop[n].connect(systemvolume)
+	//         var offset = audio.findSync(n);
+	//         audio.source_loop[n]._startTime = audio.context.currentTime;
+	//         if (audio.compatibility.start === "noteOn") {
+	//             audio.source_once[n] = audio.context.createBufferSource();
+	//             audio.source_once[n].buffer = audio.buffer[n];
+	//             audio.source_once[n].connect(audio.gain_once[n]);
+	//             audio.source_once[n].noteGrainOn(0, offset, audio.buffer[n].duration - offset);
+	//             audio.gain_once[n].gain.setValueAtTime(0, audio.context.currentTime);
+	//             audio.gain_once[n].gain.linearRampToValueAtTime(1, audio.context.currentTime + audio.volume_fade_time);
+	//             audio.source_loop[n][audio.compatibility.start](audio.context.currentTime + (audio.buffer[n].duration - offset))
+	//         } else {
+	//             audio.source_loop[n][audio.compatibility.start](0, offset)
+	//         }
+	//         audio.gain_loop[n].gain.setValueAtTime(0, audio.context.currentTime);
+	//         audio.gain_loop[n].gain.linearRampToValueAtTime(1, audio.context.currentTime + audio.volume_fade_time);
+	//         document.getElementById("button-loop-" + n).className = "active";
+	//         audio.source_loop[n]._playing = true;
+	//         audio.playing = audio.playing + 1;
+	//         if (audio.playing === 1) {
+	//             audio.pause_vis = false;
+	//             //drawSpectrum1();
+	//             jQuery(".widget-vis p").stop().fadeOut(1500, function() {
+	//                 jQuery(this).html(audio.message.random())
+	//             })
+	//         }
+	//     }
+	// };
+	// audio.playAll = function() {
+	//     for (var a in audio.source_loop) {
+	//         audio.play(a, true)
+	//     }
+	// };
+	// audio.stop = function(n) {
+	//     if (audio.source_loop[n]._playing && !audio.source_loop[n]._stopping) {
+	//         audio.source_loop[n]._stopping = true;
+	//         audio.source_loop[n][audio.compatibility.stop](audio.context.currentTime + audio.volume_fade_time);
+	//         audio.source_loop[n]._startTime = 0;
+	//         if (audio.compatibility.start === "noteOn") {
+	//             audio.source_once[n][audio.compatibility.stop](audio.context.currentTime + audio.volume_fade_time);
+	//             audio.gain_once[n].gain.setValueAtTime(1, audio.context.currentTime);
+	//             audio.gain_once[n].gain.linearRampToValueAtTime(0, audio.context.currentTime + audio.volume_fade_time)
+	//         }(function() {
+	//             var num = n;
+	//             setTimeout(function() {
+	//                 audio.source_loop[num]._playing = false;
+	//                 audio.source_loop[num]._stopping = false
+	//             }, audio.volume_fade_time * 100)
+	//         })();
+	//         audio.gain_loop[n].gain.setValueAtTime(1, audio.context.currentTime);
+	//         audio.gain_loop[n].gain.linearRampToValueAtTime(0, audio.context.currentTime + audio.volume_fade_time);
+	//         document.getElementById("button-loop-" + n).className = "inactive";
+	//         audio.playing = audio.playing - 1;
+	//         if (audio.playing === 0) {
+	//             setTimeout(function() {
+	//                 if (audio.playing === 0) {
+	//                     audio.pause_vis = true;
+	//                     jQuery(".widget-vis p").stop().fadeIn(3e3)
+	//                 }
+	//             }, 5e3)
+	//         }
+	//     }
+	// };
+	// audio.stopAll = function() {
+	//     for (var a in audio.source_loop) {
+	//         audio.stop(a)
+	//     }
+	// };
+	// try {
+	//     audio.context =  context
+	// } catch (e) {
+	//     audio.proceed = false;
+	//     alert("Web Audio API not supported in this browser.")
+	// }
+	// if (audio.proceed) {
+	//     (function() {
+	//         var name = "createGain";
+	//         if (typeof context.createGain !== "function") {
+	//             name = "createGainNode"
+	//         }
+	//         audio.compatibility.createGain = name
+	//     })();
+	//     (function() {
+	//         var start = "start",
+	//             stop = "stop",
+	//             buffer = context.createBufferSource();
+	//         if (typeof buffer.start !== "function") {
+	//             start = "noteOn"
+	//         }
+	//         audio.compatibility.start = start;
+	//         if (typeof buffer.stop !== "function") {
+	//             stop = "noteOff"
+	//         }
+	//         audio.compatibility.stop = stop
+	//     })();
+	//    // var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+	//    // window.requestAnimationFrame = requestAnimationFrame;
+	//     audio.gain.booster = context[audio.compatibility.createGain]();
+	//     audio.gain.booster.gain.value = 3;
+	//     audio.convolver = context.createConvolver();
+	//     audio.convolver.connect(audio.gain.booster);
+	//     audio.gain.collapse = context[audio.compatibility.createGain]();
+	//     var img = new Image;
+	//     img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAEklEQVR4AWNsP/eaATcYlcYKANQJFotqqVYoAAAAAElFTkSuQmCC";
+	//     //var canvas_div = document.getElementById("vis-div");
+	//     //var canvasloop = document.getElementById("vis");
+	//    // canvasloop.height = canvas_div.offsetHeight;
+	//    // canvasloop.width = canvas_div.offsetWidth;
+	//     //var ctxloop = canvasloop.getContext("2d");
+	//     //ctxloop.imageSmoothingEnabled = false;
+	//    // ctxloop.webkitImageSmoothingEnabled = ctxloop.mozImageSmoothingEnabled = false;
+	
+	//    // function drawSpectrum1() {
+	//     //    audio.analyser.getByteFrequencyData(audio.frequencyData);
+	//     //    var bar_width = Math.ceil(canvasloop.width / (audio.analyser.frequencyBinCount * .85));
+	// //ctxloop.clearRect(0, 0, canvasloop.width, canvasloop.height);
+	//    //     var freq, x, y, w, h;
+	//     //    ctxloop.fillStyle = ctxloop.createPattern(img, "repeat");
+	//      //   for (var i = 0; i < audio.analyser.frequencyBinCount; i++) {
+	//       //      freq = audio.frequencyData[i] || 0;
+	// //x = bar_width * i;
+	// //if (x + bar_width < canvasloop.width) {
+	//        //         y = canvasloop.height;
+	//        //         w = bar_width - 1;
+	//         //        h = -(Math.floor(freq / 255 * canvasloop.height) + 1);
+	//          //       ctxloop.fillRect(x, y, w, h)
+	//           //  }
+	//    //     }
+	//    //     if (!audio.pause_vis) {
+	//            // requestAnimationFrame(drawSpectrum1)
+	//    //     } else {
+	//    //         ctxloop.clearRect(0, 0, canvasloop.width, canvasloop.height)
+	//   //      }
+	//   //  }
+	//    // audio.analyser = context.createAnalyser();
+	//    // audio.analyser.smoothingTimeConstant = .85;
+	//    // audio.analyser.fftSize = 256;
+	//   //  audio.frequencyData = new Uint8Array(audio.analyser.frequencyBinCount);
+	//     jQuery("#master-volume").prop("disabled", false).knob({
+	//         angleArc: 360,
+	//         angleOffset: 0,
+	//         displayInput: true,
+	//         height: 104,
+	//         thickness: ".2",
+	//         width: 104,
+	//         change: function(v) {
+	//             v = v / 100;
+	//             audio.gain.master.gain.value = v * v
+	//         }
+	//     });
+	//     audio.gain.master = context[audio.compatibility.createGain]();
+	//     audio.gain.master.gain.value = .8649;
+	//     audio.gain.master.connect(systemvolume)
+	//     systemvolume.connect(myAudioAnalyser);  
+	//    // systemvolume.connect(audio.analyser);
+	//     systemvolume.connect(context.destination);
+	//     audio.gain.collapse.connect(audio.gain.master);
+	//     jQuery(".widget-effects").delegate("button", "click", function(e) {
+	//         var val = parseInt(this.value);
+	//         audio.gain.collapse.disconnect();
+	//         audio.gain.booster.disconnect();
+	//         var previous_vol = audio.gain.master.gain.value;
+	//         audio.gain.master.gain.value = 0;
+	//         if (this.className === "active") {
+	//             jQuery(".widget-effects .active").removeClass("active");
+	//             audio.gain.collapse.connect(audio.gain.master)
+	//         } else {
+	//             jQuery(".widget-effects .active").removeClass("active");
+	//             audio.convolver.buffer = audio.buffer_effects[val];
+	//             audio.gain.collapse.connect(audio.convolver);
+	//             audio.gain.booster.connect(audio.gain.master);
+	//             this.className = "active"
+	//         }
+	//         setTimeout(function() {
+	//             audio.gain.master.gain.value = previous_vol
+	//         }, 50)
+	//     });
+	//     document.getElementById("button-stop").addEventListener("click", audio.stopAll);
+	//     document.getElementById("button-stop").disabled = false;
+	//     document.getElementById("button-play").addEventListener("click", audio.playAll);
+	//     document.getElementById("button-play").disabled = false;
+	//     for (var a in audio.files) {
+	//         (function() {
+	//             var i = parseInt(a) + 1;
+	//             var req = new XMLHttpRequest;
+	//             req.open("GET", audio.files[i - 1], true);
+	//             req.responseType = "arraybuffer";
+	//             req.onload = function() {
+	//                 context.decodeAudioData(req.response, function(buffer) {
+	//                     audio.buffer[i] = buffer;
+	//                     audio.source_loop[i] = {};
+	//                     var button = document.getElementById("button-loop-" + i);
+	//                     button.addEventListener("click", function(e) {
+	//                         e.preventDefault();
+	//                         audio.play(this.value, false)
+	//                     });
+	//                     jQuery(button).text(button.getAttribute("data-name")).removeClass("loading");
+	//                     button.disabled = false;
+	//                     audio.gain_loop[i] = context[audio.compatibility.createGain]();
+	//                     audio.gain_loop[i].connect(audio.gain.collapse);
+	//                     if (audio.compatibility.start === "noteOn") {
+	//                         audio.gain_once[i] = context[audio.compatibility.createGain]();
+	//                         audio.gain_once[i].connect(audio.gain.collapse)
+	//                     }
+	//                 }, function() {
+	//                     console.log('Error decoding audio "' + audio.files[i - 1] + '".')
+	//                 })
+	//             };
+	//             req.send()
+	//         })()
+	//     }
+	//     for (var a in audio.effects) {
+	//         (function() {
+	//             var i = parseInt(a) + 1;
+	//             var req = new XMLHttpRequest;
+	//             req.open("GET", audio.effects[i - 1], true);
+	//             req.responseType = "arraybuffer";
+	//             req.onload = function() {
+	//                 context.decodeAudioData(req.response, function(buffer) {
+	//                     audio.buffer_effects[i] = buffer;
+	//                     var button = document.getElementById("effect-" + i);
+	//                     button.disabled = false;
+	//                     jQuery(button).html(button.getAttribute("data-name").replace(" ", "<br>")).removeClass("loading")
+	//                 }, function() {
+	// //drawVisual = requestAnimationFrame(draw); 
+	
+	
+	
+	
+	
+	//                     console.log('Error decoding effect "' + audio.effects[i - 1] + '".')
+	//                 })
+	//             };
+	//             req.send()
+	//         })()
+	//     }
+	//     jQuery(document).ready(function() {
+	//         jQuery(window).resize(function() {
+	//             //canvasloop.height = canvas_div.offsetHeight;
+	//             //canvasloop.width = canvas_div.offsetWidth
+	//         })
+	//     })
+	// }
+	
+	// draw()
+	
+	
+	// var stats = new Stats();
+	// stats.setMode( 1 ); // 0: fps, 1: ms, 2: mb
+	
+	// var el =  document.getElementById("content1")
+	// var offscreen = el.transferControlToOffscreen();
+	
+	
+	
+	// var worker = new Worker("https://melbark.com/js/offscreencanvas.js"); 
+	// worker.postMessage({canvas: offscreen}, [offscreen]);
+	
+	
+	// function draw() {
+	//     //   stats.begin();
+	
+	//        var array = new Uint8Array(myAudioAnalyser.frequencyBinCount);
+	//         myAudioAnalyser.getByteFrequencyData(array);
+	//             //   drawSpectrogram(array);
+	
+	//       drawSpectrogram(array)   
+	//     //   stats.end();
+	// ;
+	//       drawVisual = requestAnimationFrame(draw);
+	 
+	// };    
+	// draw()
+	
+	
+	
+	// align top-left
+	// stats.domElement.style.position = 'absolute';
+	// stats.domElement.style.left = '300px';
+	// stats.domElement.style.top = '0px';
+	
+	// document.body.appendChild( stats.domElement );
+	
+	// drawVisual = requestAnimationFrame(draw); 
+	
+	
+	function drawSpectrogram(array) {
+			// copy the current canvas onto the temp canvas
+		  var el = document.getElementsByTagName("canvas")[0];
+		  var ctx = el.getContext("2d");
+	
+		  var vizCanvas = document.getElementById("speccanvas");
+		  // var vizCanvas = document.getElementsByTagName("canvas")[0];
+		  var ctxosc1 = vizCanvas.getContext("2d");
+		  ctxosc1.clearRect(0, 0, 2048, 250);
+		  tempCtx.drawImage(canvas, 0, 0, 2048, 1000);
+			// iterate over the elements from the array
+		  var arrayLength = array.length
+		  for (var i = 0; i < arrayLength; i++) {
+			  // draw each pixel with the specific color
+			  var value = array[i];
+			  ctx.fillStyle = hot.getColor(value).hex();
+			  a = pxmult * frequencty_to_px(i)
+			  c = pxmult * frequencty_to_px(i+1)-pxmult * frequencty_to_px(i)
+			  ctxosc1.fillStyle = ctx.fillStyle;
+			  ctxosc1.fillRect(a, 250 - 1*value,c, value);
+			  ctx.fillRect(a, 1000 - 1,c , 1);
+		   
+			  //ctx.fillRect(10*i, 600 - 1, .1, 5);
+			}
+			
+			ctx.translate(0, -1);
+			// draw the copied image
+			ctx.drawImage(tempCanvas, 0, 0, 2048, 1000, 0, 0, 2048, 1000);
+			// reset the transformation matrix
+			ctx.setTransform(1, 0, 0, 1, 0, 0);
+	   
+			// set translate on the canvas
+		
+		}
+	
+	
+	
+		// function drawSpectrogram(array) {
+		//     // copy the current canvas onto the temp canvas
+		//   var el = document.getElementsByTagName("canvas")[0];
+		//   var ctx = el.getContext("2d");
+		//   tempCtx.drawImage(canvas, 0, 0, 2048, 1000);
+		//     // iterate over the elements from the array
+		//   var arrayLength = array.length
+		//   for (var i = 0; i < arrayLength; i++) {
+		//       // draw each pixel with the specific color
+		//       var value = array[i];
+		//       ctx.fillStyle = hot.getColor(value).hex();
+		//       ctx.fillRect(pxmult * frequencty_to_px(i), 1000 - 1,pxmult * frequencty_to_px(i+1)-pxmult * frequencty_to_px(i) , 1);
+			  
+		//       //ctx.fillRect(10*i, 600 - 1, .1, 5);
+		//     }
+			
+		//     ctx.translate(0, -1);
+		//     // draw the copied image
+		//     ctx.drawImage(tempCanvas, 0, 0, 2048, 1000, 0, 0, 2048, 1000);
+		//     // reset the transformation matrix
+		//     ctx.setTransform(1, 0, 0, 1, 0, 0);
+	   
+		//     // set translate on the canvas
+		
+		// }
+	
+	
+	
+	
+			function drawcross1(x,y,pxfreq) {
+	
+		  var c = document.getElementById("content");
+		  var co = c.getContext("2d");
+	
+	
+	
+	  //   var contDiv = $('#current_system_map'); 
+	  //   var offset = contDiv.offset();
+	  /*   x = e.clientX-offset.left;
+		 y = e.clientY-offset.top; */
+	  // var x = event.pageX - canvas.offsetLeft;
+	  // var y = event.pageY - canvas.offsetTop;
+	  co.clearRect(0, 0, canvas.width, canvas.height);
+	
+	 var teoriafreq = px_to_frequency(pxfreq+.0001)
+	  var note = teoria.note.fromFrequency( pxfreq);
+	  co.font = "15px Ariel";
+	  co.fillStyle = "white";
+	  co.fillText( note.note + "," + teoriafreq + "," + note.cents, x + 10, y +20);
+	
+	  co.beginPath();
+	  co.moveTo(0, y);
+	  co.lineTo(2048, y);
+	  co.moveTo(x, 0);
+	  co.lineTo(x, 2048);
+	  co.strokeStyle = "white"; //"rgb(255,255,255)";
+	  co.stroke();
+	  co.closePath();
+	
+	
+	  var radius = syntheffect.scaleradius;
+	
+	  for (i = 1; i < 10; i++) {
+		co.beginPath();
+		co.arc(x, y, i * radius*syntheffect.ratio1, 2 * Math.PI, false);
+	
+		co.lineWidth = .5;
+		co.strokeStyle = 'white';
+		co.stroke();
+		co.closePath();
+	  }
+	  for (i = 1; i < 10; i++) {
+		co.beginPath();
+		co.arc(x, y, i * radius * syntheffect.ratio2, 2 * Math.PI, false);
+	
+		co.lineWidth = .3;
+		co.strokeStyle = 'white';
+		co.stroke();
+		co.closePath();
+	  }
+	
+	};
+	
+	
+		 function drawcrossprint(x,y,pxfreq) {
+	
+		  var c1 = document.getElementById("contentprint");
+		  var co1 = c1.getContext("2d");
+	
+	
+	
+	  //   var contDiv = $('#current_system_map'); 
+	  //   var offset = contDiv.offset();
+	  /*   x = e.clientX-offset.left;
+		 y = e.clientY-offset.top; */
+	  // var x = event.pageX - canvas.offsetLeft;
+	  // var y = event.pageY - canvas.offsetTop;
+	   co1.clearRect(0, 0, canvas.width, canvas.height);
+	
+	//   var teoriafreq = px_to_frequency(pxfreq+.0001)
+	var teoriafreq = px_to_frequency(pxfreq)
+	  var note = teoria.note.fromFrequency( pxfreq);
+	  co1.font = "15px Ariel";
+	  co1.fillStyle = "white";
+	  co1.fillText( note.note + "," + teoriafreq + "," + note.cents, x + 10, y - 60);
+	
+	  co1.beginPath();
+	  co1.moveTo(0, y);
+	  co1.lineTo(2048, y);
+	  co1.moveTo(x, 0);
+	  co1.lineTo(x, 2048);
+	  co1.strokeStyle = "white"; //"rgb(255,255,255)";
+	  co1.stroke();
+	  co1.closePath();
+	
+	  var radius = syntheffect.scaleradius;
+	
+	  for (i = 1; i < 10; i++) {
+		co1.beginPath();
+		co1.arc(x, y, i * radius*syntheffect.ratio1, 2 * Math.PI, false);
+	
+		co1.lineWidth = .5;
+		co1.strokeStyle = 'white';
+		co1.stroke();
+		co1.closePath();
+	  }
+	  for (i = 1; i < 10; i++) {
+		co1.beginPath();
+		co1.arc(x, y, i * radius * syntheffect.ratio2, 2 * Math.PI, false);
+	
+		co1.lineWidth = .3;
+		co1.strokeStyle = 'white';
+		co1.stroke();
+		co1.closePath();
+	  }
+	};
+	
+	///////////////
+	
+	</script>
+	
+	
+	
+	
+	
+	
+	
+	<link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+	
+	   
+		<div class="recorder container">
+		   
+			   <h2>Record</h2>
+		  <p>Record monitor volume: <input type="range" max="1" step="0.1" value="0" onchange="changeVolume(this.value)"/></p>
+		  <p>
+			<button class="btn btn-primary" onclick="startRecording(this);">Record</button>
+			<button class="btn btn-warning" onclick="stopRecording(this);" disabled>Stop</button>
+		  </p>
+		  
+		  <h2>Sounds</h2>
+		  <p>
+			Sequencer
+			<button class="btn btn-primary" onclick="startSequencer(this);">Play</button>
+			<button class="btn btn-warning" onclick="stopSequencer(this);" disabled>Stop</button>
+		  </p>
+		  <table id="recordingslist">
+			<tr>
+			  <th>Sound</th>
+			  <th></th>
+			  <th></th>
+			  <th id="sequencerBoxes">
+				<!-- <p>Sequence</p> -->
+				<input type="checkbox"/>
+				<input type="checkbox"/>
+				<input type="checkbox"/>
+				<input type="checkbox"/>
+				<input type="checkbox"/>
+				<input type="checkbox"/>
+				<input type="checkbox"/>
+				<input type="checkbox"/>
+			  </th>
+			</tr>
+			<tr>
+			  <th>Drone</th>
+			  <th>
+				<label for='BaseNote'>Base Note: <span class='controlVal'></span></label>
+				<input class='control' id='BaseNote' type='range' min='40' max='100' value='63'>
+			  </th>
+			  <th>
+				<label for='NumOsc'>Number of Generators: <span class='controlVal'></span></label>
+				<input class='control' id='NumOsc' type='range' min='1' max='40' value='40'>
+			  </th>
+			  <th>
+				<!-- <input type="checkbox" id="droneToggle" checked/> -->
+			  </th>
+			</tr>
+		  </table>
+		</div>
+		<div class="editor container">
+		  <div class="row">
+			<div class="span12">
+			  <center>
+				 <div class="btn-toolbar">
+				<div class="btn-group">
+				  <a class="btn btn-primary" onclick="$('#audioLayerControl')[0].copy();"><i class="icon-share icon-white"></i> Copy</a>
+				  <a class="btn btn-primary" onclick="$('#audioLayerControl')[0].paste();"><i class="icon-chevron-down icon-white"></i> Paste</a>
+				  <a class="btn btn-primary" onclick="$('#audioLayerControl')[0].cut();"><i class="icon-chevron-up icon-white"></i> Cut</a>
+				  <a class="btn btn-primary" onclick="$('#audioLayerControl')[0].del();"><i class="icon-remove icon-white"></i> Delete</a>
+				</div>
+				<div class="btn-group">
+				  <a class="btn btn-success" onclick="$('#audioLayerControl')[0].selectAll();"><i class="icon-resize-horizontal icon-white"></i> Select All</a>
+				  <a class="btn btn-success" onclick="$('#audioLayerControl')[0].zoomIntoSelection();"><i class="icon-plus-sign icon-white"></i> Zoom To Selection</a>
+				  <a class="btn btn-success" onclick="$('#audioLayerControl')[0].zoomToFit();"><i class="icon-fullscreen icon-white"></i> Zoom To Fit</a>
+				</div>
+			  </div>
+			</center>
+			</div>
+		  </div>
+		  <hr />
+		  <div class="row">
+			<div class="span4">
+			  <h6>Spectrum</h6>
+			  <div class="well">
+				<div id="spectrum"></div>
+			  </div>
+			</div>
+			<div class="span8">
+			  <h6>Editor</h6>
+			  <div class="well">
+				 <audioLayerControl id="audioLayerControl" title="CloudCompany.mp3" />
+			  </div>
+			  <!--<div id="editor">
+					<div id="editorbox">
+						<audioLayerControl id="audioLayerControl" title="CloudCompany.mp3" />
+					</div>
+				</div>-->
+			</div>
+		  </div>
+		  <hr>
+		  <div class="row">
+			<div class="span12">
+			  <center>
+				<div class="btn-toolbar">
+				  <div class="btn-group">
+					<a id="btn_play" class="btn btn-success btn-large" onclick="$('#audioLayerControl')[0].play()" rel="tooltip" title="first tooltip"><i class="icon-play icon-white"></i></a>
+					<a id="btn_pause" class="btn btn-success btn-large disabled"><i class="icon-pause icon-white"></i></a>
+					<a id="btn_stop" class="btn btn-success btn-large" onclick="$('#audioLayerControl')[0].stop()"><i class="icon-stop icon-white"></i></a>
+					<a id="btn_loop" class="btn btn-warning btn-large" data-toggle="button" onclick="$('#audioLayerControl')[0].toggleLoop();"><i class="icon-repeat icon-white"></i></a>
+				  </div>
+				  <div class="btn-group">
+					<!-- <a class="btn btn-large btn-primary" onclick="$('#audioLayerControl')[0].save($('#savelink')[0]);"><i class="icon-fire"></i> Render</a> -->
+					<button class="btn btn-success" id="savelink" onclick="$('#audioLayerControl')[0].saveBack();"><i class="icon-download"></i> Save</button>
+				  </div>
+				</div>
+			  </center>
+			</div>
+		  </div>
+		  <div class="row">
+			<div class="span4 offset4">
+			  <div class="progress progress-striped active">
+				<div id="app-progress" class="bar" style="width: 0%;"></div>
+			  </div>
+			</div>
+		  </div>  
+		  <br>
+		  <div class="row">
+			<div class="span1"><br></div>
+			<div class="span2">
+			  <h6>Gain</h6>
+			  <div class="well" style="height: 130px; position:relative">
+				<p>Change the volume of the selected audio sequence with the given gain multiplicator.</p>
+				
+				  <div class="pull-right" style=" position:absolute; bottom: 5px; width: 100%;" >
+					<div class="btn-group" >
+					  
+						<button class="btn btn-success" onclick="decrease_db()"><i class="icon-minus"></i></button>
+						<button id="gain-db" class="btn disabled" onclick="gain_btn_clicked()">0 db</button>
+						<button class="btn btn-success" onclick="increase_db()"><i class="icon-plus"></i></button> 
+					</div>
+				  </div>
+				<script type="text/javascript">
+					var db_gain = 0;
+	
+					function decrease_db()
+					{
+					  --db_gain;
+					  update_db_gain_btn();
+					}
+	
+					function increase_db()
+					{
+					  ++db_gain;
+					  update_db_gain_btn();
+					}
+	
+					function update_db_gain_btn()
+					{
+					  var gain_btn = $('#gain-db')[0];
+	
+					  gain_btn.innerHTML = db_gain + ' db'; 
+	
+					  if (db_gain === 0)
+					  {
+						gain_btn.className = 'btn disabled';
+					  }
+					  else
+					  {
+						gain_btn.className = 'btn btn-primary';
+					  }
+					}
+	
+					function gain_btn_clicked()
+					{
+					  $('#audioLayerControl')[0].filterGain(db_gain);
+					  db_gain = 0;
+					  update_db_gain_btn();
+					}
+					</script>
+			  </div>
+			</div>
+			<div class="span2">
+			  <h6>Normalize</h6>
+			  <div class="well" style="height: 130px; position:relative">
+				<p>Adjust the volume to the maximum of the selected audio sequence.</p>
+				<a style="position:absolute; bottom: 5px; right: 5px"  class="btn btn-primary pull-right" onclick="$('#audioLayerControl')[0].filterNormalize();">Apply</a>
+				<br>
+			  </div>
+			</div>
+			<div class="span2">
+			  <h6>Silence</h6>
+			  <div class="well" style="height: 130px; position:relative">
+				<p>Silence the selected audio sequence</p>
+				<a style="position:absolute; bottom: 5px; right: 5px"  class="btn btn-primary pull-right" onclick="$('#audioLayerControl')[0].filterSilence();">Apply</a>
+				<br>
+			  </div>
+			</div>
+			<div class="span2">
+			  <h6>Fade In</h6>
+			  <div class="well" style="height: 130px; position:relative">
+				<p>Create a linear fade int of the selected audio sequence</p>
+				<a style="position:absolute; bottom: 5px; right: 5px"  class="btn btn-primary pull-right" onclick="$('#audioLayerControl')[0].filterFadeIn();">Apply</a>
+				<br>
+			  </div>
+			</div>
+			<div class="span2">
+			  <h6>Fade Out</h6>
+			  <div class="well" style="height: 130px; position:relative">
+				<p>Create a linear fade out of the selected audio sequence</p>
+				<a style="position:absolute; bottom: 5px; right: 5px" class="btn btn-primary pull-right" onclick="$('#audioLayerControl')[0].filterFadeOut();">Apply</a>
+				<br>
+			  </div>
+			</div>
+			<div class="span1">
+	
+			</div>
+	
+		 
+		 
+		  </div>
+		  <div>
+			  <h1>zMIDI example</h1>
+			  <p id="status"></p>
+			  <button id="connect">Connect to MIDI</button>
+		   </div>
+	
+	
+	
+		<!-- Le javascript
+		================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		
+	
+	
+		<!-- <script src=https://melbark.com/js/jquery.knob.custom.js></script> -->
+		<script src=https://melbark.com/js/audio.js></script>
+	
+	
+	
+	
+		<script src="js/arp/initials.js"></script>
+		<script src="js/arp/key-code-notes.js"></script>
+		<script src="js/arp/utils.js"></script>
+		<script src="js/arp/arp-board.js"></script>
+		<script src="js/arp/arp-button.js"></script>
+		<script src="js/arp/tone.js"></script>
+		<script src="js/arp/keyboard-key.js"></script>
+		<script src="js/arp/voice.js"></script>
+		<script src="js/arp/instrument.js"></script>
+		<script src="js/arp/demo.js"></script>
+	
+		
+		<script src="jquery/js/jquery-1.7.2.js"></script>
+		<script src="bootstrap/js/bootstrap-transition.js"></script>
+		<script src="bootstrap/js/bootstrap-alert.js"></script>
+		<script src="bootstrap/js/bootstrap-modal.js"></script>
+		<script src="bootstrap/js/bootstrap-dropdown.js"></script>
+		<script src="bootstrap/js/bootstrap-scrollspy.js"></script>
+		<script src="bootstrap/js/bootstrap-tab.js"></script>
+		<script src="bootstrap/js/bootstrap-tooltip.js"></script>
+		<script src="bootstrap/js/bootstrap-popover.js"></script>
+		<script src="bootstrap/js/bootstrap-button.js"></script>
+		<script src="bootstrap/js/bootstrap-collapse.js"></script>
+		<script src="bootstrap/js/bootstrap-carousel.js"></script>
+		<script src="bootstrap/js/bootstrap-typeahead.js"></script>
+	
+	
+		<script type="text/javascript" src="app/js/ACFIRFilter.js"></script>
+		<script type="text/javascript" src="app/js/ACAAFilter.js"></script> 
+		<script type="text/javascript" src="app/js/ACSpectrum.js"></script>    
+		<script type="text/javascript" src="app/js/ACFFT.js"></script>
+		<script type="text/javascript" src="app/js/SpectrumWorker.js"></script>
+		<script type="text/javascript" src="app/js/SpectrumDisplay.js"></script>
+		<script type="text/javascript" src="app/js/audioplayback.js"></script>
+		<script type="text/javascript" src="app/js/filedropbox.js"></script>
+		<script type="text/javascript" src="app/js/fft.js"></script>
+		<script type="text/javascript" src="app/js/audioLayerControl.js"></script>
+		<script type="text/javascript" src="app/js/audiosequence.js"></script>
+		<script type="text/javascript" src="app/js/AudioSequenceEditor.js"></script>
+		<script type="text/javascript" src="app/js/mathutilities.js"></script>
+		<script type="text/javascript" src="app/js/wavetrack.js"></script>
+		<script type="text/javascript" src="app/js/binarytoolkit.js"></script>
+		<script type="text/javascript" src="app/js/filesystemutility.js"></script>
+		<script type="text/javascript" src="app/js/editorapp.js"></script>
+	
+		<script src="js/lib/recorder.js"></script>
+		<script src="js/recordLive.js"></script>
+		<script src="js/sequencer.js"></script>
+		<!-- <script src="js/drone.js"></script> -->
+	
+		<!-- include RequireJS to resolve dependencies -->
+		<script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.min.js" type="text/javascript"></script>
+	
+	
+	
+		<script type="text/javascript">
+		  $(window).load(function()
+		  {
+			//$('.editor.container').addClass('invisible');
+			//$('.editor.container').removeClass('invisible');
+			onDocumentLoaded();
+		  });
+	
+	
+	
+	
+	
+			// resolve dependencies
+	
+			requirejs.config({
+				baseUrl : "src/zmidi/",
+				urlArgs : "bust=" + Date.now()
+			});
+	
+		   
+	
+			require( [ "zMIDI", "zMIDIEvent", "MIDINotes" ],
+	
+					function( zMIDI, zMIDIEvent, MIDINotes )
+					{
+						// cheap method to scope them on window for this demo
+						window.zMIDI      = zMIDI;
+						window.zMIDIEvent = zMIDIEvent;
+						window.MIDINotes  = MIDINotes;
+	
+						// check if zMIDI is supported
+	
+						if ( !zMIDI.isSupported())
+						{
+							showMessage( "Web MIDI is not supported in this browser :( see more at https://www.github.com/igorski/zmidi" );
+							connect.style.display = "none";
+						}
+						else
+						{
+							document.getElementById( "connect" ).addEventListener( "click", function( e )
+							{
+								zMIDI.connect( onConnectSuccess, onConnectFailure );
+							});
+						}
+					});
+	
+			// demo functions
+	
+			function onConnectSuccess()
+			{
+				var inputs = zMIDI.getInChannels();
+	
+				if ( inputs.length === 0) {
+					onConnectFailure();
+				}
+				else {
+					var feedback = "", i = -1;
+	
+					inputs.forEach( function( input )
+					{
+						feedback += input.manufacturer + " " + input.name + "<br />";
+						zMIDI.addMessageListener( ++i, messageHandler );
+					});
+					showMessage( "found these devices:<br /><br />" + feedback + "<br />now try sending MIDI messages<br />" );
+				}
+			}
+	 var midivoice        
+	 var midivoices = [];
+	
+	
+	function ongoingVoiceMidiIndexById(idToFind) {
+	
+	  var midivoiceslength = midivoices.length;
+	  for (var i = 0; i < midivoiceslength; i++) {
+		var id = midivoices[i].midikey;
+		
+		if (id == idToFind) {
+		  return i;
+		}
+	  }
+	  return -1; // not found
+	}
+	
+	
+			function messageHandler( event )
+			{
+				var msg = "";
+	
+				switch ( event.type )
+				{
+					case zMIDIEvent.NOTE_ON:
+	
+						var pitch = MIDINotes.getPitchByNoteNumber( event.value );
+						// msg = "note on event value: " + event.value + " ( note is " +
+						//        pitch.note + pitch.octave + " @ " + pitch.frequency + "Hz ) " +
+						//        "@ velocity " + event.velocity;
+						 // midivca.gain.value = event.velocity /100
+						 // midivco.frequency.value = pitch.frequency
+						 var midivoice = new Voicemidi(pitch.frequency,event.velocity,event.value);
+						 midivoice.start();
+						 midivoices.push(midivoice);
+						 //console.log(event.value )
+						 //console.log(midivoice)
+	
+						break;
+	
+					case zMIDIEvent.NOTE_OFF:
+	
+						msg = "note off event value: " + event.value + " @ velocity " + event.velocity;
+						// console.log(event.value)
+	
+					   var touchesmidi = event.value;
+					   var midivoiceslength = midivoices.length;
+					   var pitch = MIDINotes.getPitchByNoteNumber( event.value );
+					  // var ongoingVoiceMidiIndexById = touches.length;
+					  for (var i = 0; i < midivoiceslength; i++) {
+						
+						var idx = ongoingVoiceMidiIndexById(touchesmidi);    
+						if (idx >= 0) {
+				 
+							midivoices[idx].stop(); 
+							midivoices.splice(idx, 1); // remove it; we're done
+							//console.log("voiceupdate:" + idx + ".");     
+						} else {
+							//console.log("can't figure out which touch to continue");
+						}
+					  }
+	
+	
+	
+	
+						break;
+	
+					case zMIDIEvent.CONTROL_CHANGE:
+						var pitch = MIDINotes.getPitchByNoteNumber( event.value );
+						msg = "CC event value: " + event.velocity
+					   // midivoices[event.value].update(pitch.frequency,event.velocity);
+						//console.log(midivoices)
+	
+				  var touchesmidi = event.value;
+				   var midivoiceslength = midivoices.length;
+				   var pitch = MIDINotes.getPitchByNoteNumber( event.value );
+				  // var ongoingVoiceMidiIndexById = touches.length;
+				  for (var i = 0; i < midivoiceslength; i++) {
+					
+					var idx = ongoingVoiceMidiIndexById(touchesmidi);    
+					if (idx >= 0) {
+					  
+						midivoices[idx].update(pitch.frequency,event.velocity);
+						//midivoices[idx].update(voicex,voicey);
+						//log("voiceupdate:" + idx + ".");     
+					} else {
+					 // log("can't figure out which touch to continue");
+					}
+				  }
+	
+						break;
+	
+					default:
+						msg = "zMIDIEvent type : " + event.type + " with value " + event.value;
+					break;
+				}
+	
+				// showMessage( "received on MIDI port " + event.port + ": " + msg + " coming in on channel " + event.channel + "<br />" );
+			}
+	
+	
+	
+			function onConnectFailure()
+			{
+				showMessage( "Could not connect to MIDI peripherals..." );
+			}
+	
+			function showMessage( aMessage )
+			{
+				document.getElementById( "status" ).innerHTML += aMessage;
+			}
+	
+	
+	
+	var Voicemidi = function(context,touch) {   
+		function Voicemidi(frequency,volume,midikey){
+		  var lowNote = 0; // C4
+		  var highNote = 7900; // B4
+		  //this.attack = attack
+		  //this.release = release
+	
+		  
+		   
+			this.midikey = midikey;
+			 
+		  
+		  //log("continuing touch " + 2 ^ (frequency/68.26));
+		  this.frequency = frequency
+		  this.frequency54 = frequency*2.5
+		  this.volume = ((volume*volume)/15000)
+	 
+		  this.oscillators = [];
+		  this.gains = [];
+		 
+	
+	 };
+			   
+	
+		 Voicemidi.prototype.start = function() {
+	
+	
+	
+		
+	
+			var real = new Float32Array(200);
+		  var imag = new Float32Array(200);   
+		  real[0] = syntheffect.synthreal0
+		  real[1] = syntheffect.synthreal1
+		  real[2] = syntheffect.synthreal2
+		  real[3] = syntheffect.synthreal3
+		  real[4] = syntheffect.synthreal4
+		  real[5] = syntheffect.synthreal5
+		  real[6] = syntheffect.synthreal6
+		  real[7] = syntheffect.synthreal7
+		  real[8] = syntheffect.synthreal8
+		  real[9] = syntheffect.synthreal9
+		  real[10] = syntheffect.synthreal10
+		  real[11] = syntheffect.synthreal11
+		  real[12] = syntheffect.synthreal12
+		  real[13] = syntheffect.synthreal13
+		  real[14] = syntheffect.synthreal14
+		  real[15] = syntheffect.synthreal15
+		  real[16] = syntheffect.synthreal16
+		  real[17] = syntheffect.synthreal17
+		  real[18] = syntheffect.synthreal18
+		  real[19] = syntheffect.synthreal19
+		  real[20] = syntheffect.synthreal20
+		  
+		  real[21] = syntheffect.synthreal21
+		  real[22] = syntheffect.synthreal22
+		  real[23] = syntheffect.synthreal23
+		  real[24] = syntheffect.synthreal24
+		  real[25] = syntheffect.synthreal25
+		  real[26] = syntheffect.synthreal26
+		  real[27] = syntheffect.synthreal27
+		  real[28] = syntheffect.synthreal28
+		  real[29] = syntheffect.synthreal29
+		  real[30] = syntheffect.synthreal30
+	
+		  real[30] = syntheffect.synthreal30
+		  real[31] = syntheffect.synthreal31
+		  real[32] = syntheffect.synthreal32
+		  real[33] = syntheffect.synthreal33
+		  real[34] = syntheffect.synthreal34
+		  real[35] = syntheffect.synthreal35
+		  real[36] = syntheffect.synthreal36
+		  real[37] = syntheffect.synthreal37
+		  real[38] = syntheffect.synthreal38
+		  real[39] = syntheffect.synthreal39
+		  real[40] = syntheffect.synthreal40
+	
+		  real[40] = syntheffect.synthreal40
+		  real[41] = syntheffect.synthreal41
+		  real[42] = syntheffect.synthreal42
+		  real[43] = syntheffect.synthreal43
+		  real[44] = syntheffect.synthreal44
+		  real[45] = syntheffect.synthreal45
+		  real[46] = syntheffect.synthreal46
+		  real[47] = syntheffect.synthreal47
+		  real[48] = syntheffect.synthreal48
+		  real[49] = syntheffect.synthreal49
+		  real[50] = syntheffect.synthreal50
+	
+		  real[50] = syntheffect.synthreal50
+		  real[51] = syntheffect.synthreal51
+		  real[52] = syntheffect.synthreal52
+		  real[53] = syntheffect.synthreal53
+		  real[55] = syntheffect.synthreal55
+		  real[55] = syntheffect.synthreal55
+		  real[56] = syntheffect.synthreal56
+		  real[57] = syntheffect.synthreal57
+		  real[58] = syntheffect.synthreal58
+		  real[59] = syntheffect.synthreal59
+	
+	
+		  real[60] = syntheffect.synthreal60
+		  real[61] = syntheffect.synthreal61
+		  real[62] = syntheffect.synthreal62
+		  real[63] = syntheffect.synthreal63
+		  real[64] = syntheffect.synthreal64
+		  real[65] = syntheffect.synthreal65
+		  real[66] = syntheffect.synthreal66
+		  real[67] = syntheffect.synthreal67
+		  real[68] = syntheffect.synthreal68
+		  real[69] = syntheffect.synthreal69
+		  real[70] = syntheffect.synthreal70
+	
+		  real[71] = syntheffect.synthreal71
+		  real[72] = syntheffect.synthreal72
+		  real[73] = syntheffect.synthreal73
+		  real[74] = syntheffect.synthreal74
+		  real[75] = syntheffect.synthreal75
+		  real[76] = syntheffect.synthreal76
+		  real[77] = syntheffect.synthreal77
+		  real[78] = syntheffect.synthreal78
+		  real[79] = syntheffect.synthreal79
+		  real[80] = syntheffect.synthreal80
+	
+		  real[81] = syntheffect.synthreal81
+		  real[82] = syntheffect.synthreal82
+		  real[83] = syntheffect.synthreal83
+		  real[84] = syntheffect.synthreal84
+		  real[85] = syntheffect.synthreal85
+		  real[86] = syntheffect.synthreal86
+		  real[87] = syntheffect.synthreal87
+		  real[88] = syntheffect.synthreal88
+		  real[89] = syntheffect.synthreal89
+		  real[90] = syntheffect.synthreal90
+	
+		  real[91] = syntheffect.synthreal91
+		  real[92] = syntheffect.synthreal92
+		  real[93] = syntheffect.synthreal93
+		  real[94] = syntheffect.synthreal94
+		  real[95] = syntheffect.synthreal95
+		  real[96] = syntheffect.synthreal96
+		  real[97] = syntheffect.synthreal97
+		  real[98] = syntheffect.synthreal98
+		  real[99] = syntheffect.synthreal99
+		  real[100] = syntheffect.synthreal100
+	
+		 
+		  real[101] = syntheffect.synthreal101
+		  real[102] = syntheffect.synthreal102
+		  real[103] = syntheffect.synthreal103
+		  real[104] = syntheffect.synthreal104
+		  real[105] = syntheffect.synthreal105
+		  real[106] = syntheffect.synthreal106
+		  real[107] = syntheffect.synthreal107
+		  real[108] = syntheffect.synthreal108
+		  real[109] = syntheffect.synthreal109
+		  real[110] = syntheffect.synthreal110
+		  real[111] = syntheffect.synthreal111
+		  real[112] = syntheffect.synthreal112
+		  real[113] = syntheffect.synthreal113
+		  real[114] = syntheffect.synthreal114
+		  real[115] = syntheffect.synthreal115
+		  real[116] = syntheffect.synthreal116
+		  real[117] = syntheffect.synthreal117
+		  real[118] = syntheffect.synthreal118
+		  real[119] = syntheffect.synthreal119
+		  real[120] = syntheffect.synthreal120
+		  
+		  real[121] = syntheffect.synthreal121
+		  real[122] = syntheffect.synthreal122
+		  real[123] = syntheffect.synthreal123
+		  real[124] = syntheffect.synthreal124
+		  real[125] = syntheffect.synthreal125
+		  real[126] = syntheffect.synthreal126
+		  real[127] = syntheffect.synthreal127
+		  real[128] = syntheffect.synthreal128
+		  real[129] = syntheffect.synthreal129
+		  real[130] = syntheffect.synthreal130
+	
+		  real[130] = syntheffect.synthreal130
+		  real[131] = syntheffect.synthreal131
+		  real[132] = syntheffect.synthreal132
+		  real[133] = syntheffect.synthreal133
+		  real[134] = syntheffect.synthreal134
+		  real[135] = syntheffect.synthreal135
+		  real[136] = syntheffect.synthreal136
+		  real[137] = syntheffect.synthreal137
+		  real[138] = syntheffect.synthreal138
+		  real[139] = syntheffect.synthreal139
+		  real[140] = syntheffect.synthreal140
+	
+		  real[140] = syntheffect.synthreal140
+		  real[141] = syntheffect.synthreal141
+		  real[142] = syntheffect.synthreal142
+		  real[143] = syntheffect.synthreal143
+		  real[144] = syntheffect.synthreal144
+		  real[145] = syntheffect.synthreal145
+		  real[146] = syntheffect.synthreal146
+		  real[147] = syntheffect.synthreal147
+		  real[148] = syntheffect.synthreal148
+		  real[149] = syntheffect.synthreal149
+		  real[150] = syntheffect.synthreal150
+	
+		  real[150] = syntheffect.synthreal150
+		  real[151] = syntheffect.synthreal151
+		  real[152] = syntheffect.synthreal152
+		  real[153] = syntheffect.synthreal153
+		  real[155] = syntheffect.synthreal155
+		  real[155] = syntheffect.synthreal155
+		  real[156] = syntheffect.synthreal156
+		  real[157] = syntheffect.synthreal157
+		  real[158] = syntheffect.synthreal158
+		  real[159] = syntheffect.synthreal159
+	
+	
+		  real[160] = syntheffect.synthreal160
+		  real[161] = syntheffect.synthreal161
+		  real[162] = syntheffect.synthreal162
+		  real[163] = syntheffect.synthreal163
+		  real[164] = syntheffect.synthreal164
+		  real[165] = syntheffect.synthreal165
+		  real[166] = syntheffect.synthreal166
+		  real[167] = syntheffect.synthreal167
+		  real[168] = syntheffect.synthreal168
+		  real[169] = syntheffect.synthreal169
+		  real[170] = syntheffect.synthreal170
+	
+		  real[171] = syntheffect.synthreal171
+		  real[172] = syntheffect.synthreal172
+		  real[173] = syntheffect.synthreal173
+		  real[174] = syntheffect.synthreal174
+		  real[175] = syntheffect.synthreal175
+		  real[176] = syntheffect.synthreal176
+		  real[177] = syntheffect.synthreal177
+		  real[178] = syntheffect.synthreal178
+		  real[179] = syntheffect.synthreal179
+		  real[180] = syntheffect.synthreal180
+	
+		  real[181] = syntheffect.synthreal181
+		  real[182] = syntheffect.synthreal182
+		  real[183] = syntheffect.synthreal183
+		  real[184] = syntheffect.synthreal184
+		  real[185] = syntheffect.synthreal185
+		  real[186] = syntheffect.synthreal186
+		  real[187] = syntheffect.synthreal187
+		  real[188] = syntheffect.synthreal188
+		  real[189] = syntheffect.synthreal189
+		  real[190] = syntheffect.synthreal190
+	
+		  real[191] = syntheffect.synthreal191
+		  real[192] = syntheffect.synthreal192
+		  real[193] = syntheffect.synthreal193
+		  real[194] = syntheffect.synthreal194
+		  real[195] = syntheffect.synthreal195
+		  real[196] = syntheffect.synthreal196
+		  real[197] = syntheffect.synthreal197
+		  real[198] = syntheffect.synthreal198
+		  real[199] = syntheffect.synthreal199
+		  real[200] = syntheffect.synthreal1200
+	
+	
+	
+	
+	
+	
+		  imag[0] = syntheffect.synthi0
+		  imag[1] = syntheffect.synthi1
+		  imag[2] = syntheffect.synthi2
+		  imag[3] = syntheffect.synthi3
+		  imag[4] = syntheffect.synthi4
+		  imag[5] = syntheffect.synthi5
+		  imag[6] = syntheffect.synthi6
+		  imag[7] = syntheffect.synthi7
+		  imag[8] = syntheffect.synthi8
+		  imag[9] = syntheffect.synthi9
+		  imag[10] = syntheffect.synthi10
+		  imag[11] = syntheffect.synthi11
+		  imag[12] = syntheffect.synthi12
+		  imag[13] = syntheffect.synthi13
+		  imag[14] = syntheffect.synthi14
+		  imag[15] = syntheffect.synthi15
+		  imag[16] = syntheffect.synthi16
+		  imag[17] = syntheffect.synthi17
+		  imag[18] = syntheffect.synthi18
+		  imag[19] = syntheffect.synthi19
+		  imag[20] = syntheffect.synthi20
+		  
+		  imag[21] = syntheffect.synthi21
+		  imag[22] = syntheffect.synthi22
+		  imag[23] = syntheffect.synthi23
+		  imag[24] = syntheffect.synthi24
+		  imag[25] = syntheffect.synthi25
+		  imag[26] = syntheffect.synthi26
+		  imag[27] = syntheffect.synthi27
+		  imag[28] = syntheffect.synthi28
+		  imag[29] = syntheffect.synthi29
+		  imag[30] = syntheffect.synthi30
+	
+		  imag[30] = syntheffect.synthi30
+		  imag[31] = syntheffect.synthi31
+		  imag[32] = syntheffect.synthi32
+		  imag[33] = syntheffect.synthi33
+		  imag[34] = syntheffect.synthi34
+		  imag[35] = syntheffect.synthi35
+		  imag[36] = syntheffect.synthi36
+		  imag[37] = syntheffect.synthi37
+		  imag[38] = syntheffect.synthi38
+		  imag[39] = syntheffect.synthi39
+		  imag[40] = syntheffect.synthi40
+	
+		  imag[40] = syntheffect.synthi40
+		  imag[41] = syntheffect.synthi41
+		  imag[42] = syntheffect.synthi42
+		  imag[43] = syntheffect.synthi43
+		  imag[44] = syntheffect.synthi44
+		  imag[45] = syntheffect.synthi45
+		  imag[46] = syntheffect.synthi46
+		  imag[47] = syntheffect.synthi47
+		  imag[48] = syntheffect.synthi48
+		  imag[49] = syntheffect.synthi49
+		  imag[50] = syntheffect.synthi50
+	
+		  imag[50] = syntheffect.synthi50
+		  imag[51] = syntheffect.synthi51
+		  imag[52] = syntheffect.synthi52
+		  imag[53] = syntheffect.synthi53
+		  imag[55] = syntheffect.synthi55
+		  imag[55] = syntheffect.synthi55
+		  imag[56] = syntheffect.synthi56
+		  imag[57] = syntheffect.synthi57
+		  imag[58] = syntheffect.synthi58
+		  imag[59] = syntheffect.synthi59
+	
+	
+		  imag[60] = syntheffect.synthi60
+		  imag[61] = syntheffect.synthi61
+		  imag[62] = syntheffect.synthi62
+		  imag[63] = syntheffect.synthi63
+		  imag[64] = syntheffect.synthi64
+		  imag[65] = syntheffect.synthi65
+		  imag[66] = syntheffect.synthi66
+		  imag[67] = syntheffect.synthi67
+		  imag[68] = syntheffect.synthi68
+		  imag[69] = syntheffect.synthi69
+		  imag[70] = syntheffect.synthi70
+	
+		  imag[71] = syntheffect.synthi71
+		  imag[72] = syntheffect.synthi72
+		  imag[73] = syntheffect.synthi73
+		  imag[74] = syntheffect.synthi74
+		  imag[75] = syntheffect.synthi75
+		  imag[76] = syntheffect.synthi76
+		  imag[77] = syntheffect.synthi77
+		  imag[78] = syntheffect.synthi78
+		  imag[79] = syntheffect.synthi79
+		  imag[80] = syntheffect.synthi80
+	
+		  imag[81] = syntheffect.synthi81
+		  imag[82] = syntheffect.synthi82
+		  imag[83] = syntheffect.synthi83
+		  imag[84] = syntheffect.synthi84
+		  imag[85] = syntheffect.synthi85
+		  imag[86] = syntheffect.synthi86
+		  imag[87] = syntheffect.synthi87
+		  imag[88] = syntheffect.synthi88
+		  imag[89] = syntheffect.synthi89
+		  imag[90] = syntheffect.synthi90
+	
+		  imag[91] = syntheffect.synthi91
+		  imag[92] = syntheffect.synthi92
+		  imag[93] = syntheffect.synthi93
+		  imag[94] = syntheffect.synthi94
+		  imag[95] = syntheffect.synthi95
+		  imag[96] = syntheffect.synthi96
+		  imag[97] = syntheffect.synthi97
+		  imag[98] = syntheffect.synthi98
+		  imag[99] = syntheffect.synthi99
+		  
+		  imag[100] = syntheffect.synthi100
+		  imag[101] = syntheffect.synthi101
+		  imag[102] = syntheffect.synthi102
+		  imag[103] = syntheffect.synthi103
+		  imag[104] = syntheffect.synthi104
+		  imag[105] = syntheffect.synthi105
+		  imag[106] = syntheffect.synthi106
+		  imag[107] = syntheffect.synthi107
+		  imag[108] = syntheffect.synthi108
+		  imag[109] = syntheffect.synthi109
+		  imag[110] = syntheffect.synthi110
+	
+		  imag[111] = syntheffect.synthi111
+		  imag[112] = syntheffect.synthi112
+		  imag[113] = syntheffect.synthi113
+		  imag[114] = syntheffect.synthi114
+		  imag[115] = syntheffect.synthi115
+		  imag[116] = syntheffect.synthi116
+		  imag[117] = syntheffect.synthi117
+		  imag[118] = syntheffect.synthi118
+		  imag[119] = syntheffect.synthi119
+		  imag[120] = syntheffect.synthi120
+		  
+		  imag[121] = syntheffect.synthi121
+		  imag[122] = syntheffect.synthi122
+		  imag[123] = syntheffect.synthi123
+		  imag[124] = syntheffect.synthi124
+		  imag[125] = syntheffect.synthi125
+		  imag[126] = syntheffect.synthi126
+		  imag[127] = syntheffect.synthi127
+		  imag[128] = syntheffect.synthi128
+		  imag[129] = syntheffect.synthi129
+		  imag[130] = syntheffect.synthi130
+	
+		  imag[130] = syntheffect.synthi130
+		  imag[131] = syntheffect.synthi131
+		  imag[132] = syntheffect.synthi132
+		  imag[133] = syntheffect.synthi133
+		  imag[134] = syntheffect.synthi134
+		  imag[135] = syntheffect.synthi135
+		  imag[136] = syntheffect.synthi136
+		  imag[137] = syntheffect.synthi137
+		  imag[138] = syntheffect.synthi138
+		  imag[139] = syntheffect.synthi139
+		  imag[140] = syntheffect.synthi140
+	
+		  imag[140] = syntheffect.synthi140
+		  imag[141] = syntheffect.synthi141
+		  imag[142] = syntheffect.synthi142
+		  imag[143] = syntheffect.synthi143
+		  imag[144] = syntheffect.synthi144
+		  imag[145] = syntheffect.synthi145
+		  imag[146] = syntheffect.synthi146
+		  imag[147] = syntheffect.synthi147
+		  imag[148] = syntheffect.synthi148
+		  imag[149] = syntheffect.synthi149
+		  imag[150] = syntheffect.synthi150
+	
+		  imag[150] = syntheffect.synthi150
+		  imag[151] = syntheffect.synthi151
+		  imag[152] = syntheffect.synthi152
+		  imag[153] = syntheffect.synthi153
+		  imag[155] = syntheffect.synthi155
+		  imag[155] = syntheffect.synthi155
+		  imag[156] = syntheffect.synthi156
+		  imag[157] = syntheffect.synthi157
+		  imag[158] = syntheffect.synthi158
+		  imag[159] = syntheffect.synthi159
+	
+	
+		  imag[160] = syntheffect.synthi160
+		  imag[161] = syntheffect.synthi161
+		  imag[162] = syntheffect.synthi162
+		  imag[163] = syntheffect.synthi163
+		  imag[164] = syntheffect.synthi164
+		  imag[165] = syntheffect.synthi165
+		  imag[166] = syntheffect.synthi166
+		  imag[167] = syntheffect.synthi167
+		  imag[168] = syntheffect.synthi168
+		  imag[169] = syntheffect.synthi169
+		  imag[170] = syntheffect.synthi170
+	
+		  imag[171] = syntheffect.synthi171
+		  imag[172] = syntheffect.synthi172
+		  imag[173] = syntheffect.synthi173
+		  imag[174] = syntheffect.synthi174
+		  imag[175] = syntheffect.synthi175
+		  imag[176] = syntheffect.synthi176
+		  imag[177] = syntheffect.synthi177
+		  imag[178] = syntheffect.synthi178
+		  imag[179] = syntheffect.synthi179
+		  imag[180] = syntheffect.synthi180
+	
+		  imag[181] = syntheffect.synthi181
+		  imag[182] = syntheffect.synthi182
+		  imag[183] = syntheffect.synthi183
+		  imag[184] = syntheffect.synthi184
+		  imag[185] = syntheffect.synthi185
+		  imag[186] = syntheffect.synthi186
+		  imag[187] = syntheffect.synthi187
+		  imag[188] = syntheffect.synthi188
+		  imag[189] = syntheffect.synthi189
+		  imag[190] = syntheffect.synthi190
+	
+		  imag[191] = syntheffect.synthi191
+		  imag[192] = syntheffect.synthi192
+		  imag[193] = syntheffect.synthi193
+		  imag[194] = syntheffect.synthi194
+		  imag[195] = syntheffect.synthi195
+		  imag[196] = syntheffect.synthi196
+		  imag[197] = syntheffect.synthi197
+		  imag[198] = syntheffect.synthi198
+		  imag[199] = syntheffect.synthi199
+		  imag[1200] = syntheffect.synthi1200
+	
+	
+		   
+		 // var imag = new Float32Array(real.length);
+		  var hornTable = context.createPeriodicWave(real, imag);
+		  this.touch = touch    
+	 /* VCA */
+		  var vca = context.createGain();
+		  vca.gain.value = this.volume
+	/* VCO */
+		  var vco = context.createOscillator();
+		  //vco.type = "square";
+		  vco.setPeriodicWave(hornTable);
+		  vco.frequency.value = this.frequency;
+	
+			//   var vco54 = context.createOscillator();
+		  //vco.type = "square";
+		//   vco54.setPeriodicWave(hornTable);
+	  
+		//   vco54.frequency.value = this.frequency54;
+	  
+	  
+		  //envelope with 0.001 sec attack and 0.5 sec decay      
+		  //var envelope = context.createEnvelope(attack,decay,sustain,release);
+	
+	
+		  //var noiseGen = context.createNoiseGen(0,4096)
+		  //noiseGen.connect(context.destination)
+		  //noiseGen.connect(myAudioAnalyser)
+		  //envelope.trigger(0.01);f
+		  //feedback delay of 0.4 seconds with 0.5x feedback
+			   /* connections */
+		   vco.connect(vca)
+		//    vco54.connect(vca)
+		  //vca.connect(feedbackDelay);   
+		  //vco.connect(context.destination)
+		  // vca.connect(context.destination) 
+		  //vca.connect(envelope)  
+	
+		  vco.start(0);  
+		   //vco54.start(0);      
+	
+	
+		  //var delay = new tuna.Delay({
+			//feedback: .7,    //0 to 1+
+			//delayTime: 350,    //how many milliseconds should the wet signal be delayed?
+			//wetLevel: 0.6,    //0 to 1+
+			//dryLevel: .4,       //0 to 1+
+			//cutoff: 300,      //cutoff frequency of the built in lowpass-filter. 20 to 22050
+			//bypass: 0
+		  //});
+	
+	  
+	
+		var now = context.currentTime;
+		vca.gain.cancelScheduledValues( now );
+		vca.gain.setValueAtTime(0, now)
+		vca.gain.linearRampToValueAtTime(vca.gain.value, now + syntheffect.source_attack)
+	
+		 // envelope.connect(context.destination)      
+		  //vca.connect(context.destination);
+		  vca.connect(synthphaser);
+		  synthphaser.connect(synthtremolo)
+		  synthtremolo.connect(synthchorus)
+		  synthchorus.connect(synthoverdrive)
+		  synthoverdrive.connect(synthfilter)
+		  synthfilter.connect(synthcabinet)
+		  synthcabinet.connect(synthdelay)
+		  synthdelay.connect(synthcompressor)
+		  synthcompressor.connect(midivolume)
+		//   systemvolume.connect(context.destination)
+		//   systemvolume.connect(myAudioAnalyser)
+	
+	   
+		
+		  this.oscillators.push(vco); 
+		  this.gains.push(vca)
+	
+		};
+	
+	  // Update the note frequency.
+	  Voicemidi.prototype.updateFrequency = function(event) {
+		if (event.type == 'touchstart' || event.type == 'touchmove') {
+		   var touch = event.touches[0];
+		  voicemidi.updateFreq(touch.pageX, touch.pageY);
+		} else if (event.type == 'touchstart' || event.type == 'touchmove') {
+		  var touch = event.touches[0];
+		  voicemidi.calculateFrequency(touch.pageX, touch.pageY);
+	
+		}
+	  };
+	  // Calculate the note frequency.
+	  Voicemidi.calculateNote = function(posX) {
+		var noteDifference = highNote - lowNote;
+		var noteOffset = (noteDifference / el.offsetWidth) * (posX - el.offsetLeft);
+		return lowNote + noteOffset;
+	  };  
+	  // Calculate the volume.
+	  Voicemidi.calculateVolume = function(posY) {
+		var volumeLevel = 1 - (((100 / el.offsetHeight) * (posY - el.offsetTop)) / 100);
+		return volumeLevel;
+	  };
+		Voicemidi.prototype.update = function(x,y) {
+		  this.gains.forEach(function(g, _) {
+		  g.gain.value = (1-(y/701))
+		 // log("touch" + touch + "; " +  g.gain.value)
+		 });
+		  this.oscillators.forEach(function(oscillator, _) {
+		  oscillator.frequency.value =  x
+		  //log("touch" + touch + "; " + oscillator.frequency.value)
+		 });
+	
+		}; 
+		Voicemidi.prototype.stop = function() {     
+		var now = context.currentTime;
+		  this.gains.forEach(function(vcagain, _) {
+				  
+				  vcagain.gain.cancelScheduledValues( now );
+				  vcagain.gain.setValueAtTime(vcagain.gain.value, now)     
+				
+				  vcagain.gain.linearRampToValueAtTime(0, now + syntheffect.source_decay)              
+		  });          
+	
+	 
+		  this.oscillators.forEach(function(oscillator, _) {
+			   
+				  oscillator.stop(now + syntheffect.source_decay+0.0001);
+				  oscillator.onended = function() {
+					  oscillator.disconnect()
+					//   console.log("clean up tone")
+				  }
+				//   oscillator.disconnect()
+		  });
+		 
+		//   this.oscillators.onended = function() {
+		//     oscillators.disconnect();
+		//     delete this.oscillators
+		//     delete this.gains
+	
+		}
+		return Voicemidi;
+	  }(context);
+	
+	
+	 //    var midivco = context.createOscillator();
+	 //    var midivca = context.createGain();
+	 //    midivca.gain.value = 0
+	 //    midivco.frequency.value = 0
+	 //    midivco.start(0);
+	 //    midivco.connect(midivca)
+	 //    midivca.connect(systemvolume)
+	 //    midivca.connect(myAudioAnalyser)
+	 //    midivca.connect(context.destination)
+	 //    //var frequency = pitch.frequency
+	 //    //var volume = event.velocity/100
+	
+	 // var voice = new Voice(frequencyx,volumey,delayvalue,feedbackvalue,attack,decay,sustain,release,touches[i]);
+	 //    voice.start();
+	 //    voices.push(voice);
+	 //   voices[idx].update(voicex,voicey);
+	
+	 //     voices[idx].stop(); 
+	 //      voices.splice(idx, 1); // remove it; we're done
+	
+	
+	
+
+
+
+
+</script>  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138397494-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138397494-1');
+</script>
+	  </body>
+	</html>
+	

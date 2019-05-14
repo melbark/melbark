@@ -1,0 +1,14 @@
+{
+  "name": "socket-chat-example",
+  "version": "0.0.1",
+  "description": "HTML5 Canvas Interactive Drawing Application",
+  "dependencies": {
+    "chroma": "0.0.1",
+    "express": "4.10.2",
+    "file-system": "^2.2.2",
+    "fs": "0.0.1-security",
+    "pinch-zoom-canvas": "^1.0.4",
+    "socket.io": "1.2.0",
+    "teoria": "^2.5.0"
+  }
+}

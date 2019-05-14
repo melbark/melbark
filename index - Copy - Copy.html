@@ -1,0 +1,757 @@
+<!doctype html>
+<html>
+<head>
+
+<title>spectralpool</title>
+
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+  <script src="https://code.jquery.com/pep/0.4.0/pep.js"></script>
+<script src="apps/spectralpool/app/teoria.js"></script> 
+     <script src="http://192.168.1.100:8080/app/js/AudioaudiocontextMonkeyPatch.js"></script>
+      <script src="http://192.168.1.100:8080/app/js/chroma.js"></script>
+    <script src="http://192.168.1.100:8080/app/js/jquery.js"></script>
+    <script src="http://192.168.1.100:8080/app/js/raphael-min.js"></script>
+    <script src="http://192.168.1.100:8080/app/js/qwerty-hancock.js"></script>
+
+
+
+
+<script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth/Synth_files/chroma.js"></script>
+<script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth/Synthknob_files/raphael-min.js"></script>
+<script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth/Synthknob_files/qwerty-hancock.js"></script>
+<script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth/Synthknob_files/jquery.knob.js"></script>
+<script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth//tuna-master/tuna.js"></script>
+<script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth//stats.js-master/src/Stats.js"></script>
+
+<script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth/js/lib/recorder.js"></script>
+<script src="http://members.iinet.net.au/~wtandt@supernerd.com.au/Files/synth/js/recordLive.js"></script>
+      <script src='http://saebekassebil.github.io/teoria/teoria.js'></script>
+
+
+<style>
+
+
+#canvas
+{
+  background-color: black
+  cursor: crosshair;
+  position: relative;
+  z-index: 1;
+  left: 0px;
+  top: 0px;
+  width: 1106px; height: 608px; float:left;
+    padding:0px;  border:0px;position: absolute; ;
+}
+#content
+{
+    cursor:crosshair;
+    z-index: 3;
+    left:0px;
+    top:0px;
+
+    width: 1106px; height: 608px; float:left;
+    padding:0px;  border:0px;position: absolute;
+
+}
+
+#contentprint
+{
+    cursor:crosshair;
+    z-index: 2;
+    left:0px;
+    top:0px;
+
+    width: 1106px; height: 608px; float:left;
+    padding:0px;  border:0px;position: absolute;
+
+}
+
+
+#canvasdiv
+{
+    cursor:crosshair;
+    z-index: 2;
+    left:00px;
+    top:0px;
+
+    width: 1106px; height: 608px; float:left;
+    padding:0px;  border:0px;position: absolute;
+
+}
+
+
+#c
+{width: 1106px; height: 608px;}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 13px Helvetica, Arial; }
+form { position: fixed; bottom: 0; width: 100%; }
+form input {   border: solid black 1px; padding: 10px; width: 15%; margin-left: 81%;  }
+form button { width: 4%; background: rgb(0, 0, 255); border: none; padding: 10px; float:right; }
+#messages { list-style-type: none; margin-left: 81%; padding: 0; position: absolute; border:2px;}
+#messages li { padding: 5px 10px; }
+.vr { width:1px;  background-color:#000;  position:absolute;  top:0;  bottom:0; margin-left:81%;}
+h1 {background: rgb(0, 0, 0); width:81%; text-align: center; color: blue;}    
+      
+
+
+
+</style>
+</head>
+
+<body>
+    
+<div class = "msg">
+<ul id="messages"></ul>
+</div>
+
+<h1 id = "header"></h1>
+
+<div class="vr">&nbsp;
+</div>
+<div id="canvasspec"   >
+<canvas id="canvas" width="1106" height="608" style="display: block; background-color: yellow ;"></canvas>
+</div>
+
+<div id="canvasDiv" touch-action="none"  >
+</div>
+
+
+     
+<form action="">
+<input id="m" autocomplete="off" placeholder = "Chat Here"/><button>Send</button>
+</form>
+
+<script> 
+
+
+
+//livereload refresh 
+  document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
+  ':35729/livereload.js?snipver=1"></' + 'script>')
+
+//name and chat        
+var name = " ";
+var stroke = '#'+Math.random().toString(16).substr(-6);    //generate a random color for each client
+var clientId = Math.random()
+// console.log(clientId)
+$(document).ready(function() {                            
+        
+name = window.prompt("Enter your Name", "Name");         //name for chatting
+$("#header").text('test');               //load the head 
+        
+  if(name == 'Name')
+    name = 'Anonymous';
+  prepareCanvas();
+});
+      
+
+//var socket = io();                                         //make a connection to the server
+
+ var socket = io.connect('http://192.168.0.13:3000')
+
+ socket.on('connect', function(){
+    var sessionid = socket.io.engine.id;
+    // console.log(sessionid)
+});
+
+
+$('form').submit(function(){
+  socket.emit('chat', {'msg':$('#m').val(), 'name':name}); //emit chat messages on pressing the send button
+    $('#m').val('');                                
+    return false;
+});
+
+socket.on('chat', function(data){
+  //on receiving messages from the server append them to the message list along with name of the user who sent it
+  $('#messages').append($('<li>').text(data.name +": " +data.msg)); 
+});
+
+  
+
+
+var canvas1;
+var canvas;
+var context;
+var canvasWidth = 1106;
+var canvasHeight = 608;
+var lineWidth = 8;
+
+var clickX = new Array();           //array to store x co-ordinates of the position of the cursor
+var clickY = new Array();           //array to store y co-ordinates of the position of the cursor
+var clickDrag = new Array();        //boolean array to store true if the user is drawing, false if not
+var paint;
+var pointers = {};
+
+
+
+function prepareCanvas(){           
+//creating canvas element since all browsers don't support HTML5 canvas element  
+var canvasDiv = document.getElementById('canvasDiv');
+canvas = document.createElement('canvas');
+canvas.setAttribute('width', canvasWidth);
+canvas.setAttribute('height', canvasHeight);
+canvas.setAttribute('id', 'canvas');
+canvasDiv.appendChild(canvas);
+if(typeof G_vmlCanvasManager != 'undefined') {
+  canvas = G_vmlCanvasManager.initElement(canvas);
+
+}
+
+context = canvas.getContext("2d");
+//$('#canvas').css('background-color','rgb(130, 224, 255)');
+
+canvas.addEventListener( 'pointerdown', onPointerDown, false );
+canvas.addEventListener( 'pointermove', onPointerMove, false );
+canvas.addEventListener( 'pointerup', onPointerUp, false );
+canvas.addEventListener( 'pointercancel', onPointerUp, false );
+canvas.addEventListener( 'pointerleave', onPointerUp, false );
+
+tempaudio = context.createOscillator();
+tempaudio.type = "sine";
+tempaudio.frequency.value = 0.01;
+tempaudio.start(0)
+
+
+
+function onPointerDown(e) {
+  var voice
+  pointers[e.pointerId] = {
+    x: e.clientX,
+    y: e.clientY,
+    pointerType: e.pointerType,
+    pointerId: e.pointerId
+  };
+  
+  pointers[e.pointerId].voice = new Voice(e.clientX,1/e.clientY,e.pointerId);
+  pointers[e.pointerId].voice.start();
+  console.log(pointers)
+
+  paint = true;
+  stroke = true;
+  // addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop); //pass the x y and co-ordinate of the click to draw on canvas  
+  // redraw();
+  socket.emit('pdown', {                            //on each click send the x and y co-ordinates of the click to the server
+      'x':e.pageX - this.offsetLeft,               //passing x co-ordinate to server
+      'y':e.pageY - this.offsetTop,                //passing y co-ordinate to server
+      'paint':paint,                               //passing boolean indicating if the user is drawing or not
+      'str':stroke ,                                //passing the color of the current user 
+      'pointerType': e.pointerType,
+      'pointerId': e.pointerId,
+      'clientname': name
+    });  
+}
+
+function onPointerMove(e) {
+  // Prevent the browser from doing its default thing (scroll, zoom)
+  var pointer = pointers[e.pointerId];
+  paint = true;
+  stroke = true;
+  if (pointer) {
+    pointer.x = e.clientX;
+    pointer.y = e.clientY;
+    pointers[e.pointerId].voice.update(e.clientX,1/e.clientY);
+    socket.emit('pmove', {        //every time user moves the mouse send the x and y co-ordinates of the new position to the server
+      'x':e.pageX - this.offsetLeft,  //send x co-ordinate of the new position
+      'y':e.pageY - this.offsetTop,   //send y co-ordinate of the new position
+      'paint':paint,                  //passing boolean indicating if the user is drawing or not       
+      'str':stroke,                    //passing the color of the current user 
+         'pointerType': e.pointerType,
+      'pointerId': e.pointerId,
+      'clientname': name    
+    });
+  }
+} 
+
+function onPointerUp(e) { 
+  pointers[e.pointerId].voice.stop();
+  delete pointers[e.pointerId];
+  paint = false;
+  stroke = false;
+  socket.emit('pup', {                 //whenever a user releases the mouse button send the x and y co-ordinates of that location
+      'x':e.pageX - this.offsetLeft,    //pass x co-ordinate of the mouse relase location
+      'y':e.pageY - this.offsetTop,     //pass y co-ordinate of the mouse relase location
+      'paint':paint,                    //passing boolean indicating if the user is drawing or not
+      'str':stroke,                      //passing the color of the current user 
+         'pointerType': e.pointerType,
+      'pointerId': e.pointerId,
+      'clientname': name   
+  });
+
+}
+
+socket.on('pdown', function(data){         //receiving data from the server
+  // addClick(data.x,data.y , data.paint);  
+  console.log("pdown")
+
+ var voice
+  pointers[10+data.pointerId] = {
+    x: data.x,
+    y: data.y,
+    pointerType: data.pointerType,
+    pointerId: 10+ data.pointerId
+  };
+  
+  pointers[10 + data.pointerId].voice = new Voice(pointers[10+data.pointerId].x,1/pointers[10+data.pointerId].y,10+data.pointerId);
+  pointers[10+data.pointerId].voice.start();
+  console.log(pointers)
+
+    //pass the received a and y co-ordinates to draw on the canvas
+  var tempStroke = stroke;                 //save the current color
+  stroke = data.str;                       //set color to that of the received data
+  // redraw();                                //paint using the new color
+  stroke = tempStroke;                      //set color back to the original
+});
+
+socket.on('pmove', function(data){    
+  console.log("pmove")     //receiving data from the server
+  // addClick(data.x, data.y, data.paint);    //pass the received a and y co-ordinates to draw on the canvas
+  var tempStroke = stroke;                 //save the current color
+  stroke = data.str;                       //set color to that of the received data
+  // redraw();                                //paint using the new color
+  stroke = tempStroke;                     //set color back to the original
+
+  var pointer = pointers[10+ data.pointerId];
+  if (pointer) {
+    pointer.x =  data.x,
+    pointer.y =  data.y,
+    pointers[10+ data.pointerId].voice.update(data.x,1/data.y);
+  }
+// console.log(pointer)
+
+});
+
+socket.on('pup', function (data) {
+  // console.log(pointer)
+  console.log("pup")   //receiving data from the server
+  // addClick(data.x, data.y, data.paint);    //pass the received a and y co-ordinates to draw on the canvas
+  var tempStroke = stroke;                 //save the current color
+  stroke = data.str;                       //set color to that of the received data
+  // redraw();                                //paint using the new color
+  stroke = tempStroke;                     //set color back to the original
+ 
+
+  pointers[10+ data.pointerId].voice.stop();
+  delete pointers[10+ data.pointerId];
+
+
+});
+
+
+  // console.log("hi")
+
+  //         var voice
+  //         pointers[10] = {
+  //           x: clickX,
+  //           y: clickY,
+  //           pointerType: 10,
+  //           pointerId: 10
+  //         };
+          
+  //         pointers[10].voice = new Voice( pointers[10].x, pointers[10].y, 10);
+  //         pointers[10].voice.start();
+
+
+
+}
+
+//this function stores the x and y co-ordinates of the cursor and a boolean indicating if the user is drawing or not into the arrays defined previously
+function addClick(x, y, dragging)          
+{
+  clickX.push(x);
+  clickY.push(y);
+  clickDrag.push(dragging);
+}
+
+//this is the main function that paints on the canvas using locations from the arrays defined previously after the addClick //function populates those arrays
+function redraw(){
+  
+  
+  context.strokeStyle = stroke;                  //set the color of the stroke
+  context.lineJoin = "round";
+  context.lineWidth = 5;                         //set the width of the strokes
+      
+  //the main drawing happens in the following loop    
+  for(var i=0; i < clickX.length; i++) {    
+    context.beginPath();
+    if(clickDrag[i] && i){
+      context.moveTo(clickX[i-1], clickY[i-1]);
+     }
+     else{
+       context.moveTo(clickX[i]-1, clickY[i]);
+     }
+     context.lineTo(clickX[i], clickY[i]);
+     context.closePath();
+     context.stroke();
+  }
+  //empty the array once the canvas has been painted to avoid memory overflow
+  clickX.length = 0;
+  clickY.length = 0;
+  clickDrag.length = 0;
+}    
+
+/////
+
+
+
+
+
+
+
+var audiocontext = new AudioContext();
+
+  // load the sound
+    setupAudioNodes();
+
+
+  
+    function setupAudioNodes() {
+
+        // setup a javascript node
+        javascriptNode = audiocontext.createScriptProcessor(2048, 1, 1);
+        // connect to destination, else it isn't called
+        javascriptNode.connect(audiocontext.destination);
+
+        
+
+        // setup a analyzer
+        myAudioAnalyser = audiocontext.createAnalyser();
+        myAudioAnalyser.smoothingTimeConstant = 0;
+        myAudioAnalyser.fftSize = 16384 ;
+//        var array = new Uint8Array(myAudioAnalyser.frequencyBinCount);
+//        myAudioAnalyser.getByteFrequencyData(array);
+
+        myAudioAnalyser.connect(javascriptNode);
+
+
+
+        
+    }
+
+    // log if an error occurs
+    function onError(e) {
+        console.log(e);
+    }
+
+
+
+ 
+
+// shim layer with setTimeout fallback
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+  window.webkitRequestAnimationFrame ||
+  window.mozRequestAnimationFrame    ||
+  window.oRequestAnimationFrame      ||
+  window.msRequestAnimationFrame     ||
+  function( callback ){
+    window.setTimeout(callback, 1000 / 60);
+  };
+})();
+
+drawinit();
+
+function drawinit(){
+  //pointers = {};
+  requestAnimFrame(draw);
+}
+
+
+
+function draw() {
+
+       var array = new Uint8Array(myAudioAnalyser.frequencyBinCount);
+        myAudioAnalyser.getByteFrequencyData(array);
+
+       
+
+        // draw the spectrogram
+       // if (sourceNode.playbackState == sourceNode.PLAYING_STATE) {
+          
+           // drawSpectrum(array);
+              drawSpectrogram(array);
+           
+
+
+  
+//   c.clearRect(0,0,canvas.width, canvas.height); 
+
+//   for(var pointerId in pointers)
+//   {
+//     var pointer = pointers[pointerId]; 
+//     c.beginPath(); 
+//     c.fillStyle = "white";
+//     c.fillText(pointer.pointerType + " pointerId : "+pointer.pointerId+" x:"+pointer.x+" y:"+pointer.y, pointer.x+30, pointer.y-30); 
+
+//     c.beginPath(); 
+//     c.strokeStyle = "cyan";
+//     c.lineWidth = "6";
+//     c.arc(pointer.x, pointer.y, 40, 0, Math.PI*2, true); 
+//     c.stroke();
+
+
+   
+//   var note4scale = teoria.note.fromFrequency(pointer.x);
+//   var a4 = teoria.note(String(note4scale.note));
+//   pointer.voice.update(a4.fq(),1-1/pointer.y)
+//   /*vco.frequency.value = san.fq()*/
+
+
+//   for (var k = 1; k<= 7; k++){ 
+//   var mode4 = modelist[k]
+//   var mode4scale = a4.scale(mode4)
+  
+//   for (var i = 1; i<= 7; i++) {
+//     c.strokeStyle = "red";
+
+//     var san = mode4scale.get(i);
+//     // // c.font = "20px Ariel";
+//     // c.fillText(san, san.fq(), 20+k*10);
+//     c.strokeStyle = "blue";
+
+//     c.beginPath();
+//     c.moveTo(san.fq(), 50+k*40);
+//     c.lineTo(san.fq(), 60+k*50);
+
+//     c.closePath();
+//     c.stroke();
+// /*
+//     c.font = "20px Ariel";
+//     c.fillText(san, san.fq(), 20);
+
+//     c.beginPath();
+//     c.moveTo(san.fq(), 50);
+//     c.lineTo(san.fq(), 900);
+//     c.closePath();
+//     c.stroke();
+//     */
+//     // for (var j = 1; j <  3; j++) {
+//     //       c.strokeStyle = "red";
+//     //   var san = mode4scale.get(i);
+//     //   c.beginPath();
+//     //   c.moveTo(san.fq()*j*2, 100);
+//     //   c.lineTo(san.fq()*j*2, 900);
+//     //   c.closePath();
+//     //   c.stroke();
+//     // }
+
+//   }
+// }
+
+
+
+//   }
+  //c.fillText("hello", 0,0); 
+
+  requestAnimFrame(draw);
+}
+
+    // javascriptNode.onaudioprocess = function () {
+
+    //     // get the average for the first channel
+    //     var array = new Uint8Array(myAudioAnalyser.frequencyBinCount);
+    //     myAudioAnalyser.getByteFrequencyData(array);
+
+       
+
+    //     // draw the spectrogram
+    //    // if (sourceNode.playbackState == sourceNode.PLAYING_STATE) {
+          
+    //        // drawSpectrum(array);
+    //           drawSpectrogram(array);
+           
+    //     //}
+
+
+    // }
+
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@
+var Voice = function(audiocontext,touch) {   
+    function Voice(frequency,volume,identifier){
+      var lowNote = 0; // C4
+      var highNote = 7900; // B4
+      //this.attack = attack
+      //this.release = release
+    
+       
+        this.identifier = identifier;
+         
+
+
+  /*vco.frequency.value = san.fq()*/
+      //log("continuing touch " + 2 ^ (frequency/68.26));
+      this.frequency = frequency;
+      this.frequency54 = frequency*2.5
+      this.volume = (1-(volume/600))
+ 
+      this.oscillators = [];
+      this.gains = [];
+     
+
+ };
+           
+
+     Voice.prototype.start = function() {
+
+
+ /* VCA */
+      var vca = audiocontext.createGain();
+      vca.gain.value = this.volume
+/* VCO */
+      var vco = audiocontext.createOscillator();
+      vco.type ="triangle"
+      //vco.type = "square";
+      vco.frequency.value = this.frequency;
+
+      //vco.type = "square";
+       vco.connect(vca)
+
+      vco.start(0);  
+  
+
+    var now = audiocontext.currentTime;
+    vca.gain.cancelScheduledValues( now );
+    vca.gain.setValueAtTime(0, now)
+    vca.gain.linearRampToValueAtTime(vca.gain.value, now + .8)
+
+     // envelope.connect(audiocontext.destination)      
+      //vca.connect(audiocontext.destination);
+      vco.connect(vca);
+
+
+      vca.connect(audiocontext.destination)
+      vca.connect(myAudioAnalyser)
+   
+    
+      this.oscillators.push(vco); 
+      this.gains.push(vca)
+
+    };
+
+  // Update the note frequency.
+  Voice.prototype.updateFrequency = function(event) {
+    if (event.type == 'touchstart' || event.type == 'touchmove') {
+       var touch = event.touches[0];
+      voice.updateFreq(touch.pageX, touch.pageY);
+    } else if (event.type == 'touchstart' || event.type == 'touchmove') {
+      var touch = event.touches[0];
+      voice.calculateFrequency(touch.pageX, touch.pageY);
+
+    }
+  };
+  // Calculate the note frequency.
+  Voice.calculateNote = function(posX) {
+    var noteDifference = highNote - lowNote;
+    var noteOffset = (noteDifference / el.offsetWidth) * (posX - el.offsetLeft);
+    return lowNote + noteOffset;
+  };  
+  // Calculate the volume.
+  Voice.calculateVolume = function(posY) {
+    var volumeLevel = 1 - (((100 / el.offsetHeight) * (posY - el.offsetTop)) / 100);
+    return volumeLevel;
+  };
+    Voice.prototype.update = function(x,y) {
+      this.gains.forEach(function(g, _) {
+      g.gain.value = (1-(y/600))
+     // log("touch" + touch + "; " +  g.gain.value)
+     });
+      this.oscillators.forEach(function(oscillator, _) {
+      oscillator.frequency.value =  x
+      //log("touch" + touch + "; " + oscillator.frequency.value)
+     });
+
+    }; 
+    Voice.prototype.stop = function() {     
+    var now = audiocontext.currentTime;
+      this.gains.forEach(function(vcagain, _) {
+              
+              vcagain.gain.cancelScheduledValues( now );
+              vcagain.gain.setValueAtTime(vcagain.gain.value, now)     
+            
+              vcagain.gain.linearRampToValueAtTime(0, now + .4)              
+      });          
+
+ 
+      this.oscillators.forEach(function(oscillator, _) {
+           
+              oscillator.stop(now + 1+0.0001);
+      });
+      delete this.oscillators
+      delete this.gains
+    };
+    return Voice;
+  }(audiocontext);
+
+
+
+
+
+// var canvasspec = document.getElementById('canvasspec');
+// canvas1 = document.createElement('canvas');
+// canvas1.setAttribute('width', canvasWidth);
+// canvas1.setAttribute('height', canvasHeight);
+// canvas1.setAttribute('id', 'canvasspec');
+// canvasspec.appendChild(canvas1);
+//  if(typeof G_vmlCanvasManager != 'undefined') {
+//   canvas1 = G_vmlCanvasManager.initElement(canvas);
+// }
+
+
+
+
+    // get the context from the canvas to draw on
+    var ctx = $("#canvas").get()[0].getContext("2d");
+    // create a temp canvas we use for copying
+    var tempCanvas = document.createElement("canvas"),
+        tempCtx = tempCanvas.getContext("2d");
+    tempCanvas.width=canvasWidth;
+    tempCanvas.height=canvasHeight;
+
+
+
+// used for color distribution
+    var hot = new chroma.ColorScale({
+            colors:['#000000', 'darkblue', 'green', 'red','orange', ],
+        positions:[0, .00001, .2, .6,.75],
+        mode:'rgb',
+        limits:[0, 300]
+    });
+
+
+  
+
+
+
+        function myLog(x) {return (13.4*x)};   // some log function, just an example
+    
+    function drawSpectrogram(array) {
+      var canvas = document.getElementById("canvas");
+        // copy the current canvas onto the temp canvas
+ 
+      tempCtx.drawImage(canvas, 0, 0, canvasWidth, canvasHeight);
+        // iterate over the elements from the array
+      var arrayLength = array.length
+      for (var i = 0; i < arrayLength/18  ; i++) {
+          // draw each pixel with the specific color
+          var value = array[i];
+          ctx.fillStyle = hot.getColor(value).hex();
+            ctx.fillRect(myLog(i)/5, canvasHeight - 1, myLog(i+1)/5-myLog(i)/5, 1);
+        }
+        // set translate on the canvas
+        ctx.translate(0, -1);
+        // draw the copied image
+        ctx.drawImage(tempCanvas, 0, 0, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
+        // reset the transformation matrix
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+    }
+
+
+
+
+
+
+</script>
+
+</body>
+</html>

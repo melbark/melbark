@@ -1,0 +1,2872 @@
+<!doctype html>  
+<html>  
+
+<!-- <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script> -->
+<script src="https://melbark.com/js/midiconvert.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.3.8/Tone.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@magenta/music@^1.0.1"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.14.2/dist/tf.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+<script src ="https://rawgit.com/eligrey/canvas-toBlob.js/master/canvas-toBlob.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.2/dat.gui.min.js"></script>
+<script src="https://rawgit.com/nexus-js/ui/master/dist/NexusUI.js"></script>
+<script src="https://s3-us-west-1.amazonaws.com/luisbergmann.com/libraries/audiokeys.js"></script>  
+<script src="pinch-zoom-canvas.js"></script>
+
+<style type="text/css">
+
+ body {
+        font-family: "Roboto Mono", monospace;
+        text-align: center;
+        margin: 0px;
+        background-color: purple;
+    }
+
+    head {
+        width: calc(100% - 6px);
+        height: 150px;
+        background-color: white;
+        position: absolute;
+        left: 3px;
+        top: 3px;
+    }
+    /*
+    #Topbar #TonejsLogo{
+        margin-top: 3px;
+    } */
+
+    #FileDrop{
+        position: absolute;
+        width: 270px;
+        height: 150px;
+        top: 300px;
+        margin-left: -150px;
+        border: 2px dashed white;
+        right: 4%;
+        /* margin-top: 70px; */
+        color: azure;
+        z-index: 10;
+    }
+
+    #FileDrop.Hover{
+        background-color: greenyellow;
+        color: white;
+    }
+
+    #FileDrop input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: .6;
+        left: 0px;
+        top: 0px;
+    }
+
+ #Text {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        line-height: 150px;
+        left: 0px;
+        top: 0px;
+        text-align: center;
+    }
+
+    textarea {
+        font-family: "Roboto Mono" monospace;
+        height: 300px;
+        width: 100%;
+        /* display: inline-block; */
+        position: relative;
+        float: left;
+    }
+/* 
+    #Settings span {
+        width: 60px;
+        float: right;
+        color: white;
+        font-size: 12px;
+        text-align: left;
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+
+    #Settings input {
+        width: 30px;
+        float: right;
+        margin-left: 10px;
+        margin-top: 10px;
+    } */
+
+     #mididraw {
+        position: relative;
+        /* z-index: -2; */
+        background-color:black;
+        touch-action: none;
+    }
+
+
+    #Results {
+        position: relative;
+        width: 278px;
+        height: 200px;
+        /* margin-left: -250px; */
+        top: 300px;
+        /* left: 50%; */
+        position: relative;
+    }
+
+    #Description {
+        position: absolute;
+        width: 100%;
+        height: 40px;
+        font-size: 20px;
+        bottom: 0px;
+    }
+
+
+
+
+
+
+
+        
+                body {
+                  /* font-family: 'Lato', sans-serif; */
+                }
+/*                 
+                .overlay {
+                  height: 0%;
+                  width: 100%;
+                  position: fixed;
+                  z-index: 3;
+                  top: 0;
+                  left: 0;
+                  background-color: rgb(0, 0, 0);
+                  background-color: rgba(0,0,0, 0.9);
+                  overflow-y: hidden;
+                  transition: 0.5s;
+                }
+                
+                .overlay-content {
+                  position: relative;
+                  top: 10%;
+                  width: 100%;
+                  text-align: center;
+                  margin-top: 30px;
+                }
+                
+                .overlay a {
+                  padding: 8px;
+                  text-decoration: none;
+                  font-size: 10px;
+                  color: #818181;
+                  display: block;
+                  transition: 0.3s;
+                }
+                
+                .overlay a:hover, .overlay a:focus {
+                  color: #f1f1f1;
+                }
+                
+                .overlay .closebtn {
+                  position: absolute;
+                  top: 20px;
+                  right: 45px;
+                  font-size: 60px;
+                }
+                
+                @media screen and (max-height: 450px) {
+                  .overlay {overflow-y: auto;}
+                  .overlay a {font-size: 20px}
+                  .overlay .closebtn {
+                  font-size: 15px;
+                  top: 15px;
+                  right: 35px;
+                  }
+                } */
+
+                
+.sidenav {
+  height: 98%;
+  width: 0;
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  right: 0;
+  opacity: 1;
+  /* background-color: #111; */
+  overflow-x: hidden;
+  transition: 0.5s;
+  /* padding-top: 60px; */
+  
+}
+
+
+
+.sidenav a {
+  /* padding: 8px 8px 8px 32px; */
+  text-decoration: none;
+  font-size: 25px;
+  /* color: #818181; */
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+#main {
+  transition: margin-left .5s;
+  /* padding: 16px; */
+}
+    
+
+    #m-menu {
+    POSITION: relative;    
+    top: 60px;
+    padding: 40px;
+
+
+    } 
+m-button {
+
+
+
+    position: absolute;
+  z-index: 3;
+  top: 30px;
+  right: 49px;
+  float:right;
+  color: white;
+  /* background-color: white;
+  
+  /* color */
+  background-color: Transparent;
+    /* background-repeat:no-repeat; */
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none; 
+
+
+}
+#opennav {
+
+  position: absolute;
+  z-index: 3;
+  bottom: 30px;
+  right: 70px;
+  float:right;
+  color: white;
+  /* background-color: white;
+  
+  /* color */
+  background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none; 
+
+}
+    a {
+    color: white;
+    /* background-color: white */
+}    
+
+
+
+
+/* @media screen and (max-height: 450px) { */
+  /* .sidenav {padding-top: 15px;} */
+  /* .sidenav a {font-size: 18px;} */
+/* } */
+
+
+                </style>
+                <!-- </head> -->
+                <!-- <body> -->
+                        <link href="https://melbark.com/css/explorer1.css" rel="stylesheet">
+
+                    
+                    
+    <div id="guiContainer"></div>
+    <div id="guiSynthContainer"></div>
+    <div id="guiFxContainer"></div>
+
+
+                        <button id="opennav" style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; MELBARK</button>
+                    
+                        <div id="mySidenav" class="sidenav">
+                                    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                                    <div id="m-menu">
+                                            <div id="FileDrop">
+                                                    <div id="Text">
+                                                        Drop a midi file here
+                                                    </div>
+                                            <!-- <input type="file" accept="audio/midi"> -->
+                                            <input type="file" id="files" name="files[]" multiple />
+                                        </div>
+                                            <!-- <a href='#'  onclick="play()"><h1>Generate Magenta midi</h1></a> -->
+                                            <!-- <a href='#'  onclick="stop()"><h1>stop </h1></a> -->
+                                            <select id="selectNumber"  onchange="drawmidiroot()">
+                                                    <option>select</option>
+    
+                                                </select>
+                                            <a href='#'  onclick="playmidiparts()">Play></a>
+                                            <a href='#'  onclick="playmidipartsstop()">Stop</a>
+                                            <a href='#' onclick='downloadallCSV({ filename: "export_midiviz.csv" });'>Export CSV</a>
+                                            <!-- <a href='#' onclick='downloadallCSVML({ filename: "export_midiviz.csv" });'>Export CSV ML</a> -->
+                                            <a href='#' onclick="download_image();">Export image</a>    
+                                           
+                                           
+                                    </div>
+                                   
+                                
+                                    <div id="Results">
+                                         
+                                        <textarea id="ResultsText"></textarea>
+
+                                            <!-- <button onclick="drawmidi()">Draw</button> -->
+                                            <button onclick="zoom(1)"> Zoom In</button>
+                                            <button  onclick="zoom(-1)"> Zoom Out</button>
+                                            <!-- <a href='#' onclick="cleararray();">clear list</a> -->
+                                   
+                                   </div>
+                                   <!-- <div id="piano"></div> -->
+                                   
+                                   
+                                   
+                                   
+                            
+                             
+                               
+                              </div>
+
+<body>
+                        
+                        <canvas id="mididraw"></canvas>               
+                     
+<!-- <a href='#' onclick='downloadallCSV({ filename: "stock-data.csv" });'>Download CSV</a> -->
+
+</body>
+
+
+
+
+
+
+
+<script>
+    var pinchZoom = new PinchZoomCanvas({
+	canvas: document.getElementById('mididraw'),
+	// path: "your image url",
+	momentum: true,
+	zoomMax: 2,
+	doubletap: true,
+	onZoomEnd: function (zoom, zoomed) {
+		console.log("---> is zoomed: %s", zoomed);
+		console.log("---> zoom end at %s", zoom);
+	},
+	onZoom: function (zoom) {
+		console.log("---> zoom is %s", zoom);
+	}
+    });
+    
+        function openNav() {
+          document.getElementById("mySidenav").style.width = "300px";
+        //   document.getElementById("main").style.marginLeft = "250px";
+        //   document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+        }
+        
+        function closeNav() {
+          document.getElementById("mySidenav").style.width = "0";
+        //   document.getElementById("main").style.marginLeft= "0";
+        //   document.body.style.backgroundColor = "white";
+        }
+        </script>
+
+<!--         
+                <div id="myNav" class="overlay">
+                  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                  <div class="overlay-content">
+                   x
+                </div>
+           
+        
+                <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+                
+                <script>
+                function openNav() {
+                  document.getElementById("myNav").style.height = "100%";
+                }
+                
+                function closeNav() {
+                  document.getElementById("myNav").style.height = "0%";
+                } -->
+                </script>
+
+            
+    
+
+<script type="text/javascript">
+
+// var socket = io.connect('https://melbark.com')
+
+// socket.on('connect', function(){
+//    var sessionid = socket.io.engine.id;
+//    // console.log(sessionid)
+// });
+
+function download_image(miditracks){
+
+        // Dump the canvas contents to a file.
+        // var canvas = document.getElementById("mididraw");
+      
+            saveAs(window.blob, "output.png");
+      
+    };
+
+// shim layer with setTimeout fallback
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+  window.webkitRequestAnimationFrame ||
+  window.mozRequestAnimationFrame    ||
+  window.oRequestAnimationFrame      ||
+  window.msRequestAnimationFrame     ||
+  function( callback ){
+    window.setTimeout(callback, 1000 / 60);
+  };
+})();
+
+
+// function getRandomColor() {
+//   var letters = '0123456789ABCDEF';
+//   var color = '#';
+//   // for (var i = 0; i < 6; i++) {
+//   //   color += letters[Math.floor(Math.random() * 16)];
+//   // }
+//   var color = "hsl(" + 270 * Math.random() + ',' +
+//                  (25 +20 * Math.random()) + '%,' + 
+//                  (85 + 20 * Math.random()) + '%)';
+
+
+//   return color;
+// }
+
+
+// function getRandomColor() {
+//   return 'rgb(' + 
+//     (Math.floor(Math.random()*255)) + ', ' +
+//     100 + ', ' +
+//     57 +
+//     ')';
+// }
+
+function getRandomColor(value){
+  var h = Math.random()* 255
+  var color =  "hsl(" + h + ", 100%, 63%)";
+  return color
+}
+
+function drawmidiroot () {
+    var x = document.getElementById("selectNumber").value;
+    miditracks = midiobj[x]
+    // miditrack = miditracks
+    document.querySelector("#ResultsText").value = JSON.stringify(miditracks, undefined, 2);
+    
+    canvas = document.getElementById("mididraw");
+    // var c = document.createElement("canvas");
+    ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = true
+    var tempCanvas = document.createElement("canvas"),
+    tempCtx = tempCanvas.getContext("2d");
+
+    tempCanvas.width = miditracks.duration*50+200
+    tempCanvas.height = 2000
+    // co.clearRect(0, 0, c.width, c.height);
+    // ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // co.fillStyle = "yellow";
+   
+// add pixel aligned versions of strokeRect & fillRect to this context instance
+
+tempCtx.fillStyle = colour
+tempCtx.globalAlpha = 0.7;
+//  ctxnsole.log(note)   
+// ctx.beginPath();ctx.globalAlpha = 0.4;
+
+
+    // tracknotes1 = miditracks.tracks[1].notes
+    // tracknotes2 = miditracks.tracks[2].notes
+    var lasttime = 0
+    var maxmidi = 0
+    var minmidi = 0
+    for (var i = 0; i < miditracks.tracks.length; i++) {
+        // ctxnsole.log(miditracks.tracks[i].notes)
+        // ctxnsole.log(miditracks.tracks[i].notes.length)
+        var colour = getRandomColor()
+             
+        tempCtx.fillStyle = colour
+
+
+        if ( miditracks.tracks[i].notes.length > 0 ) {
+            
+
+            for (var note in miditracks.tracks[i].notes) {
+            //    console.log( miditracks.tracks[i].notes[note].midi)
+                var midi = miditracks.tracks[i].notes[note].midi;
+                var duration = miditracks.tracks[i].notes[note].duration;
+                var velocity = miditracks.tracks[i].notes[note].velocity;
+                var time = miditracks.tracks[i].notes[note].time;
+                var notename = Tone.Frequency(midi, "midi").toNote(); //"A4"
+                // //  console.log(note)   
+                // // co.beginPath();
+                // // co.fillRect(time*50,1000-midi*5,duration*50,10)
+
+                // co.fillRect(midi*20-20*20,time*50+40,velocity*velocity*10,duration*50)
+                tempCtx.fillRect(time*50+100,2000-(midi-20)*20,duration*50,velocity*velocity*10)
+                // co.fillStyle = "white"
+                tempCtx.font = "15px Arial";
+                tempCtx.fillText(notename, 20,2000-(midi-20)*20+7.5);
+                tempCtx.font = "9px Arial";
+                tempCtx.fillText(notename, time*50+100,2000-(midi-20)*20);
+                // c.height = time*50
+                if (time > lasttime) {
+                    lasttime = time
+                    // console.log(lasttime)
+                }
+
+                if (midi > maxmidi) {
+                    maxmidi = midi
+                    // console.log(lasttime)
+                }
+
+                if (minmidi > midi) {
+                    minmidi = midi
+                    // console.log(lasttime)
+                }
+
+                
+            }
+        }
+    
+
+
+    }
+ 
+oldCanvas = tempCanvas.toDataURL("image/png");
+// gkhead1 = new Image();
+gkhead.src = oldCanvas;
+
+
+gkhead.onload = function (){
+
+    tempCanvas.width =  lasttime*10 + 50
+    tempCanvas.height = 2000
+    // zoom(-1)
+    // ctx.drawImage(gkhead,0,0)
+    tempCtx.drawImage(gkhead,0,0)
+
+    
+    // canvas.width = lasttime*10 + 500
+    // canvas.height = 2000 
+    ctx.drawImage(gkhead,0,0)
+    sizedcanvas = tempCtx.toDataURL("image/png");
+    gkhead1.src = sizedcanvas;
+    gkhead.src = sizedcanvas;
+    gkhead1.onload = function (){
+
+        
+    // zoom(-1)
+    ctx.drawImage(gkhead1,0,0)
+
+    canvas.width = lasttime*10 + 500
+    canvas.height = window.document.documentElement.clientHeight - 5
+
+   
+    zoom(-1)
+    }
+
+    zoom(-1)
+}
+
+
+
+// gkhead = new Image();
+
+
+zoom(-1)
+// redraw()
+// ctx.drawImage(gkhead,0,0);
+// zoom(evt.shiftKey ? -1 : 1 )
+// transformedPoint(0,-500)
+// gkhead.onload = function (){
+
+
+// // ctx.scale(.3,.3)
+
+// redraw()
+
+// }
+
+
+
+    // c.width =lasttime*50+200 ;
+// co.drawImage(img, 0, 0);
+// oldCanvas = c.toDataURL("image/png");
+// var gkhead = new Image;
+// gkhead.src = oldCanvas
+// zoomstart(oldCanvas)
+// zoomstart('http://phrogz.net/tmp/gkhead.jpg')
+// trackTransforms(ctx)
+// zoomstart(oldCanvas)
+// }
+
+
+canvas.width =  window.document.documentElement.clientWidth
+canvas.height = window.document.documentElement.clientHeight - 5
+tempCanvas.toBlob(function(blob) {
+            window.blob = blob 
+            }, "image/png");
+            
+// redraw()
+// startup()
+
+
+// ctx.translate(100,100);
+            // redraw();
+
+}   
+
+
+
+
+// for (var note in tracknotes2) {
+
+// var midi = tracknotes2[note].midi
+// var duration = tracknotes2[note].duration
+// var velocity = tracknotes2[note].velocity
+// var time = tracknotes2[note].time
+// co.fillStyle = "red";
+// //  console.log(note)   
+// // co.beginPath();
+// co.fillRect(time*2,500-midi*5,duration*2,5)
+// // co.fillRect(time*2,100-midi,duration*2,1)
+
+// // co.moveTo(time*2, midi);
+// // co.lineTo(time*2+duration, midi);
+// // co.stroke();
+// // co.closePath();
+
+
+// }
+
+// for (var note in tracknotesq) {
+
+// var midi = tracknotes[note].midi
+// var duration = tracknotes[note].duration
+// var velocity = tracknotes[note].velocity
+// var time = tracknotes[note].time
+// co.fillStyle = "red";
+// //  console.log(note)   
+// // co.beginPath();
+// co.fillRect(time*3,100-midi,duration*3,2)
+// co.fillRect(time*3,100-midi,duration*3,2)
+
+// // co.moveTo(time*2, midi);
+// // co.lineTo(time*2+duration, midi);
+// // co.stroke();
+// // co.closePath();
+
+
+// }
+
+
+
+function drawcross(x,y,pxfreq) {
+
+var c = document.getElementById("content");
+var co = c.getContext("2d");
+
+
+
+//   var contDiv = $('#current_system_map'); 
+//   var offset = contDiv.offset();
+/*   x = e.clientX-offset.left;
+y = e.clientY-offset.top; */
+// var x = event.pageX - canvas.offsetLeft;
+// var y = event.pageY - canvas.offsetTop;
+co.clearRect(0, 0, canvas.width, canvas.height);
+
+var teoriafreq = px_to_frequency(pxfreq+.0001)
+var note = teoria.note.fromFrequency( pxfreq);
+co.font = "15px Ariel";
+co.fillStyle = "white";
+co.fillText( note.note + "," + teoriafreq + "," + note.cents, x + 10, y +20);
+
+co.beginPath();
+co.moveTo(0, y);
+co.lineTo(2048, y);
+co.moveTo(x, 0);
+co.lineTo(x, 2048);
+co.strokeStyle = "white"; //"rgb(255,255,255)";
+co.stroke();
+co.closePath();
+
+
+var radius = syntheffect.scaleradius;
+
+for (i = 1; i < 100000; i++) {
+co.beginPath();
+co.arc(x, y, i * radius*syntheffect.ratio1, 2 * Math.PI, false);
+
+co.lineWidth = .5;
+co.strokeStyle = 'white';
+co.stroke();
+co.closePath();
+}
+for (i = 1; i < 100000; i++) {
+co.beginPath();
+co.arc(x, y, i * radius * syntheffect.ratio2, 2 * Math.PI, false);
+
+co.lineWidth = .3;
+co.strokeStyle = 'white';
+co.stroke();
+co.closePath();
+}
+
+};
+
+function playmidipartsstop () {
+
+    Tone.Transport.stop()
+
+}
+
+
+function playmidiparts() {
+    // synth = new Synth()
+    // var partsData = partsData
+    // var miditracks = midijsons[0]
+    //  synthholder = {}
+      
+    Tone.Transport.bpm.value = miditracks.header.bpm
+    // if (miditracks.tracks.length < 4) {
+    // var tl = miditracks.tracks.length
+    // }
+    // else {
+    //   var tl = 4
+    // }
+    var tl =  miditracks.tracks.length
+    for (var i = 0; i < tl ; i++) {
+      
+            //    synth.controls.synthType = "AMSynth"
+
+        if ( miditracks.tracks[i].notes.length > 3 ) {
+           
+            //    synthholder[i] = synth
+            //    synthholder.push(synth)
+             //    synth = new Tone.PolySynth(10).toMaster()
+            //    synthholder[i] = synth
+                // console.log(Tone.Transport.bpm.value)
+            // pass in the note events from one of the tracks as the second argument to Tone.Part 
+            if ( i == 0 ){    
+            var midiPart = new Tone.Part(function(time, note) {
+               
+                 synth0.synth.triggerAttackRelease(note.name, note.duration, time, note.velocity)
+
+                }, miditracks.tracks[0].notes).start()
+
+              }
+              else if ( i == 1 ){    
+            var midiPart = new Tone.Part(function(time, note) {
+               
+                 synth1.synth.triggerAttackRelease(note.name, note.duration, time, note.velocity)
+
+                }, miditracks.tracks[1].notes).start()
+
+              }
+              else if ( i == 2 ){    
+            var midiPart = new Tone.Part(function(time, note) {
+               
+                 synth2.synth.triggerAttackRelease(note.name, note.duration, time, note.velocity)
+
+                }, miditracks.tracks[2].notes).start()
+
+              }
+              if ( i >= 3 ){    
+            var midiPart = new Tone.Part(function(time, note) {
+               
+                 synth3.synth.triggerAttackRelease(note.name, note.duration, time, note.velocity)
+
+                }, miditracks.tracks[3].notes).start()
+
+              }
+                //use the events to play the synth
+              
+
+                
+            
+        }
+
+    }
+  
+    // start the transport to hear the events
+    Tone.Transport.start()
+ }
+
+
+
+
+
+
+
+
+
+
+
+function playmidi() {
+    // var partsData = partsData
+    var midi = partsData
+    synth = new Tone.PolySynth(8).toMaster()
+
+    Tone.Transport.bpm.value = midi.header.bpm
+    console.log(Tone.Transport.bpm.value)
+  // pass in the note events from one of the tracks as the second argument to Tone.Part 
+    var midiPart = new Tone.Part(function(time, note) {
+
+    //use the events to play the synth
+    synth.triggerAttackRelease(note.name, note.duration, time, note.velocity)
+
+    }, midi.tracks[0].notes).start()
+
+    // start the transport to hear the events
+    Tone.Transport.start()
+
+      }
+
+
+      
+
+  const model = new mm.MusicVAE(
+        'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/trio_4bar');
+      const player = new mm.Player();
+
+      function play() {
+        player.resumeContext(); // enable audio
+        model.sample(1)
+          .then((samples) => player.start(samples[0], 80));
+      }
+    // var logo = new Logo({
+    //     "width" : 130,
+    //     "height" : 30,
+    //     "container" : "#Topbar"
+    // });
+
+
+    if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
+        document.querySelector("#FileDrop #Text").textContent = "Reading files not supported by this browser";
+    } else {
+
+
+        var activities = document.getElementById("selectNumber");
+
+        activities.addEventListener("changed", function() {
+           drawmidiroot(midiobj[activities.value])
+        });
+
+
+
+        var fileDrop = document.querySelector("#FileDrop")
+
+        fileDrop.addEventListener("dragenter", function(){
+            fileDrop.classList.add("Hover");
+        })
+
+        fileDrop.addEventListener("dragleave", function(){
+            fileDrop.classList.remove("Hover");
+        });
+
+        fileDrop.addEventListener("drop", function(){
+            fileDrop.classList.remove("Hover");
+        });
+
+        document.querySelector("#FileDrop input").addEventListener("change", function(e){
+            //get the files
+            files = e.target.files;
+            for (var i = 0, f; f = files[i]; i++) {
+                // console.log(f)
+                // var midiData = M
+                   parseFile(f)
+                   var select = document.getElementById("selectNumber");
+                   var opt = f.name;
+                        var el = document.createElement("option");
+                        el.textContent = opt;
+                        el.value = opt;
+                        select.appendChild(el);
+                  
+                }
+             console.log(midijsons)   
+                var select = document.getElementById("selectNumber");
+        // var options = ["1", "2", "3", "4", "5"];
+                    for(var i = 0; i < midijsons.length; i++) {
+
+                        var opt = midijsons[i];
+                        var el = document.createElement("option");
+                        el.textContent = opt;
+                        el.value = opt;
+                        select.appendChild(el);
+                            
+                   console.log(midijsons)    
+
+                    }
+           
+            console.log("ready for download")
+        });
+    }
+    midijsons = []
+    midiobj = {}
+    function parseFile(f){
+        //read the file
+        // console.log("hi")
+        var reader = new FileReader();
+        reader.onload = function(e){
+            // console.log(e.target.result)
+        var midiData = MidiConvert.parse(e.target.result)
+        // drawmidiroot(midiData)
+        midiData.filename = f.name
+        midijsons.push(midiData);
+        midiobj[f.name] = midiData
+        //     // console.log(midiData)
+            // console.log(reader.result)
+       
+        // var midi = partsData
+        // return midiData
+        };
+        reader.readAsBinaryString(f);
+      
+
+    // return midiData
+    }
+
+
+
+
+    // var stockData = [
+    //     {
+    //         Symbol: "AAPL",
+    //         Company: "Apple Inc.",
+    //         Price: "132.54"
+    //     },
+    //     {
+    //         Symbol: "INTC",
+    //         Company: "Intel Corporation",
+    //         Price: "33.45"
+    //     },
+    //     {
+    //         Symbol: "GOOG",
+    //         Company: "Google Inc",
+    //         Price: "554.52"
+    //     },
+    // ];
+ 
+
+  // make sure you set the tempo before you schedule the events
+
+
+  // pass in the note events from one of the tracks as the second argument to Tone.Part 
+  
+    function convertArrayOfObjectsToCSV2(args) {
+        var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+        // data = args.data || null;
+        // if (data == null || !data.length) {
+        //     return null;
+        // }
+
+        columnDelimiter = args.columnDelimiter || ',';
+        lineDelimiter = args.lineDelimiter || '\n';
+
+        keys = Object.keys(data.tracks[1].notes);
+        console.log(data)    
+        result = '';
+        result += keys.join(columnDelimiter);
+        result += lineDelimiter;
+
+        data.forEach(function(item) {
+            ctr = 0;
+            keys.forEach(function(key) {
+                if (ctr > 0) result += columnDelimiter;
+
+                result += item[key];
+                ctr++;
+            });
+            result += lineDelimiter;
+        });
+
+        return result;
+    }
+
+
+    
+    
+    function convertArrayOfObjectsToCSV(args) {
+        var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+        data = args.data 
+
+        columnDelimiter = args.columnDelimiter || ',';
+        lineDelimiter = args.lineDelimiter || '\n';
+        
+        for (var i = 0; i < data[0].tracks.length; i++) {
+            if ( data[0].tracks[i].notes.length > 0 ) {
+        keys = Object.keys(data[0].tracks[i].notes[0]);
+            }
+        }
+        keys_header = Object.keys(data[0].header)
+
+        // for (var i = 0; i < data.tracks.length; i++) {
+        //     if ( data.tracks[i].notes.length > 0 ) {
+        //         keys_track = Object.keys(data.tracks[i])
+        //         delete keys_track[2]
+        //     }
+        // }
+       
+
+        // console.log(Object.keys(data.tracks[1].notes))
+        console.log(keys)
+
+        // console.log(Object.keys(data.tracks[1].notes))
+
+        result = '';
+        result += keys.join(columnDelimiter);
+        result += columnDelimiter 
+        // result += keys_header.join(columnDelimiter);
+        // result += columnDelimiter 
+        result += "id";  
+        result += columnDelimiter 
+        result += "instrumentNumber"
+        result += columnDelimiter
+        result += "name"
+        result += columnDelimiter
+        result += "instrument"
+        result += columnDelimiter
+        result += "instrumentFamily"
+        result += columnDelimiter
+        result += "isPercussion"
+        result += columnDelimiter
+
+        result += "PPQ";  
+        result += columnDelimiter 
+        result += "duration";  
+        result += columnDelimiter 
+        result += "bpm"
+        result += columnDelimiter
+        result += "time0"
+        result += columnDelimiter
+        result += "time1"
+        // result += columnDelimiter
+        // result += "time2"
+        // result += columnDelimiter
+        // result += "time3"
+        result += columnDelimiter
+        result += "name"
+        result += columnDelimiter
+        result += "filename"
+
+
+        // result += keys_header.join(columnDelimiter);
+      
+        result += lineDelimiter;
+
+    for (var j = 0; j < data.length; j++) {
+        console.log(j)
+        for (var i = 0; i < data[j].tracks.length; i++) {
+            console.log(i)
+            
+            // if ( data.tracks[i].notes.length > 0 ) {
+                // for (var note in data.tracks[i].notes) {
+                    data[j].tracks[i].notes.forEach(function(item) {                        
+                    
+                    ctr = 0;
+                
+                    
+                    keys.forEach(function(key) {
+                        if (ctr > 0) result += columnDelimiter;
+                        // console.log(item)
+                    
+                        result += item[key];
+                        ctr++;
+                        // result += "hi"
+                       
+                    });
+                
+             
+                    result += columnDelimiter 
+                    result +=  data[j].tracks[i]["id"];  
+                    result += columnDelimiter ;
+                    result +=  data[j].tracks[i]["instrumentNumber"];  
+                    result += columnDelimiter;
+
+                    if ( data[j].tracks[i]["name"] == undefined) {
+
+                        result +=  undefined;  
+                        result += columnDelimiter;
+                    }
+                    else {
+                        result +=  data[j].tracks[i]["name"].replace('[^\x00-\x7F]','', text)
+                    result += columnDelimiter;
+                    }
+                    
+                    result +=  data[j].tracks[i]["instrument"].replace('[^\x00-\x7F]','', text);  
+                    result += columnDelimiter;
+                    result +=  data[j].tracks[i]["instrumentFamily"].replace('[^\x00-\x7F]','', text);  
+                    result += columnDelimiter;
+                    result +=  data[j].tracks[i]["isPercussion"].replace('[^\x00-\x7F]','', text);  
+                    result += columnDelimiter;
+
+       
+
+                    result +=  data[j].header["PPQ"];  
+                    result += columnDelimiter;
+                    result +=  data[j]["duration"];  
+                    result += columnDelimiter;
+                    result +=  data[j].header["bpm"];  
+                    result += columnDelimiter;
+
+                    if ( data[j]["timeSignature"] == undefined ) {
+                    result += 4
+                    result += columnDelimiter;
+                    result +=  4  
+                    result += columnDelimiter;
+                    // result +=  undefined 
+                    // result += columnDelimiter;
+                    // result +=  undefined
+
+
+                    }
+                    else {
+                    result +=  data[j]["timeSignature"][0];  
+                    result += columnDelimiter;
+                    result +=  data[j]["timeSignature"][1];  
+                    result += columnDelimiter;
+                    // result +=  data[j]["timeSignature"][2];  
+                    // result += columnDelimiter;
+                    // result +=  data[j]["timeSignature"][3];  
+                    
+
+                    }
+                    // result += columnDelimiter;
+                    result +=  data[j].header["name"].replace('[^\x00-\x7F]','', text); 
+                    // result +=  data[j].filename;
+                    result += columnDelimiter;
+                    result +=  data[j].filename;  
+               
+                    
+
+                    result += lineDelimiter;
+                    });
+                }    
+                // }
+            // }
+        }                    
+    return result;
+    }
+
+
+
+
+    function convertArrayOfObjectsToCSVML(args) {
+        var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+        data = args.data 
+
+        columnDelimiter = args.columnDelimiter || ',';
+        lineDelimiter = args.lineDelimiter || '\n';
+        
+        for (var i = 0; i < data[0].tracks.length; i++) {
+            if ( data[0].tracks[i].notes.length > 0 ) {
+        keys = Object.keys(data[0].tracks[i].notes[0]);
+            }
+        }
+        keys_header = Object.keys(data[0].header)
+
+        // for (var i = 0; i < data.tracks.length; i++) {
+        //     if ( data.tracks[i].notes.length > 0 ) {
+        //         keys_track = Object.keys(data.tracks[i])
+        //         delete keys_track[2]
+        //     }
+        // }
+       
+
+        // console.log(Object.keys(data.tracks[1].notes))
+        console.log(keys)
+
+        // console.log(Object.keys(data.tracks[1].notes))
+
+        result = '';
+
+        result += "midiviz_melbark";  
+        result += columnDelimiter 
+
+        // result += keys.join(columnDelimiter);
+        // result += columnDelimiter 
+        for (x = 0; x <= 1; x++) {
+        
+        result += keys.join(x + columnDelimiter);
+        result += x+columnDelimiter
+        result += "note" + x
+        result += columnDelimiter
+        result += "frequency" + x 
+        result += columnDelimiter
+
+        
+
+        }
+        // result += keys_header.join(columnDelimiter);
+        // result += columnDelimiter 
+        result += "trackindex";  
+        result += columnDelimiter 
+        
+        result += "id";  
+        result += columnDelimiter 
+        result += "instrumentNumber"
+        result += columnDelimiter
+        result += "trackname"
+        result += columnDelimiter
+        result += "instrument"
+        result += columnDelimiter
+        result += "instrumentFamily"
+        result += columnDelimiter
+        result += "isPercussion"
+        result += columnDelimiter
+
+        result += "PPQ";  
+        result += columnDelimiter 
+        result += "duration";  
+        result += columnDelimiter 
+        result += "bpm"
+        result += columnDelimiter
+        result += "timesig0"
+        result += columnDelimiter
+        result += "timesig1"
+        // result += columnDelimiter
+        // result += "time2"
+        // result += columnDelimiter
+        // result += "time3"
+        result += columnDelimiter
+        result += "name"
+        result += columnDelimiter
+        result += "filename"
+
+
+        // result += keys_header.join(columnDelimiter);
+      
+        result += lineDelimiter;
+
+    for (var j = 0; j < data.length; j++) {
+        console.log(j)
+        for (var i = 0; i < data[j].tracks.length; i++) {
+            console.log(i)
+            
+            // if ( data.tracks[i].notes.length > 0 ) {
+                // for (var note in data.tracks[i].notes) {
+                    // data[j].tracks[i].notes.forEach(function(item) {  
+                for (k = 0; k <  data[j].tracks[i].notes.length; k++ )    {
+                    ctr = 1
+                    for (z = 0; z <= 1; z++) {
+                        // ctr = 0
+                        if ( k > 8) {
+                            item =  data[j].tracks[i].notes[k-z]
+                            // console.log(item)
+                            
+                           
+                        //    ctr = 0
+                            
+                            keys.forEach(function(key) {
+                                if (ctr > 0) result += columnDelimiter;
+                                // console.log(item)
+                                if (item[key] == undefined) {
+                                    result += undefined;
+                                // ctr++;
+
+                                }
+                                else {
+                                    // console.log(item)
+                                
+                                result += item[key];
+                                
+                                // ctr++;
+                                }
+                                // result += "hi"
+                                });
+
+                                result += columnDelimiter
+                                result += Tone.Frequency(item.midi, "midi").toNote();
+                                result += columnDelimiter
+                                result += Tone.Frequency(item.midi, "midi")
+                   
+                                
+                             }
+                    else {
+                           item =  data[j].tracks[i].notes[k]
+                            
+                            // ctr = 0;
+                        
+                            
+                            keys.forEach(function(key) {
+                                if (ctr > 0) result += columnDelimiter;
+                                // console.log(item)
+                            
+                                result += item[key];
+                                // ctr++;
+                                // result += "hi"
+                                });
+                                result += columnDelimiter
+                                result += Tone.Frequency(item.midi, "midi").toNote();
+                                result += columnDelimiter
+                                result += Tone.Frequency(item.midi, "midi")
+                                     
+
+                    }
+                      
+                }    
+                
+                    result += columnDelimiter 
+                    result +=  k 
+             
+                    result += columnDelimiter 
+                    result +=  data[j].tracks[i]["id"];  
+                    result += columnDelimiter ;
+                    result +=  data[j].tracks[i]["instrumentNumber"];  
+                    result += columnDelimiter;
+
+                    if ( data[j].tracks[i]["name"] == undefined) {
+
+                        result +=  undefined;  
+                        result += columnDelimiter;
+                    }
+                    else {
+                        result +=  data[j].tracks[i]["name"].replace(","," ");  
+                    result += columnDelimiter;
+                    }
+                    
+                    result +=  data[j].tracks[i]["instrument"];  
+                    result += columnDelimiter;
+                    result +=  data[j].tracks[i]["instrumentFamily"];  
+                    result += columnDelimiter;
+                    result +=  data[j].tracks[i]["isPercussion"];  
+                    result += columnDelimiter;
+
+       
+
+                    result +=  data[j].header["PPQ"];  
+                    result += columnDelimiter;
+                    result +=  data[j]["duration"];  
+                    result += columnDelimiter;
+                    result +=  data[j].header["bpm"];  
+                    result += columnDelimiter;
+
+                    if ( data[j]["timeSignature"] == undefined ) {
+                    result += 4
+                    result += columnDelimiter;
+                    result +=  4  
+                    result += columnDelimiter;
+                    // result +=  undefined 
+                    // result += columnDelimiter;
+                    // result +=  undefined
+
+
+                    }
+                    else {
+                    result +=  data[j]["timeSignature"][0];  
+                    result += columnDelimiter;
+                    result +=  data[j]["timeSignature"][1];  
+                    result += columnDelimiter;
+                    // result +=  data[j]["timeSignature"][2];  
+                    // result += columnDelimiter;
+                    // result +=  data[j]["timeSignature"][3];  
+                    
+
+                    }
+                    // result += columnDelimiter;
+                    result +=  data[j].header["name"]; 
+                    result += columnDelimiter;
+                    result +=  data[j].filename;  
+               
+                    
+
+                    result += lineDelimiter;                      
+             
+                }
+            }
+        }    
+                // }
+            // }
+                        
+    return result;
+    }
+
+
+
+    
+    function downloadallCSV(args) {
+        var data, filename, link;
+
+        
+        var csv = convertArrayOfObjectsToCSVML({
+            data: midijsons
+        });
+        if (csv == null) return;
+
+        filename = args.filename || 'export.csv';
+
+        // if (!csv.match(/^data:text\/csv/i)) {
+        //     csv = 'data:text/csv;charset=utf-8,' + csv;
+        // }
+        var blob = new Blob([csv], { type: 'text/csv' });
+        var hiddenElement = document.createElement('a');
+        hiddenElement.href = window.URL.createObjectURL(blob);
+        // data = encodeURI(csv);
+        // console.log(data)
+
+        link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        // link.setAttribute('href', data);
+        link.setAttribute('download', filename);
+        link.click();
+    }
+
+    function downloadCSV(args) {
+        var data, filename, link;
+
+        
+        var csv = convertArrayOfObjectsToCSV({
+            data: midijsons
+        });
+        if (csv == null) return;
+        
+        filename = args.filename || 'export.csv';
+
+        if (!csv.match(/^data:text\/csv/i)) {
+            csv = 'data:text/csv;charset=utf-8,' + csv;
+        }
+        data = encodeURI(csv);
+        console.log(csv)
+        console.log(data)
+
+        link = document.createElement('a');
+        link.setAttribute('href', data);
+        link.setAttribute('download', filename);
+        link.click();
+    }
+
+
+
+ 
+
+    canvas = document.getElementsByTagName('canvas')[0];
+
+    canvas.width =  window.document.documentElement.clientWidth
+canvas.height = window.document.documentElement.clientHeight - 5
+
+
+    // gkhead.src = oldCanvas;
+     ctx = canvas.getContext('2d');
+
+     
+    function zoomstart(oldCanvas) {
+    
+    
+
+   
+    // gkhead.src = oldCanvas;
+     ctx = canvas.getContext('2d');
+            trackTransforms(ctx);
+             gkhead = new Image;
+
+// gkhead.src = 'http://phrogz.net/tmp/gkhead.jpg';
+gkhead.src = oldCanvas
+    trackTransforms(ctx);
+		  
+		  
+}
+
+
+
+	var gkhead = new Image;
+
+    
+		    var ctx = canvas.getContext('2d');
+		    trackTransforms(ctx);
+		  
+    function redraw(){
+
+          // Clear the entire canvas
+          var p1 = ctx.transformedPoint(0,0);
+          var p2 = ctx.transformedPoint(canvas.width,canvas.height);
+        //   ctx.clearRect(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
+
+          ctx.save();
+          ctx.setTransform(1,0,0,1,0,0);
+          ctx.clearRect(0,0,canvas.width,canvas.height);
+          ctx.restore();
+
+          ctx.drawImage(gkhead,0,-500);
+
+        }
+        // redraw();
+    
+
+      var lastX=canvas.width/2, lastY=canvas.height/2;
+
+      var dragStart,dragged;
+
+      canvas.addEventListener('pointerdown',function(evt){
+        evt.preventDefault()
+          document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
+          lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
+          lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
+          dragStart = ctx.transformedPoint(lastX,lastY);
+          dragged = false;
+      },false);
+
+      canvas.addEventListener('pointermove',function(evt){
+        evt.preventDefault()
+          lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
+          lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
+          dragged = true;
+          if (dragStart){
+            var pt = ctx.transformedPoint(lastX,lastY);
+            ctx.translate(pt.x-dragStart.x,pt.y-dragStart.y);
+            redraw();
+                }
+      },false);
+
+      canvas.addEventListener('pointerup',function(evt){
+        evt.preventDefault()
+          dragStart = null;
+          if (!dragged) zoom(evt.shiftKey ? -1 : 1 );
+      },false);
+
+      var scaleFactor = 1.1;
+
+      var zoominit = function(){
+          var pt = ctx.transformedPoint(0,-500);
+          ctx.translate(10,10);
+          var factor = Math.pow(1,1);
+          ctx.scale(1,1);
+          ctx.translate(0,0);
+          redraw();
+      }
+
+      var zoom = function(clicks){
+          var pt = ctx.transformedPoint(lastX,lastY);
+          ctx.translate(pt.x,pt.y);
+          var factor = Math.pow(scaleFactor,clicks);
+          ctx.scale(factor,factor);
+          ctx.translate(-pt.x,-pt.y);
+          redraw();
+      }
+
+      var handleScroll = function(evt){
+          var delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.detail ? -evt.detail : 0;
+          if (delta) zoom(delta);
+          return evt.preventDefault() && false;
+      };
+
+    
+      canvas.addEventListener('DOMMouseScroll',handleScroll,false);
+      canvas.addEventListener('mousewheel',handleScroll,false);
+    
+
+	// gkhead.src = 'http://phrogz.net/tmp/gkhead.jpg';
+	
+	// Adds ctx.getTransform() - returns an SVGMatrix
+	// Adds ctx.transformedPoint(x,y) - returns an SVGPoint
+	function trackTransforms(ctx){
+      var svg = document.createElementNS("http://www.w3.org/2000/svg",'svg');
+      var xform = svg.createSVGMatrix();
+      ctx.getTransform = function(){ return xform; };
+
+      var savedTransforms = [];
+      var save = ctx.save;
+      ctx.save = function(){
+          savedTransforms.push(xform.translate(0,0));
+          return save.call(ctx);
+      };
+    
+      var restore = ctx.restore;
+      ctx.restore = function(){
+        xform = savedTransforms.pop();
+        return restore.call(ctx);
+		      };
+
+      var scale = ctx.scale;
+      ctx.scale = function(sx,sy){
+        xform = xform.scaleNonUniform(sx,sy);
+        return scale.call(ctx,sx,sy);
+		      };
+    
+      var rotate = ctx.rotate;
+      ctx.rotate = function(radians){
+          xform = xform.rotate(radians*180/Math.PI);
+          return rotate.call(ctx,radians);
+      };
+    
+      var translate = ctx.translate;
+      ctx.translate = function(dx,dy){
+          xform = xform.translate(dx,dy);
+          return translate.call(ctx,dx,dy);
+      };
+    
+      var transform = ctx.transform;
+      ctx.transform = function(a,b,c,d,e,f){
+          var m2 = svg.createSVGMatrix();
+          m2.a=a; m2.b=b; m2.c=c; m2.d=d; m2.e=e; m2.f=f;
+          xform = xform.multiply(m2);
+          return transform.call(ctx,a,b,c,d,e,f);
+      };
+    
+      var setTransform = ctx.setTransform;
+      ctx.setTransform = function(a,b,c,d,e,f){
+          xform.a = a;
+          xform.b = b;
+          xform.c = c;
+          xform.d = d;
+          xform.e = e;
+          xform.f = f;
+          return setTransform.call(ctx,a,b,c,d,e,f);
+      };
+    
+      var pt  = svg.createSVGPoint();
+      ctx.transformedPoint = function(x,y){
+          pt.x=x; pt.y=y;
+          return pt.matrixTransform(xform.inverse());
+      }
+    }
+
+    
+
+
+
+
+
+
+    
+
+var fx, inst1;
+var oscilloscope, piano;
+
+// Unfocus the textbox
+function blurAll() {
+//   var tmp = document.createElement("input");
+//   document.body.appendChild(tmp);
+//   tmp.focus();
+//   document.body.removeChild(tmp);
+}
+
+function initNexus() {
+  Nexus.context = Tone.context;
+  let poly = ["AMSynth", "DuoSynth", "FMSynth", "MonoSynth", "Synth"];
+
+//   var position = new Nexus.Position('#masterdelay')
+
+    // var masterdelayrack = new Nexus.Rack("#masterdelayrack",{
+    //     attribute: 'data-nx'
+    // })
+
+    // masterdelayrack.freq.value = 0.25
+    // masterdelayrack.volume.value = 0.5
+    // masterdelayrack.mod.value = 0.75
+
+    // masterdelayrack.freq.on('change',function(v) {
+    // console.log(v);
+    // })
+
+
+    // var position = new Nexus.Position('#masterdelay',{
+    // 'size': [200,200],
+    // 'mode': 'absolute',  // "absolute" or "relative"
+    // 'x': 0.5,  // initial x value
+    // 'minX': 0,
+    // 'maxX': 1,
+    // 'stepX': 0,
+    // 'y': 0.5,  // initial y value
+    // 'minY': 0,
+    // 'maxY': 1,
+    // 'stepY': 0
+    // })
+
+    // position.on('change',function(v) {
+    // console.log(v);
+
+
+    // })
+
+    
+
+
+
+
+//   oscilloscope = new Nexus.Oscilloscope("#osci", {
+//     size: [ 708, 53]
+//   });
+//   oscilloscope.colorize("fill", "#000");
+//   oscilloscope.colorize("accent", "#3480bf");
+//   oscilloscope.connect(Tone.Master);
+
+//   let meter = new Nexus.Meter("#meter", {
+//     size: [10, 53]
+//   });
+//   meter.colorize("fill", "#000");
+//   meter.colorize("accent", "#3480bf");
+//   meter.connect(Tone.Master);
+
+//   piano = new Nexus.Piano("#piano", {
+//     size: [300, 50],
+//     mode: "button", // 'button', 'toggle', or 'impulse'
+//     lowNote: 0,
+//     highNote: 240
+//   });
+//   piano.colorize("accent", "#55b0e7");
+//   piano.colorize("fill", "#66b0e7");
+
+//   piano.on("change", v => {
+//     if (v.state && inst1.synth) {
+//       // the triggerAttack is different for Metal and Noise Synths
+//       if (
+//         inst1.controls.synthType == "MetalSynth" ||
+//         inst1.controls.synthType == "NoiseSynth"
+//       ) {
+//         inst1.synth.triggerAttack();
+//       } else {
+//         inst1.synth.triggerAttack(Tone.Frequency(v.note, "midi").toNote());
+//       }
+//     } else if (poly.includes(inst1.controls.synthType)) {
+//       inst1.synth.triggerRelease(Tone.Frequency(v.note, "midi").toNote());
+//     } else if (inst1.synth) {
+//       inst1.synth.triggerRelease(); // if synth is mono
+//     }
+//   });
+
+//   function playNote(value) {
+//     if (value[0] === 144 && value[2] != 0) {
+//       piano.toggleKey(Tone.Frequency(value[1], "midi").toMidi(), true);
+//     } else if (value[0] === 144 || value[0] === 128) {
+//       piano.toggleKey(Tone.Frequency(value[1], "midi").toMidi(), false);
+//     }
+//   }
+
+//   // got the MIDI code from here:
+//   // https://github.com/kylestetz/AudioKeys
+
+//   let keyboard = new AudioKeys({
+//     polyphony: 8,
+//     rows: 1,
+//     priority: "last"
+//   });
+
+//   keyboard.down(note => {
+//     if (note.note >= 0 && note.note <= 120) {
+//       piano.toggleKey(note.note, true);
+//     }
+//   });
+
+//   keyboard.up(note => {
+//     if (note.note >= 0 && note.note <= 120) {
+//       piano.toggleKey(note.note, false);
+//     }
+//   });
+
+  // MIDI
+  // https://codepen.io/Rumyra/pen/NxdbzL
+
+  let midi, data;
+  // start talking to MIDI controller
+  if (navigator.requestMIDIAccess) {
+    navigator
+      .requestMIDIAccess({
+        sysex: false
+      })
+      .then(onMIDISuccess, onMIDIFailure);
+  } else {
+    console.warn("No MIDI support in your browser");
+  }
+
+  // on success
+  function onMIDISuccess(midiData) {
+    // this is all our MIDI data
+    midi = midiData;
+    var allInputs = midi.inputs.values();
+    // loop over all available inputs and listen for any MIDI input
+    for (
+      var input = allInputs.next();
+      input && !input.done;
+      input = allInputs.next()
+    ) {
+      // when a MIDI value is received call the onMIDIMessage function
+      input.value.onmidimessage = gotMIDImessage;
+    }
+  }
+  // var dataList = document.querySelector('#midi-data ul')
+
+  function gotMIDImessage(messageData) {
+    playNote(messageData.data);
+  }
+
+  // on failure
+  function onMIDIFailure() {
+    console.warn("Not recognising MIDI controller");
+  }
+}
+
+class Synth {
+  constructor(synthid) {
+    this.synth = null;
+    this.synthid = synthid
+    this.guiSynth = new dat.GUI({
+      autoPlace: false
+    });
+    this.guiSynth.DEFAULT_WIDTH = 600;
+    this.guiSynthFolder = null;
+    this.config = null;
+    this.configMap = null;
+    this.volumeObj = null;
+    this.configString = null;
+    this.fx = new Fx(this.synthid)
+    this.controls = {
+      synthType: "______choose a synth_______"
+    };
+    this._initSynthGui();
+  }
+
+  disconnect() {
+    if (this.synth) this.synth.disconnect();
+  }
+
+  _initSynthGui() {
+    let _this = this;
+
+    this.guiSynth
+      .add(this.controls, "synthType", [
+        "__choose a synth__",
+        "AMSynth",
+        "DuoSynth",
+        "FMSynth",
+        "MembraneSynth",
+        "MetalSynth",
+        "MonoSynth",
+        "NoiseSynth",
+        "PluckSynth",
+        "Synth"
+      ])
+      .onChange(function() {
+        if (_this.controls.synthType != "__choose a synth__") {
+          _this._initSynth(_this.controls.synthType);
+          blurAll();
+        }
+      });
+    this.guiSynth.width = 430;
+    let guiContainer = document
+      .getElementById("guiContainer")
+      .appendChild(this.guiSynth.domElement);
+  }
+  _initSynth(type) {
+    let poly = ["AMSynth", "DuoSynth", "FMSynth", "MonoSynth", "Synth"];
+    let _this = this;
+    
+
+    //     if (poly.includes(type)) {
+    //   this.synth = new Tone.PolySynth(8, Tone[type]);
+    // } else {
+    //   this.synth = new Tone[type]();
+    // }
+
+
+    if (this.synth) {
+      //if synth exists
+      this.synth.disconnect;
+      this.synth.dispose();
+      if (this.guiSynthFolder) {
+        //if there is a folder
+        this.guiSynth.removeFolder(this.guiSynthFolder);
+      }
+    }
+
+    if (this == synth0) {
+
+    if (poly.includes(type)) {
+    this.synth = new Tone.PolySynth(8, Tone[type]);
+    } else {
+    this.synth = new Tone[type]();
+    }
+
+  }
+    if (this == synth1) {
+
+    if (poly.includes(type)) {
+    this.synth = new Tone.PolySynth(8, Tone[type]);
+    } else {
+    this.synth = new Tone[type]();
+    }
+
+  }
+
+
+    if (this == synth2) {
+
+    if (poly.includes(type)) {
+    this.synth = new Tone.PolySynth(8, Tone[type]);
+    } else {
+    this.synth = new Tone[type]();
+    }
+
+  }
+    if (this == synth3) {
+
+    if (poly.includes(type)) {
+    this.synth = new Tone.PolySynth(8, Tone[type]);
+    } else {
+    this.synth = new Tone[type]();
+    }
+
+  }
+
+
+    if (this == inst1) {
+
+        this.synth = new Tone["Synth"]();
+    }
+    // if (this == synth) {
+
+    //     if (poly.includes(type)) {
+    //   this.synth = new Tone.PolySynth(8, Tone[type]);
+    // } else {
+    //   this.synth = new Tone[type]();
+    // }
+
+    
+    // }
+
+
+    // if (poly.includes(type)) {
+    //   this.synth = new Tone.PolySynth(8, Tone[type]);
+    // } else {
+    //   this.synth = new Tone[type]();
+    // }
+
+
+
+    if (this.fx.fx) {
+      //add fx if there's one already created
+      this.synth.disconnect();
+      this.fx.updateFxChain();
+    } else {
+        // this.synth.connect(myAudioAnalyser)
+        this.synth.toMaster();
+    }
+    this._initSynthFolder(type);
+  }
+
+  _initSynthFolder(type) {
+    let _this = this;
+
+    let _paramObj = {
+      harmonicity: {
+        min: 0,
+        max: 20,
+        step: 0.00001
+      },
+      modulationIndex: {
+        min: 0,
+        max: 1000,
+        step: 0.00001
+      },
+      vibratoAmount: {
+        min: 0,
+        max: 100,
+        step: 0.001
+      },
+      vibratoRate: {
+        min: 0,
+        max: 50,
+        step: 0.001
+      },
+      portamento: {
+        min: 0,
+        max: 10,
+        step: 0.001
+      },
+      pitchDecay: {
+        min: 0,
+        max: 2,
+        step: 0.0001
+      },
+      octaves: {
+        min: 0,
+        max: 10,
+        step: 0.0001
+      },
+      Q: {
+        min: 0,
+        max: 20,
+        step: 0.0001
+      },
+      frequency: {
+        min: 0.0001,
+        max: 10000,
+        step: 0.0001
+      },
+      baseFrequency: {
+        min: 0,
+        max: 10000,
+        step: 0.0001
+      },
+      exponent: {
+        min: 0,
+        max: 10,
+        step: 0.0001
+      },
+      resonance: {
+        min: 0,
+        max: 15000,
+        step: 0.0001
+      },
+      volume: {
+        min: -99,
+        max: 0,
+        step: 0.001
+      },
+      detune: {
+        min: -100,
+        max: 100,
+        step: 0.001
+      },
+      attack: {
+        min: 0.001,
+        max: 10,
+        step: 0.0001
+      },
+      decay: {
+        min: 0.001,
+        max: 1,
+        step: 0.0001
+      },
+      sustain: {
+        min: 0.001,
+        max: 1,
+        step: 0.0001
+      },
+      release: {
+        min: 0.001,
+        max: 20,
+        step: 0.0001
+      },
+      partials: {
+        min: 0.001,
+        max: 20,
+        step: 0.0001
+      },
+      attackNoise: {
+        min: 0.1,
+        max: 20,
+        step: 0.0001
+      },
+      dampening: {
+        min: 0,
+        max: 10000,
+        step: 0.0001
+      }
+    };
+
+    // get the default synth config
+    this.config = Object.assign(Tone[type].defaults);
+
+    if (typeof this.configMap == "defined") {
+      this.configMap.clear();
+    }
+
+    //create Map
+    this.configMap = new Map(Object.entries(this.config)); // a entry for controlling synth volume
+
+    //add a volume entry that balances some differences between synth types volumes
+    if (type == "DuoSynth" || type == "MembraneSynth") {
+      this.volumeObj = {
+        volume: -6
+      };
+    } else if (
+      type == "MetalSynth" ||
+      type == "MonoSynth" ||
+      type == "NoiseSynth"
+    ) {
+      this.volumeObj = {
+        volume: -20
+      };
+    } else {
+      this.volumeObj = {
+        volume: -3
+      };
+    }
+
+    this.synth.volume.value = this.volumeObj.volume;
+    this.guiSynthFolder = _this.guiSynth.addFolder(type);
+    this.guiSynthFolder.open();
+
+    // adding a volume control first on gui
+    this.guiSynthFolder
+      .add(this.volumeObj, "volume", -50, 0, 0.01)
+      .name("synthVolume (db)")
+      .onChange(function() {
+        _this.synth.volume.value = _this.volumeObj.volume;
+      });
+
+    // Iterate over synth default parameters
+    for (var [key, value] of this.configMap) {
+      if (typeof key == "string" && typeof value == "number") {
+        let paramName = key; // e.g. harmonicity, detune
+        _this.guiSynthFolder
+          .add(
+            this.config,
+            key,
+            _paramObj[key].min,
+            _paramObj[key].max,
+            _paramObj[key].step
+          )
+          .onChange(function() {
+            _this.synth.set(paramName, _this.config[paramName]);
+          });
+      }
+
+      if (typeof value == "object") {
+        // if there's a nested object
+        let _objFolder = this.guiSynthFolder.addFolder(key);
+        _objFolder.open();
+        let subMap = new Map(Object.entries(value));
+        let synthParam = key; //store name of parameter for synth.set
+        let subObj = value; //store sub object for gui
+        for (var [key, value] of subMap) {
+          if (typeof key == "string" && typeof value == "number") {
+            let param = key; //store control name for onChange
+            let paramValue = value; //stores numerical param
+            if (key == "rolloff" || key == "type") {
+            } else {
+              _objFolder
+                .add(
+                  subObj,
+                  key,
+                  _paramObj[key].min,
+                  _paramObj[key].max,
+                  _paramObj[key].step
+                )
+                .name(synthParam.concat(".", param))
+                .onChange(function() {
+                  _this.synth.set(synthParam.concat(".", param), subObj[param]);
+                });
+            }
+          } else if (typeof key == "string") {
+            let synthParamType = key; //store name of parameter for synth.set
+            let param = value; //store control name for onChange
+            if (synthParam == "envelope") {
+              _objFolder
+                .add(subObj, key, [
+                  "exponential",
+                  "linear",
+                  "sine",
+                  "cosine",
+                  "bounce",
+                  "ripple",
+                  "step"
+                ])
+                .name(synthParam.concat(".", synthParamType))
+                .onChange(function() {
+                  blurAll();
+                });
+            } else if (
+              synthParam == "oscillator" ||
+              synthParam == "modulation"
+            ) {
+              _objFolder
+                .add(subObj, key, [
+                  "square",
+                  "sine",
+                  "triangle",
+                  "sawtooth",
+                  "pwm",
+                  "pulse",
+                  "fatsquare",
+                  "fatsine",
+                  "fattriangle",
+                  "fatsawtooth",
+                  "fmsquare",
+                  "fmsine",
+                  "fmtriangle",
+                  "fmsawtooth",
+                  "amsquare",
+                  "amsine",
+                  "amtriangle",
+                  "amsawtooth"
+                ])
+                .name(synthParam.concat(".", synthParamType))
+                .onChange(function() {
+                  _this.synth.set(
+                    synthParam.concat(".", synthParamType),
+                    subObj[synthParamType]
+                  );
+                  blurAll();
+                });
+              // adding partials
+              subObj.partials = 0;
+              _objFolder
+                .add(subObj, "partials", [0, 1, 2, 4, 8, 16, 32, 64, 128])
+                .onChange(function() {
+                  let osc = subObj[synthParamType].concat(subObj.partials);
+                  if (
+                    subObj[synthParamType] != "pwm" &&
+                    subObj[synthParamType] != "pulse"
+                  ) {
+                    _this.synth.set(
+                      synthParam.concat(".", synthParamType),
+                      osc
+                    );
+                  }
+                  blurAll();
+                });
+            } else if (synthParam == "noise") {
+              _objFolder
+                .add(subObj, key, ["white", "pink", "brown"])
+                .name(synthParam.concat(".", synthParamType))
+                .onChange(function() {
+                  _this.synth.set(
+                    synthParam.concat(".", synthParamType),
+                    subObj.type
+                  );
+                  blurAll();
+                  _this.synth.envelope.sustain = 1;
+                });
+            }
+          }
+
+          // This is just for DuoSynth
+
+          if (typeof value == "object") {
+            //if there's another nested object
+            let subSubMap = new Map(Object.entries(value));
+            let synthParamSubType = key; //oscillator or filterEnvelope or Envelope
+            let subObj = value;
+            let synthParamType = key; //store name of parameter for synth.set
+
+            for (var [key, value] of subSubMap) {
+              if (synthParamSubType == "oscillator") {
+                _objFolder
+                  .add(subObj, key, [
+                    "square",
+                    "sine",
+                    "triangle",
+                    "sawtooth",
+                    "pwm",
+                    "pulse",
+                    "fatsquare",
+                    "fatsine",
+                    "fattriangle",
+                    "fatsawtooth",
+                    "fmsquare",
+                    "fmsine",
+                    "fmtriangle",
+                    "fmsawtooth",
+                    "amsquare",
+                    "amsine",
+                    "amtriangle",
+                    "amsawtooth"
+                  ])
+                  .name(synthParam.concat(".", key))
+                  .onChange(function() {
+                    _this.synth.set(
+                      synthParam
+                        .concat(".", synthParamSubType)
+                        .concat(".", Object.entries(subObj)[0][0]),
+                      Object.entries(subObj)[0][1]
+                    );
+                    blurAll();
+                  });
+              } else {
+                _objFolder
+                  .add(
+                    subObj,
+                    key,
+                    _paramObj[key].min,
+                    _paramObj[key].max,
+                    _paramObj[key].step
+                  )
+                  .name(
+                    synthParam.concat(".", synthParamSubType).concat(".", key)
+                  )
+                  .onChange(function() {
+                    _this.synth.set(
+                      synthParam
+                        .concat(".", synthParamSubType)
+                        .concat(".", key),
+                      subObj[key]
+                    );
+                  });
+                blurAll();
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+class Fx {
+  constructor(synthid) {
+    this.fx = null;
+    this.fxChain = [];
+    this.volume = new Tone.Volume(-3);
+    this.fxChainEnd = [this.volume, Tone.Master];
+    this.configFxMap = null;
+    this.synthid = synthid;
+    this.initControls = {
+      addFx: "AMSynth"
+    };
+    this.guiFx = new dat.GUI({
+      autoPlace: true
+    });
+    this.folder = null;
+    this._initGui();
+    this.remove = function() {};
+  }
+
+  _initGui() {
+    let _this = this;
+
+    this.guiContainer = document
+      .getElementById("guiFxContainer")
+      .appendChild(this.guiFx.domElement);
+    this.guiFx.width = 280;
+
+    this.guiFx
+      .add(this.initControls, "addFx", [
+        "___insert an effect___",
+        "AutoFilter",
+        "AutoPanner",
+        "AutoWah",
+        "BitCrusher",
+        "Chebyshev",
+        "Chorus",
+        "Distortion",
+        "FeedbackDelay",
+        "Freeverb",
+        "JCReverb",
+        "Phaser",
+        "PingPongDelay",
+        "PitchShift",
+        "Tremolo",
+        "Vibrato",
+        "Compressor",
+        "MultibandCompressor",
+        "EQ3",
+        "FeedbackCombFilter",
+        "Filter",
+        "Limiter",
+        "LowpassCombFilter"
+      ])
+      .name("addFx (max: 8)")
+      .onChange(function() {
+        if (_this.initControls.addFx != "___insert an effect___") {
+          _this.folder = _this.guiFx.addFolder(_this.initControls.addFx);
+          _this.folder.open();
+          _this._initFx(_this.initControls.addFx);
+          blurAll();
+        }
+      });
+
+    var initVol = {
+      effectsVolume: -3
+    };
+    this.guiFx
+      .add(initVol, "effectsVolume", -48, 0, 0.001)
+      .name("fxVolume (db)")
+      .onChange(function() {
+        // _this.volume.volume.rampTo(initVol.effectsVolume, 0.2);
+        _this.volume.volume.value = initVol.effectsVolume;
+        blurAll();
+      });
+  }
+
+  _initFx(fxType) {
+    if (this.fxChain.length < 8) {
+      this.fx = new Tone[fxType]();
+      //starts fx if is one ot these three below
+      if (
+        fxType == "AutoFilter" ||
+        fxType == "AutoPanner" ||
+        fxType == "Tremolo"
+      )
+        this.fx.start();
+      this.fxChain.push(this.fx); //adds to the fx _fxChain
+      this._initFxControls(fxType);
+      this.updateFxChain();
+    } else {
+      window.alert("There's a limit of 8 insert effects.");
+    }
+  }
+
+  updateFxChain() {
+    let fxChainComplete = this.fxChain.concat(this.fxChainEnd); //adding fx to volume and Tone.Master
+
+    console.log(this.synthid)
+    if (this.synthid == 0) {
+      console.log("you are here")    
+      synth0.synth.disconnect();
+      var source = synth0.synth;
+      
+    
+    }
+    else if (this.synthid ==  1) {
+      synth1.synth.disconnect();
+      var source = synth1.synth;
+    
+    }
+    else if (this.synthid ==  2) {
+      synth2.synth.disconnect();
+      var source = synth2.synth;
+  
+      
+    }
+    else {
+      synth3.synth.disconnect();
+      var source = synth3.synth;
+    
+    }
+    
+      for (var i = 0; i < fxChainComplete.length; i++) {
+        //a loop for connecting the fx
+        source.connect(fxChainComplete[i]);
+        source = fxChainComplete[i];
+      }
+    
+
+    
+
+    
+    // if (synth.synth) {
+    //   synth.synth.disconnect();
+    //   let source = synth.synth;
+
+    //   for (var i = 0; i < fxChainComplete.length; i++) {
+    //     //a loop for connecting the fx
+    //     source.connect(fxChainComplete[i]);
+    //     source = fxChainComplete[i];
+    //   }
+    // }
+  
+
+
+    // if (inst1.synth) {
+    //   inst1.synth.disconnect();
+    //   let source = inst1.synth;
+
+    //   for (var i = 0; i < fxChainComplete.length; i++) {
+    //     //a loop for connecting the fx
+    //     source.connect(fxChainComplete[i]);
+    //     source = fxChainComplete[i];
+    //   }
+    // }
+  }
+
+  _initFxControls(fxType) {
+    // get the default synth config
+    let _configFxObj = Object.assign(Tone[fxType].defaults);
+
+    let _this = this;
+    let _fx = this.fx;
+    let _folder = this.folder;
+    let _paramFxObj = {
+      frequency: {
+        min: 0.0001,
+        max: 10000,
+        step: 0.00001
+      },
+      baseFrequency: {
+        min: 0,
+        max: 10000,
+        step: 0.00001
+      },
+      depth: {
+        min: 0,
+        max: 1,
+        step: 0.00001
+      },
+      octaves: {
+        min: 0,
+        max: 10,
+        step: 0.00001
+      },
+      Q: {
+        min: 0,
+        max: 10,
+        step: 0.00001
+      },
+      stages: {
+        min: 0,
+        max: 10,
+        step: 0.00001
+      },
+      sensitivity: {
+        min: -36,
+        max: 12,
+        step: 0.00001
+      },
+      gain: {
+        min: 0,
+        max: 20,
+        step: 0.00001
+      },
+      ratio: {
+        min: 1,
+        max: 20,
+        step: 0.00001
+      },
+      threshold: {
+        min: -99,
+        max: 0,
+        step: 0.00001
+      },
+      knee: {
+        min: 0,
+        max: 40,
+        step: 0.00001
+      },
+      attack: {
+        min: 0.001,
+        max: 1,
+        step: 0.00001
+      },
+      release: {
+        min: 0.001,
+        max: 1,
+        step: 0.00001
+      },
+      bits: {
+        min: 4,
+        max: 8,
+        step: 0.0001
+      },
+      order: {
+        min: 1,
+        max: 8,
+        step: 1
+      },
+      delayTime: {
+        min: 0,
+        max: 1,
+        step: 0.0001
+      },
+      maxDelayTime: {
+        min: 0,
+        max: 1,
+        step: 0.0001
+      },
+      pitch: {
+        min: -36,
+        max: 36,
+        step: 0.0001
+      },
+      feedback: {
+        min: 0,
+        max: 1,
+        step: 0.0001
+      },
+      width: {
+        min: 0,
+        max: 1,
+        step: 0.0001
+      },
+      decay: {
+        min: 0,
+        max: 5,
+        step: 0.0001
+      },
+      preDelay: {
+        min: 0,
+        max: 1,
+        step: 0.0001
+      },
+      windowSize: {
+        min: 0.03,
+        max: 0.1,
+        step: 0.0001
+      },
+      roomSize: {
+        min: 0,
+        max: 1,
+        step: 0.0001
+      },
+      dampening: {
+        min: 0,
+        max: 10000,
+        step: 0.0001
+      },
+      spread: {
+        min: 0,
+        max: 180,
+        step: 0.0001
+      },
+      distortion: {
+        min: 0,
+        max: 1,
+        step: 0.0001
+      },
+      maxDelay: {
+        min: 0,
+        max: 10,
+        step: 0.0001
+      },
+      resonance: {
+        min: 0,
+        max: 1,
+        step: 0.0001
+      },
+      oversample: {
+        values: ["none", "2x", "4x"]
+      },
+      type: {
+        values: ["square", "sine", "triangle", "sawtooth"]
+      },
+      "filter.type": {
+        values: [
+          "lowpass",
+          "highpass",
+          "bandpass",
+          "lowshelf",
+          "highshelf",
+          "notch",
+          "allpass",
+          "peaking"
+        ]
+      },
+      rolloff: {
+        values: ["-12", "-12", "-24", "-48", "-96"]
+      },
+      highFrequency: {
+        min: 0,
+        max: 10000,
+        step: 0.0001
+      },
+      lowFrequency: {
+        min: 0,
+        max: 10000,
+        step: 0.0001
+      },
+      low: {
+        min: -24,
+        max: 0,
+        step: 0.0001
+      },
+      high: {
+        min: -24,
+        max: 0,
+        step: 0.0001
+      },
+      mid: {
+        min: -24,
+        max: 0,
+        step: 0.0001
+      }
+    };
+
+    //this prevents a excessive range on frequency parameter for Phaser(danger!), Vibrato and Tremolo effects.
+    if (fxType == "Phaser" || fxType == "Tremolo" || fxType == "Vibrato") {
+      _paramFxObj.frequency.max = 30;
+    }
+
+    // clear Map
+    if (this.configFxMap) {
+      this.configFxMap.clear();
+    }
+
+    //create Map
+    this.configFxMap = new Map(Object.entries(_configFxObj)); // a entry for controlling synth volume
+    let _configFxMap = this.configFxMap;
+
+    var initialFxControls = {
+      removeFx: function() {
+        let tempVol = _this.volume.volume.value;
+        _this.volume.volume.rampTo(-99, 1); //fadeOut
+        _fx.dispose();
+        let index = _this.fxChain.indexOf(_fx);
+        _this.fxChain.splice(index, 1); // deletes the fx
+        _this.updateFxChain(); //update the synth.chain()
+        _this.guiFx.removeFolder(_folder);
+        _configFxMap.clear();
+        _this.volume.volume.rampTo(tempVol, 1); //fadeIn
+      },
+      wet: 1
+    };
+    //
+
+    // adding a wet and volume control first on gui
+    this.folder.add(initialFxControls, "removeFx");
+    this.folder.add(initialFxControls, "wet", 0, 1, 0.001).onChange(function() {
+      _this.fx.set("wet", initialFxControls.wet);
+      blurAll();
+    });
+
+    // Iterate over fx default parameters
+    for (var [key, value] of this.configFxMap) {
+      let _fx = this.fx;
+      let paramName = key; // e.g. harmonicity, detune
+      if (typeof key == "string" && typeof value != "object") {
+        if (_paramFxObj[key].hasOwnProperty("min")) {
+          this.folder
+            .add(
+              _configFxObj,
+              key,
+              _paramFxObj[key].min,
+              _paramFxObj[key].max,
+              _paramFxObj[key].step
+            )
+            .onChange(function() {
+              _fx.set(paramName, _configFxObj[paramName]);
+              blurAll();
+            });
+        } else if (value == "lowpass") {
+          this.folder
+            .add(_configFxObj, key, [
+              "lowpass",
+              "highpass",
+              "bandpass",
+              "lowshelf",
+              "highshelf",
+              "notch",
+              "allpass",
+              "peaking"
+            ])
+            .name(paramName)
+            .onChange(function() {
+              _fx.set(paramName, _configFxObj[paramName]);
+              blurAll();
+            });
+        } else {
+          this.folder
+            .add(_configFxObj, key, _paramFxObj[key].values)
+            .name(key)
+            .onChange(function() {
+              _fx.set(paramName, _configFxObj[paramName]);
+              blurAll();
+            });
+        }
+      } else {
+        if (typeof value == "object") {
+          // if there's a nested object
+          let subMap = new Map(Object.entries(value));
+          let fxParam = key; //store name of parameter for synth.set
+          let subObj = value; //store sub object for gui
+          for (var [key, value] of subMap) {
+            let param = key; //store control name for onChange
+            let paramValue = value; //stores numerical param
+            if (_paramFxObj[key].hasOwnProperty("min")) {
+              this.folder
+                .add(
+                  subObj,
+                  key,
+                  _paramFxObj[key].min,
+                  _paramFxObj[key].max,
+                  _paramFxObj[key].step
+                )
+                .name(fxParam.concat(".", param))
+                .onChange(function() {
+                  _fx.set(fxParam.concat(".", param), subObj[param]);
+                  blurAll();
+                });
+            } else {
+              if (fxParam == "filter" && param == "type") {
+                this.folder
+                  .add(subObj, key, [
+                    "lowpass",
+                    "highpass",
+                    "bandpass",
+                    "lowshelf",
+                    "highshelf",
+                    "notch",
+                    "allpass",
+                    "peaking"
+                  ])
+                  .name(fxParam.concat(".", param))
+                  .onChange(function() {
+                    _fx.set(fxParam.concat(".", param), subObj[param]);
+                    blurAll();
+                  });
+              } else {
+                this.folder
+                  .add(subObj, key, _paramFxObj[key].values)
+                  .name(fxParam.concat(".", param))
+                  .onChange(function() {
+                    _fx.set(fxParam.concat(".", param), subObj[param]);
+                  });
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+start()
+synthtracks = {}
+
+synth0 = new Synth(0)
+  synth1 = new Synth(1)
+  synth2 = new Synth(2)
+  synth3 = new Synth(3)
+  
+
+function start() {
+//   console.clear()
+  // initial Tone.Js setup
+  
+//   Tone.setContext(context);
+//   Tone.Transport.start();
+//   synth = new Synth()
+  // fx = new Fx(); //new fx rack with synth as source
+  Tone.context.latencyHint = "fastest";
+  Tone.context.lookAhead = 0.01;
+
+// initNexus()
+  initNexus();
+//   inst1 = new Synth();
+  
+  // synth = new Synth()
+
+}
+
+
+    
+
+
+</script>  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138397494-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138397494-1');
+</script>
+
+
+</html>  

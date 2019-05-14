@@ -1,0 +1,325 @@
+
+body {
+    background-color: darkgray;
+    onselectstart:"return false";
+    oncontextmenu:"return false";
+     /* touch-action:"none"  */
+}
+
+
+
+
+
+
+
+
+#dat-gui-container
+{
+  position: relative;
+  z-index: 4;
+  left: 0px; 
+  /* top: 40px;*/ 
+
+}  
+
+#canvas
+{
+  background-color: black;
+  cursor: crosshair;
+  position: relative;
+  z-index: 1;
+  left: 300px;
+  top: 40px;
+  width: 2048px; height: 1000px; float:left;
+    padding:0px;  border:0px;position: absolute; 
+    touch-action: none;
+}
+
+
+
+#speccanvas
+{
+    background-color: black;
+    cursor:crosshair;
+    z-index: 2;
+    left:300px;
+    top:1040px;
+    touch-action: none;
+
+    width: 2048px; height: 200px; float:left;
+    padding:0px;  border:0px;position: absolute;
+
+}
+
+/* 
+#content1
+{
+    cursor:crosshair;
+    z-index: 3;
+    left:300px;
+    top:40px;
+
+    width: 2048px; height: 1000px; float:left;
+    padding:0px;  border:0px;position: absolute;
+
+} */
+
+
+#content
+{
+    cursor:crosshair;
+    z-index: 3;
+    left:300px;
+    top:40px;
+
+    width: 2048px; height: 1000px; float:left;
+    padding:0px;  border:0px;position: absolute;
+    touch-action: none;
+
+}
+
+#contentprint
+{
+    cursor:crosshair;
+    z-index: 2;
+    left:300px;
+    top:40px;
+
+    width: 2048px; height: 1000px; float:left;
+    padding:0px;  border:0px;position: absolute;
+    touch-action: none;
+
+}
+
+#c
+{width: 2048px; height: 700px;}
+
+
+     /* #dat-gui-container > div{min-height: 27px; height: 27px; width: 100%; }  */
+             /* #dat-gui-container > div > ul  {position: left; z-index: 0;} */
+            /* #dat-gui-container > div > ul { display: table-row;  } */
+            /* #dat-gui-container > div > ul > li { display: table-cell; min-width: 180px ;padding-left: 0px;padding-right:1px} */
+            /* #dat-gui-container > div > ul > li.cr { background: none; line-height: normal; vertical-align: top; border-left: 0px !important;border-bottom: 0px} */
+            /* #dat-gui-container > div > ul > li.cr >div { background: #1a1a1a; height: 27px !important;padding-left: 6px;} */
+            /* #dat-gui-container > div > ul > li.cr > div > span.property-name{padding-top: 6px; } */
+            /* #dat-gui-container > div > ul > li.cr.string >div { border-left:4px solid green; } */
+            /* #dat-gui-container > div > ul > li.cr.number >div { border-left:4px solid blue;} */
+            /* #dat-gui-container > div > ul > li.cr.function >div { border-left:4px solid red;} */
+            /* #dat-gui-container > div > ul > li.cr.color >div { border-left:4px solid orange;} */
+            /* #dat-gui-container > div > ul > li.cr.boolean>div { border-left:4px solid purple;} */ 
+             /* #dat-gui-container .close-button { display:none;}       */ 
+
+
+.soundBite input {
+ margin-right: 4px;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.samplebox
+{
+  display: inline-block;
+  vertical-align: right;
+  width: 140px;
+  height: 140px;
+  padding: 30px;
+ 
+
+  text-align: center;
+}
+
+/* prevent duplicate drag enter/leave events for child elements */
+.samplebox *
+{
+  pointer-events: none;
+}
+
+#simple-test
+{
+  background-color: #79BC8A;
+  border: 8px solid transparent;
+}
+
+#advanced-test
+{
+    touch-action: none;
+    background-color:grey;
+  border: 8px dashed transparent;
+
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+#advanced-test1
+{
+    touch-action: none;
+    background-color:grey;
+  border: 8px dashed transparent;
+
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+
+#advanced-test2
+{
+    touch-action: none;
+    background-color:grey;
+  border: 8px dashed transparent;
+
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+#advanced-test3
+{
+    touch-action: none;
+    background-color:grey;
+  border: 8px dashed transparent;
+
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+
+#advanced-test11
+{
+    touch-action: none;
+    background-color:grey;
+  border: 8px dashed transparent;
+
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+
+#advanced-test21
+{
+    touch-action: none;
+    background-color:grey;
+  border: 8px dashed transparent;
+
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+#advanced-test31
+{
+    touch-action: none;
+    background-color:grey;
+  border: 8px dashed transparent;
+
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+
+#advanced-test12
+{
+    touch-action: none;
+    background-color:grey;
+  border: 8px dashed transparent;
+
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+
+#advanced-test22
+{
+    touch-action: none;
+    background-color:grey;
+  border: 8px dashed transparent;
+
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+#advanced-test32
+{
+    touch-action: none;
+    background-color:grey;
+  border: 8px dashed transparent;
+
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+
+
+#advanced-test.over
+{
+    
+  background-color:greenyellow;
+  border-color: green;
+}
+#advanced-test1.over
+{
+    
+  background-color:greenyellow;
+  border-color: green;
+}
+#advanced-test2.over
+{
+    
+  background-color:greenyellow;
+  border-color: blue;
+}
+
+#advanced-test3.over
+{
+    
+  background-color:greenyellow;
+  border-color: red;
+}
+
+#advanced-test11.over
+{
+    
+  background-color:greenyellow;
+  border-color: green;
+}
+#advanced-test21.over
+{
+    
+  background-color:greenyellow;
+  border-color: blue;
+}
+
+#advanced-test31.over
+{
+    
+  background-color:greenyellow;
+  border-color: red;
+}
+
+
+#advanced-test12.over
+{
+    
+  background-color:greenyellow;
+  border-color: green;
+}
+#advanced-test22.over
+{
+    
+  background-color:greenyellow;
+  border-color: blue;
+}
+
+#advanced-test32.over
+{
+    
+  background-color:greenyellow;
+  border-color: red;
+}
+
+
+
+

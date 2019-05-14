@@ -1,0 +1,595 @@
+﻿<!doctype html>  
+<html>  
+
+
+<script src="https://melbark.com/js/midiconvert.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.3.8/Tone.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/@magenta/music@^1.0.1"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.14.2/dist/tf.min.js"></script> -->
+<!-- <script type="text/javascript" src="https://fastcdn.org/FileSaver.js/1.1.20151003/FileSaver.js" ></script> -->
+<!-- <script src ="https://rawgit.com/eligrey/canvas-toBlob.js/master/canvas-toBlob.js"></script> -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.2/dat.gui.min.js"></script>
+<script src="https://rawgit.com/nexus-js/ui/master/dist/NexusUI.js"></script>
+<!-- <script src="https://s3-us-west-1.amazonaws.com/luisbergmann.com/libraries/audiokeys.js"></script>   -->
+<!-- <script src="pinch-zoom-canvas.js"></script> -->
+
+<style type="text/css">
+
+ body {
+        font-family: "Roboto Mono", monospace;
+        text-align: center;
+        margin: 0px;
+        background-color: black;
+        /* background: url(https://192.168.0.12:8080/files/waves.jpg); */
+        background-repeat: no-repeat;
+        background-size: 100% 
+    }
+
+    head {
+        width: calc(100% - 6px);
+        height: 150px;
+        background-color: white;
+        position: absolute;
+        left: 3px;
+        top: 3px;
+    }
+    /*
+    #Topbar #TonejsLogo{
+        margin-top: 3px;
+    } */
+
+    #FileDrop{
+        position: absolute;
+        width: 270px;
+        height: 150px;
+        top: 300px;
+        margin-left: -150px;
+        border: 2px dashed white;
+        right: 4%;
+        /* margin-top: 70px; */
+        color: azure;
+        z-index: 10;
+    }
+
+    p{
+        /* position: absolute;
+        width: 270px;
+        height: 150px;
+        top: 300px;
+        margin-left: -150px;
+        border: 2px dashed white;
+        right: 4%;
+        margin-top: 70px; */
+        color: azure;
+        /* z-index: 10; */
+    }
+    .ascii-art {
+    font-family: monospace;
+    white-space: pre;
+}
+    #FileDrop.Hover{
+        background-color: greenyellow;
+        color: white;
+    }
+
+    #FileDrop input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: .6;
+        left: 0px;
+        top: 0px;
+    }
+
+ #Text {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        line-height: 150px;
+        left: 0px;
+        top: 0px;
+        text-align: center;
+    }
+
+    textarea {
+        font-family: "Roboto Mono" monospace;
+        height: 300px;
+        width: 100%;
+        /* display: inline-block; */
+        position: relative;
+        float: left;
+    }
+/* 
+    #Settings span {
+        width: 60px;
+        float: right;
+        color: white;
+        font-size: 12px;
+        text-align: left;
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+
+    #Settings input {
+        width: 30px;
+        float: right;
+        margin-left: 10px;
+        margin-top: 10px;
+    } */
+
+     #mididraw {
+        position: relative;
+        /* z-index: -2; */
+        background-color: black;
+        touch-action: none;
+    }
+
+
+    #Results {
+        position: relative;
+        width: 278px;
+        height: 200px;
+        /* margin-left: -250px; */
+        top: 300px;
+        /* left: 50%; */
+        position: relative;
+    }
+
+    #Description {
+        position: absolute;
+        width: 100%;
+        height: 40px;
+        font-size: 20px;
+        bottom: 0px;
+    }
+
+
+
+
+
+
+
+        
+                body {
+                  /* font-family: 'Lato', sans-serif; */
+                }
+/*                 
+                .overlay {
+                  height: 0%;
+                  width: 100%;
+                  position: fixed;
+                  z-index: 3;
+                  top: 0;
+                  left: 0;
+                  background-color: rgb(0, 0, 0);
+                  background-color: rgba(0,0,0, 0.9);
+                  overflow-y: hidden;
+                  transition: 0.5s;
+                }
+                
+                .overlay-content {
+                  position: relative;
+                  top: 10%;
+                  width: 100%;
+                  text-align: center;
+                  margin-top: 30px;
+                }
+                
+                .overlay a {
+                  padding: 8px;
+                  text-decoration: none;
+                  font-size: 10px;
+                  color: #818181;
+                  display: block;
+                  transition: 0.3s;
+                }
+                
+                .overlay a:hover, .overlay a:focus {
+                  color: #f1f1f1;
+                }
+                
+                .overlay .closebtn {
+                  position: absolute;
+                  top: 20px;
+                  right: 45px;
+                  font-size: 60px;
+                }
+                
+                @media screen and (max-height: 450px) {
+                  .overlay {overflow-y: auto;}
+                  .overlay a {font-size: 20px}
+                  .overlay .closebtn {
+                  font-size: 15px;
+                  top: 15px;
+                  right: 35px;
+                  }
+                } */
+
+                
+.sidenav {
+  height: 98%;
+  width: 0;
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  right: 0;
+  opacity: 1;
+  /* background-color: #111; */
+  overflow-x: hidden;
+  transition: 0.5s;
+  /* padding-top: 60px; */
+  
+}
+
+
+
+.sidenav a {
+  /* padding: 8px 8px 8px 32px; */
+  text-decoration: none;
+  font-size: 25px;
+  /* color: #818181; */
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+#main {
+  transition: margin-left .5s;
+  /* padding: 16px; */
+}
+    
+
+    #m-menu {
+    POSITION: relative;    
+    top: 60px;
+    padding: 40px;
+
+
+    } 
+m-button {
+
+
+
+    position: absolute;
+  z-index: 3;
+  top: 30px;
+  right: 49px;
+  float:right;
+  color: white;
+  /* background-color: white;
+  
+  /* color */
+  background-color: Transparent;
+    /* background-repeat:no-repeat; */
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none; 
+
+
+}
+#opennav {
+
+  position: absolute;
+  z-index: 3;
+  top: 30px;
+  right: 70px;
+  float:right;
+  color: white;
+  /* background-color: white;
+  
+  /* color */
+  background-color: Transparent;    
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none; 
+
+}
+    a {
+    color: grey;
+    /* background-color: white */
+}    
+
+h1 {
+    color: rgb(172, 21, 21);
+    /* background-color: white */
+}    
+
+
+                </style>
+                <!-- </head> -->
+                <!-- <body> -->
+                        <link href="https:/40.115.69.186:443/css/explorer1.css" rel="stylesheet">
+
+                    
+    <header>
+      <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-7366613914907932",
+          enable_page_level_ads: true
+        });
+      </script>
+    <meta name="keywords" content="web audio api, spectrogram, synth, paint music,midi art, touch, pen, theremin,
+    DAW,audio,data science,midi,visualiser,csv,json,data viz,music,sound,spectrograph, spectrum, frequency">
+    </header>                
+    
+    
+    <div id="guiContainer"></div>
+    <div id="guiSynthContainer"></div>
+    <div id="guiFxContainer"></div>
+
+
+                        <button id="opennav" style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; MELBARK</button>
+                    
+                        <div id="mySidenav" class="sidenav">
+                                    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                                    <div id="m-menu">
+                                            <h1>MIDI TOOLS</h1>
+                                            <a href='https://melbark.com/midiviz'>>MidiViz2csv</a>
+                                            <a href='https://melbark.com/midijson'>>json2midi</a>
+
+
+                                            <h1>SPECTRALPOOL</h1>
+                                         
+                                            <a href='https://melbark.com/spectralpoolpurple'> >purple</a>
+                                            <a href='https://melbark.com/spectralpoolmagenta'> >magenta</a>
+                                            <a href='https://melbark.com/spectralpoolpink'> >pink</a>
+                                            <a href='https://melbark.com/spectralpoolred'> >red</a>                                           
+                                            <a href='https://melbark.com/spectralpoolblack'> >black</a>
+                                            <a href='https://melbark.com/sacredinstrument'> >sacred</a>
+                                            <a href='https://melbark.com/harmonisphere'> >harmonisphere</a>
+                                            <h1>ML MUSIC GENERATORS</h1>
+                                            <a href='https://github.com/melbark/music_generation'>>training data</a>
+                                            <a href='https://colab.research.google.com/drive/1vw4EVHCegVu7KleYjLWn29m6pRRf20fT'>>tf gpt-2</a> 
+                                            <a href='https://colab.research.google.com/drive/1mRtD3JVyVvle_PJBc5kZLyz3OkLRlRcy'>>tf rnn </a>  
+                                            <a href='https://colab.research.google.com/drive/1g_UzSZYmqJaWfVrk2T3dCrKSvb-v6mKN'>>keras tf tpu ltsm</a>
+                                            <a href='https://colab.research.google.com/drive/11kEkpsX1Horoogy6gJhLGQn8pePTHAjT'>>tf rnn eager</a>                                                             
+                                            
+                                            <a href='https://colab.research.google.com/drive/1PU9NqGIhwjqeVeNmK0Z0qgulSuTKdtmb'>>tf rnn 2</a>
+                                            <a href='https://colab.research.google.com/drive/1GQYvPFLFCsXH5S2zFHo4jiYLQMP4rBRF'>>h2o random walk</a>
+                                            <a href='https://colab.research.google.com/drive/1i57rRsNoi1WMqLhOU0ULXD0p-QnUPOyF'>>h2o shallow</a>
+
+                                            <h1>SOCIAL</h1>
+                                            <a href='https://youtu.be/oUrmk-6_rW0'>>youtube demo</a>
+                                            <a href='https://soundcloud.com/melbark'>>soundcloud</a>  
+                                            <a href='https://twitter.com/spectralpool'>>twitter</a>
+                                            <a href='https://twitch.com/spectralpool'>>twitch</a>
+
+                                            
+
+                                            <!-- <a href='https://melbark.com/midiviz'>MidiViz</a> -->
+                                            
+
+                                           
+                                    </div>
+                                
+                                  
+                                   </div>
+                                   <!-- <div id="piano"></div> -->
+                                   
+                                   
+                                   
+                                   
+                            
+                             
+                               
+                              </div>
+
+                            
+   
+<body >
+
+  <div left:300px>
+
+      <div style="color:RED" class="ascii-art" >
+          ,--.    ,--.
+         ((O ))--((O ))
+        ,'_`--'____`--'_`.
+        _:  ____________  :_
+        | | ||::::::::::|| | |
+        | | ||::::::::::|| | |
+        | | ||::::::::::|| | |
+        |_| |/__________\| |_|
+        |________________|
+        </div>   
+<table style="width: 50%; top:2%; " border="9">
+<tbody>
+<tr>
+ 
+<td> <div style="color:white" class="ascii-art" > 
+    Melbark provides a set of midi, synth, spectrogram and music generation
+    tools using the web audio api, h2o and tensorflow.
+
+    Follow these steps to generate midi tracks in the style of the artist of your choosing:
+
+    step 1:
+    Download midi tracks in the style you want. Import to midiviz2csv and export csv.
+
+    An impressive collection of midis can be found @
+    https://www.reddit.com/r/WeAreTheMusicMakers/comments/3ajwe4/the_largest_midi_collection_on_the_internet/
+
+
+    step 2
+    Choose a machine learning pattern from the links provided. Save a copy and run all cells.
+
+    Upload the csv from step 1 to use as training data.
+    Once the notebook has completed, csv and json files of the new track will be generated
+    
+    step 3.
+    Import the json file from step 2 to json2midi to create your new midi track.
+    From here you can import to midivizcsv or spectralpool>purple to play the midi.
+    
+    If you want a more organic sound try:
+    ableton live > native instruments native access > kontact and a piano library from
+    http://bigcatinstruments.blogspot.com/2014/08/gm-midi-instruments-for-kontakt.html
+         
+
+   SPECTRALPOOLS:
+   Allow you to create a pixel perfect soundscape layer by layer. Similar as to how you would create an image 
+   in photoshop. The synth is your brush and the spectrogram is your canvas. Where you 
+   paint is what you hear.  Tilt pens allow you to control velocity via pressure and synth 
+   effects by tilt. The spectrogram scale is inspired by the mel and bark pyschoacoustic scales.
+   A balance of control without distorting perception of distance on screen and note interval.
+
+    spectralpool - black  (red and pink variations): 
+      polyphonic ,
+      additive synth,
+      tonejs and tunajs effects,
+      recording,
+      arpeggiator ,
+      microphone and midi inputs.
+    *Requires chrome < 65
+
+    spectralpool - purple: 
+      monophonic ,
+      tonejs and tunajs effects,
+      recording,
+      arpeggiator ,
+      microphone and midi inputs,
+      sample pads.
+  
+    There is an ableton option which changes the node chain 
+    to prevent output of microphone input while still displaying
+    on the spectrogram - see tutorial.
+
+
+    ML DATA FORMAT
+    Data is transformed to a format of midi*duration*timedelta and each note is separated by tab
+    Example: 68*33*0 72*33*33 65*33*0 72*33*34 60*33*0
+
+    Timedelta is the duration between current and last note. Having the delta avoids the need to include breaks.
+    Chords are created when timedelta equals zero.
+
+    Duration and timedelta are represented as fraction of beat and then multiplied by a factor to bin.
+
+    Velocity and instruments can also be included.
+
+    Track index is removed. Dataframe is sorted by time and timedelta is calculated by a row offset. Track index can be reconstructed on output.
+
+    Dataset is standardised by: 
+    -time/bpm
+    -shifting all data around a standard midi mode 
+    -offsetting each midi note by [0,-3,4,5,-5,9,-9]
+
+    Midi range is filtered between 30 and 90. Duration and timedelta are filtered to two full bars.
+
+    For instructions and demos please visit  https://soundcloud.com/melbark, https://github.com/melbark, https://youtube.com/melbark or live at https://twitch.com/spectralpool
+    
+  </div>   
+  </td>
+</tr>
+<tr>
+<td> <div style="color:red" class="ascii-art" > 
+    If you want to help this project grow please consider donating 
+    BTC:323jLfob2iisXAihigD2fzCUx6BHP7UqaG
+    ETH:0x29F55464005c504442E8670215290f3433c57758
+    LTC:MRamXkauDVG5zSsqJpGU8pxr2gzBubgBE8
+
+    
+</div>
+<a href="mailto:mark@melbark.com">email: mark@melbark.com</a>
+</td>
+</tr>
+<tr>
+<td><div style="color:white" class="ascii-art" >
+    Resources:
+    https://en.wikipedia.org/wiki/Mel_scale
+    https://en.wikipedia.org/wiki/Bark_scale
+    Chris Wilson - https://github.com/cwilso
+    Chris Lowis - https://www.webaudioweekly.com/ &  https://github.com/chrislo
+    
+    Magenta - https://magenta.tensorflow.org/
+    https://github.com/sherjilozair/char-rnn-tensorflow
+    https://github.com/saebekassebil/teoria,https://tonejs.github.io/,https://github.com/Theodeus/tuna
+    https://github.com/anishathalye/neural-style
+    
+</div></td>
+</tr>
+</tbody>
+
+           
+</table>
+                           
+                        <!-- <canvas id="mididraw"></canvas>                -->
+                     
+<!-- <a href='#' onclick='downloadallCSV({ filename: "stock-data.csv" });'>Download CSV</a> -->
+
+</body>
+
+
+
+
+
+
+
+<script>
+    
+    // document.getElementById("mySidenav").style.width = "300px";
+        function openNav() {
+          document.getElementById("mySidenav").style.width = "300px";
+        //   document.getElementById("main").style.marginLeft = "250px";
+        //   document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+        }
+        
+        function closeNav() {
+          document.getElementById("mySidenav").style.width = "0";
+        //   document.getElementById("main").style.marginLeft= "0";
+        //   document.body.style.backgroundColor = "white";
+        }
+
+        openNav()   
+        </script>
+
+<!--         
+                <div id="myNav" class="overlay">
+                  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                  <div class="overlay-content">
+                   x
+                </div>
+           
+        
+                <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+                
+                <script>
+                function openNav() {
+                  document.getElementById("myNav").style.height = "100%";
+                }
+                
+                function closeNav() {
+                  document.getElementById("myNav").style.height = "0%";
+                } -->
+                </script>
+
+            
+    
+
+
+
+</script> 
+
+</script>  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-138397494-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-138397494-1');
+</script>
+
+</html>  

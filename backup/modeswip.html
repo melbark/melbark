@@ -1,0 +1,3651 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Spectral Pool</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+  </head>
+
+ <style>
+
+ * {
+    margin:0;
+}
+
+
+
+
+#dat-gui-container
+{
+  position: relative;
+  z-index: 4;
+ /* left: 0px;
+  top: 40px;*/
+
+}  
+
+#canvas
+{
+  background-color: black';
+  cursor: crosshair;
+  position: relative;
+  z-index: 1;
+  left: 300px;
+  top: 40px;
+  width: 2048px; height: 1000px; float:left;
+    padding:0px;  border:0px;position: absolute; 
+}
+
+#content
+{
+    cursor:crosshair;
+    z-index: 3;
+    left:300px;
+    top:40px;
+
+    width: 2048px; height: 1000px; float:left;
+    padding:0px;  border:0px;position: absolute;
+
+}
+
+#contentprint
+{
+    cursor:crosshair;
+    z-index: 2;
+    left:300px;
+    top:40px;
+
+    width: 2048px; height: 1000px; float:left;
+    padding:0px;  border:0px;position: absolute;
+
+}
+
+#c
+{width: 2048px; height: 700px;}
+
+     #dat-gui-container > div{min-height: 27px; height: 27px; width: 100%; } 
+/*            #dat-gui-container > div > ul  {position: left; z-index: 0;}
+            #dat-gui-container > div > ul { display: table-row;  }
+            #dat-gui-container > div > ul > li { display: table-cell; min-width: 180px ;padding-left: 0px;padding-right:1px}
+            #dat-gui-container > div > ul > li.cr { background: none; line-height: normal; vertical-align: top; border-left: 0px !important;border-bottom: 0px}
+            #dat-gui-container > div > ul > li.cr >div { background: #1a1a1a; height: 27px !important;padding-left: 6px;}
+            #dat-gui-container > div > ul > li.cr > div > span.property-name{padding-top: 6px; }
+            #dat-gui-container > div > ul > li.cr.string >div { border-left:4px solid green; }
+            #dat-gui-container > div > ul > li.cr.number >div { border-left:4px solid blue;}
+            #dat-gui-container > div > ul > li.cr.function >div { border-left:4px solid red;}
+            #dat-gui-container > div > ul > li.cr.color >div { border-left:4px solid orange;}
+            #dat-gui-container > div > ul > li.cr.boolean>div { border-left:4px solid purple;}
+            #dat-gui-container .close-button { display:none;}      
+*/
+
+.soundBite input {
+ margin-right: 4px;}
+
+
+
+</style>
+
+    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="bootstrap/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="bootstrap/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="bootstrap/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="bootstrap/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="bootstrap/ico/apple-touch-icon-57-precomposed.png">
+
+
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/pep/0.4.1/pep.js"></script>
+    <!-- <script src="./js/teoria.js"></script> -->
+
+
+
+    <script src="http://40.115.69.186:3000/js/chroma.js"></script>
+    <script src="http://40.115.69.186:3000/js/Synthknob_files/raphael-min.js"></script>
+    <script src="http://40.115.69.186:3000/js/Synthknob_files/qwerty-hancock.js"></script>
+    <!-- <script src="http://40.115.69.186:3000/js/Synthknob_files/jquery.knob.js"></script> -->
+    <script src="http://40.115.69.186:3000/js/tuna-master/tuna.js"></script>
+    <!-- <script src="http://40.115.69.186:3000/js/stats.js-master/src/Stats.js"></script> -->
+
+    <script src="http://40.115.69.186:3000/js/lib/recorder.js"></script>
+    <script src="http://40.115.69.186:3000/js/recordLive.js"></script> 
+    <script src='http://40.115.69.186:3000/js/teoria.js'></script>
+
+
+
+<script src="http://40.115.69.186:3000/js/dat.gui-master/build/dat.gui.min.js"></script>
+    <!-- <script src="/Web Audio API Demo_files/jquery.knob.custom.js"></script> -->
+
+
+
+
+
+<!-- Latest compiled and minified CSS -->
+
+<body style="background-color: black;">
+
+
+
+    <div id="dat-gui-container"></div>
+    <canvas id="canvas" width="2048" height="1000"></canvas>
+    <canvas width="2048" height="1000" id="content"></canvas>
+    <canvas width="2048" height="1000" id="contentprint"></canvas>
+
+
+
+
+
+
+<div id="header">
+ 
+
+</div>
+
+<div id="nav">
+<canvas width="300" height="1050"></canvas>   
+<!-- <button onclick="openWin()">Open "myWindow"</button>
+<button onclick="closeWin()">Close "myWindow"</button> -->
+<button id="connect">Connect to MIDI</button>
+
+ <input id="files" type="file" id="files" name="files[]" multiple />
+<input id="play" type="button" value="play" />
+
+<script>
+// var myWindow;
+
+// function openWin() {
+//     myWindow = window.open("", "myWindow", "width=200, height=100");
+//     myWindow.document.write(<p>We make most of our music these days based on a boring old 12 dimensional hypercube. The piano is to the cube as the Spectral Pool is to a sphere.
+// As you play on the Spectral Pool the harmonics are visualised; using the ripples drawn on the spectrum you can visualise and manipulate the scale you wish to play.
+
+// Spectral Pool is an audio visual multitouch polyphonic sound recording studio right in your web browser. It allows you to visualise and interpret all things sound. You can use your microphone, sound card stereomix,usb guitar, midi keyboard, to build and record your own tracks by yourself of with your friends. You can see what you play and interact by using a spectral analysis and a multitouch polyphonic theremin. The theremin and spectral analysis can be controlled via paramaeters, allowing them to aligned or offset, this allows you to paint a canvas of sound in real time. Using the tuna effects in the controller you can mix the color and shape of the sound you are creating.<p>);
+// }
+
+// function closeWin() {
+//     myWindow.close();
+// }
+</script>   
+
+ <div class="content">
+ 
+      
+    <div class="playground">
+        <div class="content-wide">
+            <div class="widget widget-vis" id="vis-div">
+                 
+            </div>
+            <div class="widget widget-loops">
+                <h3>Loop</h3>
+                <div class="widget-items">
+                    <button id="button-loop-1" type="button" form="form" value="1" data-name="1" class="">1</button>
+                    <button id="button-loop-2" type="button" form="form" value="2" data-name="2" class="">2</button>
+                    <button id="button-loop-3" type="button" form="form" value="3" data-name="3" class="">3</button>
+                </div>
+            </div>
+            <div class="widget widget-controls">
+                <h3>Controls</h3>
+                <div class="widget-items">
+                    <div style="display: inline; width: 104px; height: 104px;">
+                        <canvas width="104" height="104"></canvas>
+                        <input id="master-volume" value="Volume" data-value="93" style="width: 56px; height: 34px; display: inline-block; position: absolute; vertical-align: middle; margin-top: 34px; margin-left: -80px; border: 0px; font-weight: bold; font-style: normal; font-variant: normal; font-stretch: normal; font-size: 20px; line-height: normal; font-family: Arial; text-align: center; color: rgb(135, 206, 235); padding: 0px; -webkit-appearance: none; background: none;">
+                    </div>
+                    <button id="button-play" type="button" form="form">Play</button>
+                    <button id="button-stop" type="button" form="form">Stop</button>
+                </div>
+            </div>
+            <div class="widget widget-effects">
+                <h3>Effects</h3>
+                <div class="widget-items">
+                    <button id="effect-1" type="button" form="form" value="1" data-name="Cave" class="">Cave</button>
+                    <button id="effect-2" type="button" form="form" value="2" data-name="Lodge" class="">Lodge</button>
+                    <button id="effect-3" type="button" form="form" value="3" data-name="Parking Garage">Parking
+                        <br>Garage</button>
+                </div>
+            </div>
+        </div>
+
+
+
+<div id="controller" > 
+
+
+</div>
+
+ 
+
+
+ <!--
+<div id="footer">
+Log: <pre id="log"</pre>
+</div>-->
+   
+ <!--<div id="keyboard" style="font-size: 0px;"></div>-->
+
+
+<script type="text/javascript">
+
+
+
+// var obj = {
+//     x:5,
+//     y:5,
+ 
+//     'Z Translate': 0.5,
+//     Color:"rgba(228,30,0,0.3)",
+//     Interpolation : 0,
+//     Yes: true
+// };
+
+
+   
+// var FizzyText = function() {
+//   this.message = 'dat.gui';
+//   this.speed = 0.8;
+//   this.maxsize = 0.8;
+//   this.displayOutline = false;
+//   this.explode = function() {getLiveInput()};
+//   // Define render logic ...
+// };
+var socket = io.connect('http://40.115.69.186:3000')
+
+socket.on('connect', function(){
+   var sessionid = socket.io.engine.id;
+   // console.log(sessionid)
+});
+
+var Synthojb = function() {  
+  //this.linein = function() {getLiveInput()}
+  this.volume = 0.90        /* function  -> click run function */   
+  this.input_delay = 0.40 ;           
+  this.input_feedback = 0.20;
+      /* VarType  |  Display             */    
+  this.delay = 400 ;           
+  this.feedback = 0.90; 
+  this.wetLevel = 1.00 ;           
+  this.dryLevel = 1.00 ; 
+  this.cutoff = 16000 ;           
+  this.bypass = 1; 
+
+   this.chorus_rate = 1.50;
+   this.chorus_feedback = 0.20;
+   this.chorus_delay = 0.004;
+   this.chorus_bypass = 1;
+
+   this.phaser_rate = 1.20;                     //0.01 to 8 is a decent range; but higher values are possible
+   this.phaser_depth= 0.30;                    //0 to 1
+   this.phaser_feedback= 0.20;                 //0 to 1+
+   this.phaser_stereoPhase= 30;               //0 to 180
+   this.phaser_baseModulationFrequency= 700;  //500 to 1500
+   this.phaser_bypass= 1;
+
+
+   this.over_outputGain= 0.50;         //0 to 1+
+   this.over_drive=0.70;              //0 to 1
+   this.over_curveAmount= 1;          //0 to 1
+   this.over_algorithmIndex= 0;       //0 to 5; selects one of our drive algorithms
+   this.over_bypass=1;
+
+   this.comp_threshold= 0.5;    //-100 to 0
+   this.comp_makeupGain= 1;     //0 and up
+   this.comp_attack= 1;         //0 to 1000
+   this.comp_release= 0;        //0 to 3000
+   this.comp_ratio= 4;          //1 to 20
+   this.comp_knee= 5;           //0 to 40
+   this.comp_automakeup= true;  //true/false
+   this.comp_bypass= 0  ;      /* numbers -> cursor               */
+ 
+
+  this.filter_frequency= 440; //20 to 22050
+  this.filter_Q= 1; //0.001 to 100
+  this.filter_gain= 0; //-40 to 40
+  this.filter_filterType= "lowpass"; //lowpass; highpass; bandpass; lowshelf; highshelf; peaking; notch; allpass
+  this.filter_bypass= 0;
+
+  this.cabinet_makeupGain= 1;                                 //0 to 20
+  this.cabinet_impulsePath= "impulses/impulse_guitar.wav";    //path to your speaker impulse
+  this.cabinet_bypass= 0;
+
+  this.tremolo_intensity= 0.3;    //0 to 1
+  this.tremolo_rate= 4;         //0.001 to 8
+  this.tremolo_stereoPhase= 0;    //0 to 180
+  this.tremolo_bypass= 0;
+
+  this.WahWah_automode= true;                //true/false
+  this.WahWah_baseFrequency= 0.5;            //0 to 1
+  this.WahWah_excursionOctaves= 2;           //1 to 6
+  this.WahWah_sweep= 0.2;                    //0 to 1
+  this.WahWah_resonance= 10;                 //1 to 100
+  this.WahWah_sensitivity= 0.5;              //-1 to 1
+  this.WahWah_bypass= 0;
+
+  this.spectrumRatio = 0.89;
+  this.specratio1 = 0.867;
+  this.specratio2 = 2.8;
+  this.minf = 5;
+  this.maxf = 22050;
+  this.logscale = 2;
+  this.specpxoffset = 0;
+  this.fftmult = 8192;
+  this.pxmult = 1.303;
+
+  this.source_delay = 10
+  this.source_feedback = 0.7
+  this.source_attack = 0.1
+  this.source_decay = 4
+
+  this.truefalse = false;         /* yes-no    -> checkbox           */
+  this.synthreal0 = 1
+  this.synthreal1 = 1
+  this.synthreal2 = 0
+  this.synthreal3 = 0
+  this.synthreal4 = 0
+  this.synthreal5 = 0
+  this.synthreal6 = 0
+  this.synthreal7 = 0
+  this.synthreal8 = 0
+  this.synthreal9 = 0
+  this.synthreal10 = 0
+  this.synthreal11 = 0
+  this.synthreal12 = 0
+  this.synthreal13 = 0.0
+  this.synthreal14 = 0.00
+  this.synthreal15 = 0
+  this.synthreal16 = 0
+  this.synthreal17 = 0
+  this.synthreal18 = 0
+  this.synthreal19 = 0
+  this.synthreal20 = 0
+
+    this.ratio1 = .4
+  this.ratio2 = .5
+  this.scaleradius = 125
+
+
+};
+//A lo-fi bitcrusher effect.
+
+
+
+
+  // var text = new FizzyText();
+
+var syntheffect = new Synthojb();
+var inputeffect = new Synthojb();
+
+
+
+var  gui = new dat.GUI({autoPlace: false});
+gui.remember(syntheffect);
+var ControlMain = function() {  
+  //this.linein = function() {getLiveInput()}
+    this.Microphone = false;
+    this.Audio = false;
+    this.Synth = false;
+};
+
+var controlmain = new ControlMain();
+// var  gui = new dat.GUI({autoPlace: true});
+  
+   var CB1Controller = gui.add(controlmain, 'Audio').onChange(function(value){    
+        controlmain.Audio = !value
+            console.log("You changed me to " + value);
+            if (controlmain.Audio = true) {
+              loadSound("sedan.mp3");
+             
+              // controlmain.Audio = true
+              
+            }
+            if(controlmain.Audio = false) {
+              // sourceNode.stop(0);
+              // controlmain.Audio = false
+             
+              
+            }
+           
+    });
+    
+    var CB2Controller = gui.add(controlmain, 'Microphone').onChange(function(value){
+           controlmain.Microphone = !value
+            console.log("You changed me to " + value);
+          
+                if (controlmain.Microphone = true) {
+              getLiveInput() 
+              // controlmain.Microphone = true
+            }
+            if (controlmain.Microphone = false) {
+              // endLiveInput() 
+              // controlmain.Microphone = false
+            }
+   
+    });
+  
+    var CB3Controller = gui.add(controlmain, 'Synth').onChange(function(value){
+        controlmain.Synth = !value
+            console.log("You changed me to " + value);
+            if (controlmain.Synth = true) {
+              startup()
+              // controlmain.Synth = false
+            }
+            if (controlmain.Synth = false) {
+              // //Voice.vca.value = 0;
+              // controlmain.Synth = true
+            }
+   
+    });
+ var controller = gui.add(syntheffect, 'volume', 0, 10).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     systemvolume.gain.value = newValue;
+   });    
+
+  controller.onChange(function(value) {
+ //volume
+  // Fires on every change, drag, keypress, etc.
+  });
+
+  controller.onFinishChange(function(value) {
+  // Fires when a controller loses focus.
+  console.log("The new value is " + value);
+  });
+
+
+var f2 = gui.addFolder('Spectrum');
+var i1 = gui.addFolder('Input');
+fspectrum = f2.addFolder('spectrumRatio');
+  fspectrum.add(syntheffect, 'spectrumRatio' , 0, 2.000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    pr = newValue
+  });
+
+  fspectrum.add(syntheffect, 'specratio1' , 0, 2.000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    specratio1 = newValue
+  });
+
+fspectrum.add(syntheffect, 'specratio2' , 0, 10.000).onChange(function(newValue) {
+ console.log("You changed me to " + newValue);
+  specratio2 = newValue
+});
+
+  fspectrum.add(syntheffect, 'minf' , 0, 22050).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    minf = newValue
+  });
+
+fspectrum.add(syntheffect, 'maxf' , 0, 22050).onChange(function(newValue) {
+ console.log("You changed me to " + newValue);
+  maxf = newValue
+});
+fspectrum.add(syntheffect, 'logscale' , 0, 20).onChange(function(newValue) {
+ console.log("You changed me to " + newValue);
+  logscale = newValue
+});
+fspectrum.add(syntheffect, 'specpxoffset' , -1000 , 1000).onChange(function(newValue) {
+ console.log("You changed me to " + newValue);
+  specpxoffset = newValue
+});
+fspectrum.add(syntheffect, 'fftmult' ,  { 1024: 1024, 2048: 2048, 4096: 4096, 8192: 8192 , 16384: 16384, 32768: 32768 }).onChange(function(newValue) {
+ console.log("You changed me to " + newValue);
+  fftmult = newValue
+  myAudioAnalyser.fftSize = fftmult
+
+});
+fspectrum.add(syntheffect, 'pxmult' , 0, 6.000).onChange(function(newValue) {
+ console.log("You changed me to " + newValue);
+  pxmult = newValue
+});
+
+
+
+var f1 = gui.addFolder('Synth');
+
+fenvdelay = f1.addFolder('EnvDelay');
+  fenvdelay.add(syntheffect, 'source_delay', 0, 1000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthdelay.source_delay = newValue
+  });
+  fenvdelay.add(syntheffect, 'source_feedback', 0, 1000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthdelay.source_feedback = newValue
+  });
+
+
+  fenvdelay.add(syntheffect, 'source_attack', 0, 100).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthdelay.source_attack = newValue
+  });
+  fenvdelay.add(syntheffect, 'source_decay', 0, 100).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthdelay.source_decay = newValue
+  });
+
+  fenvdelay.add(syntheffect, 'scaleradius', 0, 1000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthdelay.scaleradius = newValue
+  });
+  fenvdelay.add(syntheffect, 'ratio1', 0, 1000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthdelay.ratio1 = newValue
+  });
+  fenvdelay.add(syntheffect, 'ratio2', 0, 1000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthdelay.ratio2 = newValue
+  });
+
+
+
+
+fdelay = f1.addFolder('Delay');
+  fdelay.add(syntheffect, 'delay', 0, 10000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthdelay.delayTime = newValue
+  });
+  fdelay.add(syntheffect, 'feedback', 0, 2).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthdelay.feedback = newValue
+  });
+
+  fdelay.add(syntheffect, 'wetLevel', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthdelay.wetLevel = newValue
+  });
+  fdelay.add(syntheffect, 'dryLevel', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthdelay.dryLevel = newValue
+  });
+  fdelay.add(syntheffect, 'cutoff', 0, 16000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthdelay.cutoff = newValue
+  });
+  fdelay.add(syntheffect, 'bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthdelay.bypass = newValue
+  });
+
+  fchorus = f1.addFolder('Chorus');
+  fchorus.add(syntheffect, 'chorus_rate', 0, 8).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthchorus.rate = newValue
+  });
+  fchorus.add(syntheffect, 'chorus_feedback', 0, 2).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthchorus.feedback = newValue
+  });
+
+  fchorus.add(syntheffect, 'chorus_delay', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthchorus.delay = newValue
+  });
+  fchorus.add(syntheffect, 'chorus_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthchorus.bypass = newValue
+  });
+
+
+fphaser = f1.addFolder('Phaser');
+  fphaser.add(syntheffect, 'phaser_rate', 0, 5).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthphaser.rate = newValue
+  });
+  fphaser.add(syntheffect, 'phaser_depth', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthphaser.depth = newValue
+  });
+
+  fphaser.add(syntheffect, 'phaser_feedback', 0, 2).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthphaser.feedback = newValue
+  });
+  fphaser.add(syntheffect, 'phaser_stereoPhase', 0, 30).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthphaser.stereoPhase = newValue
+  });
+  fphaser.add(syntheffect, 'phaser_baseModulationFrequency', 0, 700).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthphaser.baseModulationFrequency = newValue
+  });
+  fphaser.add(syntheffect, 'phaser_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthphaser.bypass = newValue
+  });
+
+foverdrive = f1.addFolder('Overdrive');
+  foverdrive.add(syntheffect, 'over_outputGain', 0, 11.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthoverdrive.outputGain = newValue
+  });
+  foverdrive.add(syntheffect, 'over_drive', 0, 1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthoverdrive.odrive = newValue
+  });
+
+  foverdrive.add(syntheffect, 'over_curveAmount', 0, 1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthoverdrive.curveAmount = newValue
+  });
+  foverdrive.add(syntheffect, 'over_algorithmIndex', 0,5).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthoverdrive.algorithmIndex = newValue
+  });
+
+  foverdrive.add(syntheffect, 'over_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthoverdrive.bypass = newValue
+  });
+
+
+fsynthcompressor = f1.addFolder('Synthcompressor');
+  fsynthcompressor.add(syntheffect, 'comp_threshold', -100, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthcompressor.threshold = newValue
+  });
+  fsynthcompressor.add(syntheffect, 'comp_makeupGain', 0, 3).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthdelay.makeupGain = newValue
+  });
+
+  fsynthcompressor.add(syntheffect, 'comp_attack', 0, 1000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthdelay.attack = newValue
+  });
+  fsynthcompressor.add(syntheffect, 'comp_release', 0, 3000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthdelay.release = newValue
+  });
+  fsynthcompressor.add(syntheffect, 'comp_ratio', 1, 20).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthdelay.ratio = newValue
+  });
+    fsynthcompressor.add(syntheffect, 'comp_knee', 0, 40).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthdelay.knee = newValue
+  });
+
+  fsynthcompressor.add(syntheffect, 'comp_automakeup', true, false).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthdelay.automakeup = newValue
+  });
+  fsynthcompressor.add(syntheffect, 'comp_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthdelay.bypass = newValue
+  });
+
+
+ffilter = f1.addFolder('Filter');
+  ffilter.add(syntheffect, 'filter_frequency', 20, 22050).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthcompressor.frequency = newValue
+  });
+  ffilter.add(syntheffect, 'filter_Q', 0.001, 100).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthfilter.Q = newValue
+  });
+
+  ffilter.add(syntheffect, 'filter_gain', -40, 40).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthfilter.gain = newValue
+  });
+  ffilter.add(syntheffect, 'filter_filterType',"lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass").onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthfilter.filterType = newValue
+  });
+
+  ffilter.add(syntheffect, 'filter_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthfilter.bypass = newValue
+  });
+
+
+
+
+
+fcabinet = f1.addFolder('Caibnet');
+  fcabinet.add(syntheffect, 'cabinet_makeupGain', 0, 20).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthcabinet.makeupGain = newValue
+  });
+  fcabinet.add(syntheffect, 'cabinet_impulsePath',"impulses/impulse_guitar.wav").onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthcabinet.impulsePath = newValue
+  });
+  fcabinet.add(syntheffect, 'cabinet_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthcabinet.bypass = newValue
+  });
+
+
+ftremolo = f1.addFolder('Tremolo');
+  ftremolo.add(syntheffect, 'tremolo_intensity', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthtremolo.intensity = newValue
+  });
+  ftremolo.add(syntheffect, 'tremolo_rate',.001, 8.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthtremolo.rate = newValue
+  });
+
+  ftremolo.add(syntheffect, 'tremolo_stereoPhase', 0, 180).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthtremolo.stereoPhase = newValue
+  });
+
+
+  ftremolo.add(syntheffect, 'tremolo_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthtremolo.bypass = newValue
+  });
+
+
+
+fwahwah = f1.addFolder('WahWah');
+  fwahwah.add(syntheffect, 'WahWah_automode', true).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthwahwah.automode = newValue
+  });
+  fwahwah.add(syntheffect, 'WahWah_baseFrequency', 0, 1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthwahwah.baseFrequency = newValue
+  });
+
+  fwahwah.add(syntheffect, 'WahWah_excursionOctaves', 0, 6.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthwahwah.excursionOctaves = newValue
+  });
+  fwahwah.add(syntheffect, 'WahWah_sweep', 0, 1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthwahwah.sweep = newValue
+  });
+  fwahwah.add(syntheffect, 'WahWah_resonance', 1, 100).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    synthwahwah.resonance = newValue
+  });
+    fwahwah.add(syntheffect, 'WahWah_sensitivity', -1, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthwahwah.sensitivity = newValue
+  });
+
+  fwahwah.add(syntheffect, 'WahWah_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     synthwahwah.bypass = newValue
+  });
+
+
+fdelay = i1.addFolder('Delay');
+  fdelay.add(inputeffect, 'delay', 0, 10000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputdelay.delayTime = newValue
+  });
+  fdelay.add(inputeffect, 'feedback', 0, 2).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputdelay.feedback = newValue
+  });
+
+  fdelay.add(inputeffect, 'wetLevel', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputdelay.wetLevel = newValue
+  });
+  fdelay.add(inputeffect, 'dryLevel', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputdelay.dryLevel = newValue
+  });
+  fdelay.add(inputeffect, 'cutoff', 0, 16000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputdelay.cutoff = newValue
+  });
+  fdelay.add(inputeffect, 'bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputdelay.bypass = newValue
+  });
+
+  fchorus = i1.addFolder('Chorus');
+  fchorus.add(inputeffect, 'chorus_rate', 0, 8).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputchorus.rate = newValue
+  });
+  fchorus.add(inputeffect, 'chorus_feedback', 0, 2).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputchorus.feedback = newValue
+  });
+
+  fchorus.add(inputeffect, 'chorus_delay', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputchorus.delay = newValue
+  });
+  fchorus.add(inputeffect, 'chorus_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputchorus.bypass = newValue
+  });
+
+
+fphaser = i1.addFolder('Phaser');
+  fphaser.add(inputeffect, 'phaser_rate', 0, 5).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputphaser.rate = newValue
+  });
+  fphaser.add(inputeffect, 'phaser_depth', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputphaser.depth = newValue
+  });
+
+  fphaser.add(inputeffect, 'phaser_feedback', 0, 2).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputphaser.feedback = newValue
+  });
+  fphaser.add(inputeffect, 'phaser_stereoPhase', 0, 30).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputphaser.stereoPhase = newValue
+  });
+  fphaser.add(inputeffect, 'phaser_baseModulationFrequency', 0, 700).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputphaser.baseModulationFrequency = newValue
+  });
+  fphaser.add(inputeffect, 'phaser_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputphaser.bypass = newValue
+  });
+
+foverdrive = i1.addFolder('Overdrive');
+  foverdrive.add(inputeffect, 'over_outputGain', 0, 11.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputoverdrive.outputGain = newValue
+  });
+  foverdrive.add(inputeffect, 'over_drive', 0, 1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputoverdrive.odrive = newValue
+  });
+
+  foverdrive.add(inputeffect, 'over_curveAmount', 0, 1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputoverdrive.curveAmount = newValue
+  });
+  foverdrive.add(inputeffect, 'over_algorithmIndex', 0 ,5).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputoverdrive.algorithmIndex = newValue
+  });
+
+  foverdrive.add(inputeffect, 'over_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputoverdrive.bypass = newValue
+  });
+
+
+finputcompressor = i1.addFolder('inputcompressor');
+  finputcompressor.add(inputeffect, 'comp_threshold', -100, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputcompressor.threshold = newValue
+  });
+  finputcompressor.add(inputeffect, 'comp_makeupGain', 0, 3).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputdelay.makeupGain = newValue
+  });
+
+  finputcompressor.add(inputeffect, 'comp_attack', 0, 1000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputdelay.attack = newValue
+  });
+  finputcompressor.add(inputeffect, 'comp_release', 0, 3000).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputdelay.release = newValue
+  });
+  finputcompressor.add(inputeffect, 'comp_ratio', 1, 20).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputdelay.ratio = newValue
+  });
+    finputcompressor.add(inputeffect, 'comp_knee', 0, 40).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputdelay.knee = newValue
+  });
+
+  finputcompressor.add(inputeffect, 'comp_automakeup', true, false).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputdelay.automakeup = newValue
+  });
+  finputcompressor.add(inputeffect, 'comp_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputdelay.bypass = newValue
+  });
+
+
+ffilter = i1.addFolder('Filter');
+  ffilter.add(inputeffect, 'filter_frequency', 20, 22050).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputcompressor.frequency = newValue
+  });
+  ffilter.add(inputeffect, 'filter_Q', 0.001, 100).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputfilter.Q = newValue
+  });
+
+  ffilter.add(inputeffect, 'filter_gain', -40, 40).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputfilter.gain = newValue
+  });
+  ffilter.add(inputeffect, 'filter_filterType',"lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass").onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputfilter.filterType = newValue
+  });
+
+  ffilter.add(inputeffect, 'filter_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputfilter.bypass = newValue
+  });
+
+
+
+
+
+fcabinet = i1.addFolder('Caibnet');
+  fcabinet.add(inputeffect, 'cabinet_makeupGain', 0, 20).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputcabinet.makeupGain = newValue
+  });
+  fcabinet.add(inputeffect, 'cabinet_impulsePath',"impulses/impulse_guitar.wav").onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputcabinet.impulsePath = newValue
+  });
+  fcabinet.add(inputeffect, 'cabinet_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputcabinet.bypass = newValue
+  });
+
+
+ftremolo = i1.addFolder('Tremolo');
+  ftremolo.add(inputeffect, 'tremolo_intensity', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputtremolo.intensity = newValue
+  });
+  ftremolo.add(inputeffect, 'tremolo_rate',.001, 8.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputtremolo.rate = newValue
+  });
+
+  ftremolo.add(inputeffect, 'tremolo_stereoPhase', 0, 180).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputtremolo.stereoPhase = newValue
+  });
+
+
+  ftremolo.add(inputeffect, 'tremolo_bypass', 0, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputtremolo.bypass = newValue
+  });
+
+
+
+fwahwah = i1.addFolder('WahWah');
+  fwahwah.add(inputeffect, 'WahWah_automode', true).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputwahwah.automode = newValue
+  });
+  fwahwah.add(inputeffect, 'WahWah_baseFrequency', 0, 1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputwahwah.baseFrequency = newValue
+  });
+
+  fwahwah.add(inputeffect, 'WahWah_excursionOctaves', 0, 6.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputwahwah.excursionOctaves = newValue
+  });
+  fwahwah.add(inputeffect, 'WahWah_sweep', 0, 1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputwahwah.sweep = newValue
+  });
+  fwahwah.add(inputeffect, 'WahWah_resonance', 1, 100).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    inputwahwah.resonance = newValue
+  });
+    fwahwah.add(inputeffect, 'WahWah_sensitivity', -1, 1).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+     inputwahwah.sensitivity = newValue
+  });
+
+
+var AddSynth = f1.addFolder('AddSynth');
+  AddSynth.add(syntheffect, 'synthreal0', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal0 = newValue
+  })
+
+
+  AddSynth.add(syntheffect, 'synthreal1', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal1 = newValue
+  })
+
+  AddSynth.add(syntheffect, 'synthreal2', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal2 = newValue
+  })
+
+
+  AddSynth.add(syntheffect, 'synthreal3', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal3 = newValue
+  })
+
+    AddSynth.add(syntheffect, 'synthreal4', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal4 = newValue
+  })
+
+
+  AddSynth.add(syntheffect, 'synthreal5', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal5 = newValue
+  })
+
+  AddSynth.add(syntheffect, 'synthreal6', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal6 = newValue
+  })
+
+
+  AddSynth.add(syntheffect, 'synthreal7', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal7 = newValue
+  })
+
+
+  AddSynth.add(syntheffect, 'synthreal8', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal8 = newValue
+  })
+
+
+  AddSynth.add(syntheffect, 'synthreal9', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal9 = newValue
+  })
+
+  AddSynth.add(syntheffect, 'synthreal10', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal10 = newValue
+  })
+
+
+  AddSynth.add(syntheffect, 'synthreal11', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal11 = newValue
+  })
+
+
+  AddSynth.add(syntheffect, 'synthreal12', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal12 = newValue
+  })
+
+
+  AddSynth.add(syntheffect, 'synthreal13', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal13 = newValue
+  })
+
+  AddSynth.add(syntheffect, 'synthreal4', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal14 = newValue
+  })
+
+
+  AddSynth.add(syntheffect, 'synthreal15', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal15 = newValue
+  })
+
+
+  AddSynth.add(syntheffect, 'synthreal16', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal16 = newValue
+  })
+
+
+  AddSynth.add(syntheffect, 'synthreal17', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal17 = newValue
+  })
+
+  AddSynth.add(syntheffect, 'synthreal18', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal18 = newValue
+  })
+
+
+  AddSynth.add(syntheffect, 'synthreal19', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal19 = newValue
+  })
+
+  AddSynth.add(syntheffect, 'synthreal20', 0,1.0).onChange(function(newValue) {
+   console.log("You changed me to " + newValue);
+    syntheffect.synthreal20 = newValue
+  })
+
+
+
+
+    
+var dat_container = document.getElementById('dat-gui-container');
+dat_container.appendChild(gui.domElement);
+
+ 
+  //getLiveInput(); 
+
+
+
+ // gui.remember(syntheffect);
+
+     /* Add a save menu, @localstorage */
+
+
+
+
+           /* Add a save menu, @localstorage */
+
+
+///////////////
+  var delayvalue = 2000
+  var feedbackvalue = 0.8
+  var inputdelay = 0.2
+  var inputfeedback = 0.3
+  var attack = 1
+  var decay = 1
+  var sustain = 1
+  var release = 1
+
+ 
+  var context = new AudioContext();
+  var myAudioAnalyser = context.createAnalyser()
+
+  var voices = [];
+  var mousevoices = []
+  //var voicetracker = {};
+
+    var tuna = new Tuna(context);
+
+
+
+     var synthchorus = new tuna.Chorus({
+    rate: 1.5,         //0.01 to 8+
+    feedback: 0.2,     //0 to 1+
+    delay: 0.0045,     //0 to 1
+    bypass: 1          //the value 1 starts the effect as bypassed, 0 or 1
+});
+//A delay effect with feedback and a lowpass filter applied to the delayed signal.
+
+var synthdelay = new tuna.Delay({
+    feedback: 1,    //0 to 1+
+    delayTime: 2000 ,   //how many milliseconds should the wet signal be delayed?
+    wetLevel: 0.25,    //0 to 1+
+    dryLevel: 1,       //0 to 1+
+    cutoff: 16000,      //cutoff frequency of the built in lowpass-filter. 20 to 22050
+    bypass: 1
+});
+//A basic phaser effect.
+
+var synthphaser = new tuna.Phaser({
+    rate: 1.2,                     //0.01 to 8 is a decent range, but higher values are possible
+    depth: 0.3,                    //0 to 1
+    feedback: 0.2,                 //0 to 1+
+    stereoPhase: 30,               //0 to 180
+    baseModulationFrequency: 700,  //500 to 1500
+    bypass: 1
+});
+//A basic overdrive effect.
+
+var synthoverdrive = new tuna.Overdrive({
+    outputGain: 0.5,         //0 to 1+
+    drive: 0.7,              //0 to 1
+    curveAmount: 1,          //0 to 1
+    algorithmIndex: 0,       //0 to 5, selects one of our drive algorithms
+    bypass: 1
+});
+//A compressor with the option to use automatic makeup gain.
+
+var synthcompressor = new tuna.Compressor({
+    threshold: 0.5,    //-100 to 0
+    makeupGain: 1,     //0 and up
+    attack: 1,         //0 to 1000
+    release: 0,        //0 to 3000
+    ratio: 4,          //1 to 20
+    knee: 5,           //0 to 40
+    automakeup: true,  //true/false
+    bypass: 1
+});
+//A convolver with high- and lowcut. You can find a lot of impulse resonses here, or by searching for "free impulse response files".
+
+var synthconvolver = new tuna.Convolver({
+    highCut: 22050,                         //20 to 22050
+    lowCut: 20,                             //20 to 22050
+    dryLevel: 1,                            //0 to 1+
+    wetLevel: 1,                            //0 to 1+
+    level: 1,                               //0 to 1+, adjusts total output of both wet and dry
+    impulse: "impulses/impulse_rev.wav",    //the path to your impulse response
+    bypass: 1
+});
+//A basic filter.
+
+var synthfilter = new tuna.Filter({
+    frequency: 440, //20 to 22050
+    Q: 1, //0.001 to 100
+    gain: 0, //-40 to 40
+    filterType: "lowpass", //lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass
+    bypass: 1
+});
+//A cabinet/speaker emulator.
+
+var synthcabinet = new tuna.Cabinet({
+    makeupGain: 1,                                 //0 to 20
+    impulsePath: "impulses/impulse_guitar.wav",    //path to your speaker impulse
+    bypass: 1
+});
+//A basic tremolo.
+
+var synthtremolo = new tuna.Tremolo({
+    intensity: 0.3,    //0 to 1
+    rate: 4,         //0.001 to 8
+    stereoPhase: 0,    //0 to 180
+    bypass: 1
+});
+//A wahwah with an auto wah option.
+
+var synthwahwah = new tuna.WahWah({
+    automode: true,                //true/false
+    baseFrequency: 0.5,            //0 to 1
+    excursionOctaves: 2,           //1 to 6
+    sweep: 0.2,                    //0 to 1
+    resonance: 10,                 //1 to 100
+    sensitivity: 0.5,              //-1 to 1
+    bypass: 1
+});
+//A lo-fi bitcrusher effect.
+
+var synthbitcrusher = new tuna.Bitcrusher({
+    bits: 4,          //1 to 16
+    normfreq: 0.1,    //0 to 1
+    bufferSize: 4096  //256 to 16384
+});
+//A resonant, analog-sounding filter.
+
+var synthmoog = new tuna.MoogFilter({
+    cutoff: 0.065,    //0 to 1
+    resonance: 3.5,   //0 to 4
+    bufferSize: 4096  //256 to 16384
+});
+
+
+
+ var inputchorus = new tuna.Chorus({
+    rate: 1.5,         //0.01 to 8+
+    feedback: 0.2,     //0 to 1+
+    delay: 0.0045,     //0 to 1
+    bypass: 1          //the value 1 starts the effect as bypassed, 0 or 1
+});
+//A delay effect with feedback and a lowpass filter applied to the delayed signal.
+
+var inputdelay = new tuna.Delay({
+    feedback: 1,    //0 to 1+
+    delayTime: 2000 ,   //how many milliseconds should the wet signal be delayed?
+    wetLevel: 0.25,    //0 to 1+
+    dryLevel: 1,       //0 to 1+
+    cutoff: 16000,      //cutoff frequency of the built in lowpass-filter. 20 to 22050
+    bypass: 1
+});
+//A basic phaser effect.
+
+var inputphaser = new tuna.Phaser({
+    rate: 1.2,                     //0.01 to 8 is a decent range, but higher values are possible
+    depth: 0.3,                    //0 to 1
+    feedback: 0.2,                 //0 to 1+
+    stereoPhase: 30,               //0 to 180
+    baseModulationFrequency: 700,  //500 to 1500
+    bypass: 1
+});
+//A basic overdrive effect.
+
+var inputoverdrive = new tuna.Overdrive({
+    outputGain: 0.5,         //0 to 1+
+    drive: 0.7,              //0 to 1
+    curveAmount: 1,          //0 to 1
+    algorithmIndex: 0,       //0 to 5, selects one of our drive algorithms
+    bypass: 1
+});
+//A compressor with the option to use automatic makeup gain.
+
+var inputcompressor = new tuna.Compressor({
+    threshold: 0.5,    //-100 to 0
+    makeupGain: 1,     //0 and up
+    attack: 1,         //0 to 1000
+    release: 0,        //0 to 3000
+    ratio: 4,          //1 to 20
+    knee: 5,           //0 to 40
+    automakeup: true,  //true/false
+    bypass: 1
+});
+//A convolver with high- and lowcut. You can find a lot of impulse resonses here, or by searching for "free impulse response files".
+
+var inputconvolver = new tuna.Convolver({
+    highCut: 22050,                         //20 to 22050
+    lowCut: 20,                             //20 to 22050
+    dryLevel: 1,                            //0 to 1+
+    wetLevel: 1,                            //0 to 1+
+    level: 1,                               //0 to 1+, adjusts total output of both wet and dry
+    impulse: "impulses/impulse_rev.wav",    //the path to your impulse response
+    bypass: 1
+});
+//A basic filter.
+
+var inputfilter = new tuna.Filter({
+    frequency: 440, //20 to 22050
+    Q: 1, //0.001 to 100
+    gain: 0, //-40 to 40
+    filterType: "lowpass", //lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass
+    bypass: 1
+});
+//A cabinet/speaker emulator.
+
+var inputcabinet = new tuna.Cabinet({
+    makeupGain: 1,                                 //0 to 20
+    impulsePath: "impulses/impulse_guitar.wav",    //path to your speaker impulse
+    bypass: 1
+});
+//A basic tremolo.
+
+var inputtremolo = new tuna.Tremolo({
+    intensity: 0.3,    //0 to 1
+    rate: 4,         //0.001 to 8
+    stereoPhase: 0,    //0 to 180
+    bypass: 1
+});
+//A wahwah with an auto wah option.
+
+var inputwahwah = new tuna.WahWah({
+    automode: true,                //true/false
+    baseFrequency: 0.5,            //0 to 1
+    excursionOctaves: 2,           //1 to 6
+    sweep: 0.2,                    //0 to 1
+    resonance: 10,                 //1 to 100
+    sensitivity: 0.5,              //-1 to 1
+    bypass: 1
+});
+//A lo-fi bitcrusher effect.
+
+var inputbitcrusher = new tuna.Bitcrusher({
+    bits: 4,          //1 to 16
+    normfreq: 0.1,    //0 to 1
+    bufferSize: 4096  //256 to 16384
+});
+//A resonant, analog-sounding filter.
+
+var inputmoog = new tuna.MoogFilter({
+    cutoff: 0.065,    //0 to 1
+    resonance: 3.5,   //0 to 4
+    bufferSize: 4096  //256 to 16384
+});
+
+//A delay that bounces between the left and right channel.
+
+//var glitch = new tuna.PingPongDelay({
+    //wetLevel: 0.5, //0 to 1
+  //  feedback: 0.3, //0 to 1
+//delayTimeLeft: 150, //1 to 10000 (milliseconds)
+  //  delayTimeRight: 200 //1 to 10000 (milliseconds)
+//});
+
+
+
+
+
+var systemvolume = context.createGain();
+systemvolume.gain.value = 0.98
+systemvolume.connect(context.destination)
+var recorder = new Recorder(systemvolume);
+
+var audio_context = context;
+
+///
+
+
+///
+
+
+
+
+function startup(context) {
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d"); 
+
+      var c = document.getElementById("content");
+      var co = c.getContext("2d");
+     var c1 = document.getElementById("contentprint");
+      var co1 = c.getContext("2d");
+
+
+  // c.addEventListener('mousedown', handleStart,false);
+  // $( "#content" ).mousedown(handleStart);
+  // $( "#content" ).mousemove(handleStart);
+  // $( "#content" ).mouseup(handleStart);
+  // $( "#content" ).mouseleave(handleStart);
+  // $( "#content" ).touchstart(handleStart);
+  // $( "#content" ).touchend(handleStart);
+  // $( "#content" ).touchcancel(handleStart);
+  // $( "#content" ).touchleave(handleStart);
+  // $( "#content" ).touchmove(handleStart);
+
+
+
+
+  // c.addEventListener('mousedown', handleStart,false);
+  // c.addEventListener('mousemove', handleMove,false);
+  // c.addEventListener('mouseup', handleEnd,false);
+  // c.addEventListener('mouseleave', handleCancel,false);
+  // c.addEventListener("touchstart", handleStart, false);
+  // c.addEventListener("touchend", handleEnd, false);
+  // c.addEventListener("touchcancel", handleCancel, false);
+  // c.addEventListener("touchleave", handleEnd, false);
+  // c.addEventListener("touchmove", handleMove, false);
+  
+	// suppress context menu
+	c.addEventListener('contextmenu', function(e) { e.preventDefault(); }, false)
+
+  
+  c.addEventListener( 'pointerdown', handleStart, false );
+  c.addEventListener( 'pointermove', handleMove, false );
+  c.addEventListener( 'pointerup', handleEnd, false );
+  c.addEventListener( 'pointercancel', handleCancel, false );
+  c.addEventListener( 'pointerleave', handleEnd, false );
+   
+  // c.addEventListener( 'pointerdown', onPointerDown, false );
+  // c.addEventListener( 'pointermove', onPointerMove, false );
+  // c.addEventListener( 'pointerup', onPointerUp, false );
+  // c.addEventListener( 'pointercancel', onPointerUp, false );
+  // c.addEventListener( 'pointerleave', onPointerUp, false );
+  // // //tempaudio = context.createOscillator();
+  //tempaudio.type = "sine";
+  //tempaudio.frequency.value = 0;
+  //tempaudio.start(0)
+  
+  
+  }
+
+//var ongoingTouches = new Array;
+$('html, body').css({
+    overflow: 'hidden',
+    height: '100%'
+});
+
+function getX (x) {return(x-rect.left - root.scrollLeft)} 
+function getY (y) {return(y - rect.top - root.scrollTop)} 
+
+
+pointers = {};
+
+function init(){
+  pointers = {};
+  // requestAnimFrame(draw);
+}
+
+function draw() {
+  
+  c.clearRect(0,0,canvas.width, canvas.height); 
+
+  for(var pointerId in pointers)
+  {
+    var pointer = pointers[pointerId]; 
+    var note4 = teoria.note.fromFrequency(pointer.x);
+    var a4 = teoria.note(String(note4.note));
+    var freq = a4.fq()
+    pointer.voice.update(a4.fq(),1-1/pointer.y)
+
+    c.beginPath(); 
+    c.fillStyle = "white";
+    c.fillText(pointer.pointerType + " pointerId : "+ pointer.pointerId + " ,note: " + a4 + " ,freq: " + freq +" ,x:"+pointer.x+" ,y:"+pointer.y, pointer.x ,30); 
+  
+    // c.beginPath(); 
+    // c.strokeStyle = "cyan";
+    // c.lineWidth = "6";
+    // c.arc(pointer.x, pointer.y, 40, 0, Math.PI*2, true); 
+    // c.stroke();
+
+
+   
+ 
+  /*vco.frequency.value = san.fq()*/
+ 
+  var note4scale = teoria.note.fromFrequency(pointer.x/2);
+  var b4 = teoria.note(String(note4scale.note));
+  for (var k = 1; k<= 7; k++){ 
+  var mode4 = modelist[k]
+  var mode4scale = b4.scale(mode4)
+  c.fillText(mode4, pointer.x/2-40, 50+k*40);
+  for (var i = 1; i<= 7; i++) {  
+
+    var san = mode4scale.get(i);
+    // // c.font = "20px Ariel";
+     c.fillText(san, san.fq(), 50+k*40);
+    c.strokeStyle = "blue";
+
+    c.beginPath();
+    c.moveTo(san.fq(), 50+i*40);
+    c.lineTo(san.fq(), 60+i*50);
+
+    c.closePath();
+    c.stroke();
+/*
+    c.font = "20px Ariel";
+    c.fillText(san, san.fq(), 20);
+
+    c.beginPath();
+    c.moveTo(san.fq(), 50);
+    c.lineTo(san.fq(), 900);
+    c.closePath();
+    c.stroke();
+    */
+
+    for (var j = 1; j <  100; j++) {
+          c.strokeStyle = "red";
+      var san = mode4scale.get(i);
+      c.beginPath();
+      c.moveTo(san.fq()*j, 50+k*40);
+      c.lineTo(san.fq()*j, 60+k*50);
+      c.closePath();
+      c.stroke();
+    }
+
+
+
+  }
+}
+
+
+
+  }
+  //c.fillText("hello", 0,0); 
+
+  // requestAnimFrame(draw);
+}
+
+function onPointerDown(e) {
+  var voice
+  pointers[e.pointerId] = {
+    x: e.clientX,
+    y: e.clientY,
+    pointerType: e.pointerType,
+    pointerId: e.pointerId
+  };
+  
+  pointers[e.pointerId].voice = new Voice(e.clientX,1/e.clientY,e.pointerId);
+  pointers[e.pointerId].voice.start();
+  console.log(pointers)
+
+  paint = true;
+  stroke = true;
+  // addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop); //pass the x y and co-ordinate of the click to draw on canvas  
+  // redraw();
+  socket.emit('pdown', {                            //on each click send the x and y co-ordinates of the click to the server
+      'x':e.pageX - this.offsetLeft,               //passing x co-ordinate to server
+      'y':e.pageY - this.offsetTop,                //passing y co-ordinate to server
+      'paint':paint,                               //passing boolean indicating if the user is drawing or not
+      'str':stroke ,                                //passing the color of the current user 
+      'pointerType': e.pointerType,
+      'pointerId': e.pointerId,
+      'clientname': name
+    });  
+}
+
+function onPointerMove(e) {
+  // Prevent the browser from doing its default thing (scroll, zoom)
+  var pointer = pointers[e.pointerId];
+  paint = true;
+  stroke = true;
+  if (pointer) {
+    pointer.x = e.clientX;
+    pointer.y = e.clientY;
+    pointers[e.pointerId].voice.update(e.clientX,1/e.clientY);
+    socket.emit('pmove', {        //every time user moves the mouse send the x and y co-ordinates of the new position to the server
+      'x':e.pageX - this.offsetLeft,  //send x co-ordinate of the new position
+      'y':e.pageY - this.offsetTop,   //send y co-ordinate of the new position
+      'paint':paint,                  //passing boolean indicating if the user is drawing or not       
+      'str':stroke,                    //passing the color of the current user 
+         'pointerType': e.pointerType,
+      'pointerId': e.pointerId,
+      'clientname': name    
+    });
+  }
+} 
+
+function onPointerUp(e) { 
+  pointers[e.pointerId].voice.stop();
+  delete pointers[e.pointerId];
+  paint = false;
+  stroke = false;
+  socket.emit('pup', {                 //whenever a user releases the mouse button send the x and y co-ordinates of that location
+      'x':e.pageX - this.offsetLeft,    //pass x co-ordinate of the mouse relase location
+      'y':e.pageY - this.offsetTop,     //pass y co-ordinate of the mouse relase location
+      'paint':paint,                    //passing boolean indicating if the user is drawing or not
+      'str':stroke,                      //passing the color of the current user 
+         'pointerType': e.pointerType,
+      'pointerId': e.pointerId,
+      'clientname': name   
+  });
+
+}
+
+socket.on('pdown', function(data){         //receiving data from the server
+  // addClick(data.x,data.y , data.paint);  
+  console.log("pdown")
+
+ var voice
+  pointers[10+data.pointerId] = {
+    x: data.x,
+    y: data.y,
+    pointerType: data.pointerType,
+    pointerId: 10+ data.pointerId
+  };
+  
+  pointers[10 + data.pointerId].voice = new Voice(pointers[10+data.pointerId].x,1/pointers[10+data.pointerId].y,10+data.pointerId);
+  pointers[10+data.pointerId].voice.start();
+  console.log(pointers)
+
+    //pass the received a and y co-ordinates to draw on the canvas
+  var tempStroke = stroke;                 //save the current color
+  stroke = data.str;                       //set color to that of the received data
+  // redraw();                                //paint using the new color
+  stroke = tempStroke;                      //set color back to the original
+});
+
+socket.on('pmove', function(data){    
+  console.log("pmove")     //receiving data from the server
+  // addClick(data.x, data.y, data.paint);    //pass the received a and y co-ordinates to draw on the canvas
+  var tempStroke = stroke;                 //save the current color
+  stroke = data.str;                       //set color to that of the received data
+  // redraw();                                //paint using the new color
+  stroke = tempStroke;                     //set color back to the original
+
+  var pointer = pointers[10+ data.pointerId];
+  if (pointer) {
+    pointer.x =  data.x,
+    pointer.y =  data.y,
+    pointers[10+ data.pointerId].voice.update(data.x,1/data.y);
+  }
+// console.log(pointer)
+
+});
+
+socket.on('pup', function (data) {
+  // console.log(pointer)
+  console.log("pup")   //receiving data from the server
+  // addClick(data.x, data.y, data.paint);    //pass the received a and y co-ordinates to draw on the canvas
+  var tempStroke = stroke;                 //save the current color
+  stroke = data.str;                       //set color to that of the received data
+  // redraw();                                //paint using the new color
+  stroke = tempStroke;                     //set color back to the original
+ 
+
+  pointers[10+ data.pointerId].voice.stop();
+  delete pointers[10+ data.pointerId];
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////
+///////////////////////////////////////////
+/////////////////////////////////////////
+
+function handleStart(e) {   
+// evt.preventDefault(); 
+   var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d"); 
+ 
+
+
+
+          var rect = el.getBoundingClientRect(), root = document.documentElement;
+        // return relative mouse position
+          var mouseX =e.pageX  - rect.left - root.scrollLeft
+          var mouseY = e.pageY - rect.top - root.scrollTop
+
+
+
+  var c = document.getElementsByTagName("content");
+   var offset = findPos(c);
+
+    
+
+    var frequencyx = px_to_frequency(mouseX)
+    var volumey = e.pressure
+  
+    var feedbackvalue = syntheffect.synthfeedback
+    var delayvalue = syntheffect.delayvalue
+
+     //log(evt.pageX + ";" + evt.x + ";" + evt.clientX + ";" + evt.posX + ";" + UIEvent.pageX)
+
+    var voice = new Voice(frequencyx,volumey,delayvalue,feedbackvalue,attack,decay,sustain,release,1000);   
+    voice.start();
+    
+    // drawcrossprint(mouseX,volumey,px_to_frequency(mouseX))  
+  
+  
+}
+
+
+function handleEnd(evt) {
+  evt.preventDefault();
+  //log("touchend.");
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+    var c = document.getElementsByTagName("content");
+   var offset = findPos(c);
+
+  
+
+     var rect = el.getBoundingClientRect(), root = document.documentElement;
+        // return relative mouse position
+            var mouseX =evt.clientX  - rect.left - root.scrollLeft
+          var mouseY = evt.clientY - rect.top - root.scrollTop
+
+  
+  
+      voice.stop()
+     
+  
+  
+}
+
+function handleMove(e) {
+// evt.preventDefault();    
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+    var c = document.getElementsByTagName("content");
+   var offset = findPos(c);
+
+
+  // evt.preventDefault();   
+
+          var rect = el.getBoundingClientRect(), root = document.documentElement;
+        // return relative mouse position
+           var mouseX =e.pageX  - rect.left - root.scrollLeft
+          var mouseY = e.pageY - rect.top - root.scrollTop
+          var frequencyx = px_to_frequency(mouseX)
+          // var volumey = mouseeveY;
+          var volumey = e.pressure
+          // console.log(volumey)
+   
+  //  drawcross(mouseX,mouseY,frequencyx)
+ 
+         
+         voice.update(frequencyx,volumey);
+        //  drawcross(mouseX,mouseY,frequencyx)
+    
+  
+}
+function handleCancel(evt) {
+//  log("touchend/touchleave.");
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+  var c = document.getElementsByTagName("content");
+   var offset = findPos(c);
+
+  
+    
+       voice.stop();
+      
+
+    //  log("can't figure out which touch to end");
+    
+   
+}
+
+
+
+function colorForTouch(touch) {
+  var r = touch.identifier % 16;
+  var g = Math.floor(touch.identifier / 3) % 16;
+  var b = Math.floor(touch.identifier / 7) % 16;
+  r = r.toString(16); // make it a hex digit
+  g = g.toString(16); // make it a hex digit
+  b = b.toString(16); // make it a hex digit
+  var color = "#" + r + g + b;
+  //log("color for touch with identifier " + touch.identifier + " = " + color);
+  return color;
+}
+function copyTouch(touch,voice,counter) {
+  return {identifier: touch.identifier, tracker: counter, clientX: touch.clientX,clientY: touch.clientY, vtrack: voice};
+}
+//function copyVoice(touch,voice,counter) {
+ // return {voiceid: {identifier: identifier: touch.identifier, counter: counter, clientX: touch.clientX,clientY: touch.clientY, voiceobj: voice}};
+//}
+function ongoingTouchIndexById(idToFind) {
+  for (var i = 0; i < ongoingTouches.length; i++) {
+    var id = ongoingTouches[i].identifier;
+    
+    if (id == idToFind) {
+      return i;
+    }
+  }
+  return -1; // not found
+}
+
+
+function ongoingVoiceIndexById(idToFind) {
+
+  var voicesLength = voices.length;
+  for (var i = 0; i < voicesLength; i++) {
+    var id = voices[i].identifier;
+    
+    if (id == idToFind) {
+      return i;
+    }
+  }
+  return -1; // not found
+}
+
+
+function log(msg) {
+  var p = document.getElementById('log');
+  p.innerHTML = msg + "\n" + p.innerHTML;
+}
+ 
+function findPos (obj) {
+    var curleft = 0,
+        curtop = 0;
+
+    if (obj.offsetParent) {
+        do {
+            curleft += obj.offsetLeft;
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+
+        return { x: curleft-document.body.scrollLeft, y: curtop-document.body.scrollTop };
+    }
+}
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@
+var Voice = function(context,touch) {   
+    function Voice(frequency,volume,delay,feedback,attack,decay,sustain,release,touch){
+      var lowNote = 0; // C4
+      var highNote = 7900; // B4
+      //this.attack = attack
+      //this.release = release
+
+      
+        this.touch = touch
+        this.identifier = touch.identifier;
+         
+      
+      //log("continuing touch " + 2 ^ (frequency/68.26));
+      this.frequency = frequency
+      this.frequency54 = frequency*2.5
+      this.volume = volume
+      console.log(this.volume)
+ 
+      this.oscillators = [];
+      this.gains = [];
+     
+
+ };
+           
+
+     Voice.prototype.start = function() {
+
+
+
+      var real = new Float32Array(21);
+      var imag = new Float32Array(21);   
+      real[0] = syntheffect.synthreal0
+      real[1] = syntheffect.synthreal1
+      real[2] = syntheffect.synthreal2
+      real[3] = syntheffect.synthreal3
+      real[4] = syntheffect.synthreal4
+      real[5] = syntheffect.synthreal5
+      real[6] = syntheffect.synthreal6
+      real[7] = syntheffect.synthreal7
+      real[8] = syntheffect.synthreal8
+      real[9] = syntheffect.synthreal9
+      real[10] = syntheffect.synthreal10
+      real[11] = syntheffect.synthreal11
+      real[12] = syntheffect.synthreal12
+      real[13] = syntheffect.synthreal13
+      real[14] = syntheffect.synthreal14
+      real[15] = syntheffect.synthreal15
+      real[16] = syntheffect.synthreal16
+      real[17] = syntheffect.synthreal17
+      real[18] = syntheffect.synthreal18
+      real[19] = syntheffect.synthreal19
+      real[20] = syntheffect.synthreal20
+
+
+      imag[0] = 0
+      imag[1] = 0
+      imag[2] = 0
+      imag[3] = 0
+      imag[4] = 0
+      imag[5] = 0
+      imag[6] = 0
+      imag[7] = 0
+      imag[8] = 0
+      imag[9] = 0
+      imag[10] = 0
+      imag[11] = 0
+      imag[12] = 0
+      imag[13] = 0
+      imag[14] = 0
+      imag[15] = 0
+      imag[16] = 0
+      imag[17] = 0
+      imag[18] = 0
+      imag[19] = 0
+      imag[20] = 0
+
+       
+     // var imag = new Float32Array(real.length);
+      var hornTable = context.createPeriodicWave(real, imag);
+      this.touch = touch    
+ /* VCA */
+      var vca = context.createGain();
+      vca.gain.value = this.volume
+/* VCO */
+      var vco = context.createOscillator();
+      //vco.type = "square";
+      vco.setPeriodicWave(hornTable);
+      vco.frequency.value = this.frequency;
+
+          var vco54 = context.createOscillator();
+      //vco.type = "square";
+      vco54.setPeriodicWave(hornTable);
+  
+      vco54.frequency.value = this.frequency54;
+  
+  
+      //envelope with 0.001 sec attack and 0.5 sec decay      
+      //var envelope = context.createEnvelope(attack,decay,sustain,release);
+
+
+      //var noiseGen = context.createNoiseGen(0,4096)
+      //noiseGen.connect(context.destination)
+      //noiseGen.connect(myAudioAnalyser)
+      //envelope.trigger(0.01);
+      //feedback delay of 0.4 seconds with 0.5x feedback
+           /* connections */
+       vco.connect(vca)
+       vco54.connect(vca)
+      //vca.connect(feedbackDelay);   
+      //vco.connect(context.destination)
+      // vca.connect(context.destination) 
+      //vca.connect(envelope)  
+
+      vco.start(0);  
+       //vco54.start(0);      
+
+
+      //var delay = new tuna.Delay({
+        //feedback: .7,    //0 to 1+
+        //delayTime: 350,    //how many milliseconds should the wet signal be delayed?
+        //wetLevel: 0.6,    //0 to 1+
+        //dryLevel: .4,       //0 to 1+
+        //cutoff: 300,      //cutoff frequency of the built in lowpass-filter. 20 to 22050
+        //bypass: 0
+      //});
+
+  
+
+    var now = context.currentTime;
+    vca.gain.cancelScheduledValues( now );
+    vca.gain.setValueAtTime(0, now)
+    vca.gain.linearRampToValueAtTime(vca.gain.value, now + syntheffect.source_attack)
+
+     // envelope.connect(context.destination)      
+      //vca.connect(context.destination);
+      vca.connect(synthphaser);
+      synthphaser.connect(synthtremolo)
+      synthtremolo.connect(synthchorus)
+      synthchorus.connect(synthoverdrive)
+      synthoverdrive.connect(synthfilter)
+      synthfilter.connect(synthcabinet)
+      synthcabinet.connect(synthdelay)
+      synthdelay.connect(synthcompressor)
+      synthcompressor.connect(systemvolume)
+      systemvolume.connect(context.destination)
+      systemvolume.connect(myAudioAnalyser)
+
+   
+    
+      this.oscillators.push(vco); 
+      this.gains.push(vca)
+
+    };
+
+  // Update the note frequency.
+  Voice.prototype.updateFrequency = function(e) {
+   
+       var touch = e.pointer[0];
+      voice.updateFreq(touch.pageX, touch.pressure);
+    
+  };
+  // Calculate the note frequency.
+  Voice.calculateNote = function(posX) {
+    var noteDifference = highNote - lowNote;
+    var noteOffset = (noteDifference / el.offsetWidth) * (posX - el.offsetLeft);
+    return lowNote + noteOffset;
+  };  
+  // Calculate the volume.
+  Voice.calculateVolume = function(posY) {
+    var volumeLevel = 1 - (((100 / el.offsetHeight) * (posY - el.offsetTop)) / 100);
+    return volumeLevel;
+  };
+    Voice.prototype.update = function(x,y) {
+      this.gains.forEach(function(g, _) {
+      g.gain.value = 0
+     // log("touch" + touch + "; " +  g.gain.value)
+     });
+      this.oscillators.forEach(function(oscillator, _) {
+      oscillator.frequency.value =  x
+      //log("touch" + touch + "; " + oscillator.frequency.value)
+     });
+
+    }; 
+    Voice.prototype.stop = function() {     
+    var now = context.currentTime;
+      this.gains.forEach(function(vcagain, _) {
+              
+              vcagain.gain.cancelScheduledValues( now );
+              vcagain.gain.setValueAtTime(vcagain.gain.value, now)     
+            
+              vcagain.gain.linearRampToValueAtTime(0, now + syntheffect.source_decay)              
+      });          
+
+ 
+      this.oscillators.forEach(function(oscillator, _) {
+           
+              oscillator.stop(now + syntheffect.source_decay+0.0001);
+      });
+      delete this.oscillators
+      delete this.gains
+    };
+    return Voice;
+  }(context);
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+  /* NoiseGen */
+
+  function NoiseGenFactory(context, stereo, bufSize){
+    bufSize = bufSize || 512;
+    var node = context.createScriptProcessor(bufSize, 1, 2);
+    node.onaudioprocess = function(e){
+      var outBufferL = e.outputBuffer.getChannelData(0);
+      var outBufferR = e.outputBuffer.getChannelData(1);
+      for (var i = 0; i < bufSize; i++){
+        outBufferL[i] = Math.random() * 2 - 1;
+        outBufferR[i] = stereo ? Math.random() * 2 - 1 : outBufferL[i];
+      }
+    }
+    return node;
+  }
+    /** INSTRUMENTS **/
+
+  function Drum(context){
+    var osc = this.osc = context.createOscillator();
+    osc.frequency.value = 45;
+    osc.type = osc.SINE;
+    var env = this.env = context.createEnvelope(0.001, 0.1, 0, 0.5);
+    osc.connect(env);
+  }
+
+  Drum.prototype.trigger = function(){
+    this.env.trigger(0.05);
+  }
+  Drum.prototype.connect = function(dest){
+    this.env.connect(dest);
+  }
+
+  function HiHat(context){
+    this.noiseGen = context.createNoiseGen();
+    this.filter = context.createBiquadFilter();
+    this.filter.type = this.filter.HIGHPASS;
+    this.filter.frequency.value = 5000;
+    this.noiseGen.connect(this.filter);
+    this.env = context.createEnvelope(0.001, 0.05, 0, 0.2);
+    this.filter.connect(this.env);
+  }
+
+  HiHat.prototype.trigger = function(){
+    this.env.trigger(0.025);
+  }
+  HiHat.prototype.connect = function(dest){
+    this.env.connect(dest);
+  }
+
+  AudioContext.prototype.createDrum = function(){ return new Drum(this); };
+  AudioContext.prototype.createHiHat = function(){ return new HiHat(this); };
+
+  /** LOOP **/
+
+  function Loop(){
+    this.tracks = {};
+    this.stopped = true;
+    this.interval = 500;
+    this.beatUnit = 1/4;
+    this.onPlay = function(){};
+  }
+
+  Loop.prototype.setInstruments = function(instruments){
+    each(instruments, function(inst, label){
+      this.tracks[label] = { instrument: inst };
+    }, this);
+  }
+
+  Loop.prototype.setSequences = function(seqs){
+    each(seqs, function(loop, label){
+      this.tracks[label].loop = typeof loop === "string" ? loop.split('') : loop;
+      this.tracks[label].loopPos = 0;
+    }, this);
+  }
+
+  Loop.prototype.setBPM = function(BPM){
+    this.interval = (60 / BPM) * 1000;
+  }
+
+  Loop.prototype.setBeatUnit = function(unit){
+    this.beatUnit = unit;
+  }
+
+  Loop.prototype.startLoop = function(){
+    this.stopped = false;
+    this.playNext();
+  }
+
+  Loop.prototype.playNext = function(){
+    if (this.stopped) return;
+    each(this.tracks, function(track, name){
+      var currNote = track.loop[track.loopPos];
+      if (currNote === '*'){
+        track.instrument.trigger();
+      }
+      this.onPlay(name, track.loopPos);
+      if (++track.loopPos >= track.loop.length){
+        track.loopPos = 0;
+      }
+    }, this);
+    var self = this;
+    setTimeout(function(){ self.playNext(); }, this.interval * this.beatUnit * 4);
+  }
+
+  Loop.prototype.stopLoop = function(){
+    this.stopped = true;
+  }
+
+  function each(obj, callback, context){
+    context = context || this;
+    for (var prop in obj){
+      if (obj.hasOwnProperty(prop)){
+        callback.call(context, obj[prop], prop);
+      }
+    }
+  }
+
+//////////////////   //playSoundCloud();
+
+function  playSoundCloud(context) {
+
+    var context 
+    audio = new Audio(),
+    source,
+    // `stream_url` you'd get from 
+    // requesting http://api.soundcloud.com/tracks/6981096.json
+    url = 'http://api.soundcloud.com/tracks/6981096/stream' +
+          '?client_id=27d0d20680464016e65074ccc5bd0244';
+
+audio.src = url;
+source = context.createMediaElementSource(audio);
+source.connect(context.destination);
+source.mediaElement.play();
+
+};
+
+
+function doMath(){<!--from  w w w .  j  ava  2 s .  c  om-->
+var inputNum=document.soundcloudurl.input.value;
+
+var result = inputNum;
+document.soundcloudurl.answer.value = result;
+} 
+
+
+
+
+
+var source;
+function playSound(arraybuffer) {
+    context.decodeAudioData(arraybuffer, function (buffer) {
+        source = context.createBufferSource();
+        source.connect(context.destination);
+        source.connect(systemvolume)
+        source.connect(myAudioAnalyser)
+        source.buffer = buffer;
+        source.start(0);
+    });
+}
+
+function handleFileSelect(evt) {
+    var files = evt.target.files; // FileList object
+    playFile(files[0]);
+}
+
+function playFile(file) {
+    var freader = new FileReader();
+
+    freader.onload = function (e) {
+        console.log(e.target.result);
+        playSound(e.target.result);
+    };
+    freader.readAsArrayBuffer(file);
+}
+
+player = document.getElementById('player');
+document.getElementById('files').addEventListener('change', handleFileSelect, false);
+document.getElementById('play').onclick = function () {
+    player.play();
+};
+
+// // load the specified sound
+// function loadSound(url) {
+//     var request = new XMLHttpRequest();
+//     request.open('GET', file, true);
+//     request.responseType = 'arraybuffer';
+
+//     // When loaded decode the data
+//     request.onload = function () {
+
+//         // decode the data
+//         context.decodeAudioData(request.response, function (buffer) {
+//             // when the audio is decoded play the sound
+//             playSound(buffer);
+//         }, onError);
+//     }
+//     request.send();
+// }
+//     // log if an error occurs
+//     function onError(e) {
+//         console.log(e);
+//     }
+
+
+// function playSound(buffer) {
+//     sourceNode.buffer = buffer;
+//     sourceNode.start(0);
+//     sourceNode.loop = false;
+// }
+
+
+/////////////////////////
+
+
+
+  // Only get the audio stream.
+
+function getLiveInput() {
+  // navigator.getUserMedia = navigator.getUserMedia ||
+  //                        navigator.webkitGetUserMedia ||
+  //                        navigator.mediaDevices.getUserMedia||
+  //                        navigator.mozGetUserMedia;
+  // // Only get the audio stream.
+  navigator.mediaDevices.getUserMedia({audio: true}).then(onStream);
+};
+
+function endLiveInput() {
+  // Only get the audio stream.
+    input.disconnect(context.destination)
+  
+  //vca.connect(context.destination)
+};
+
+function onStream(stream) {
+  // Wrap a MediaStreamSourceNode around the live input stream.
+  var input = context.createMediaStreamSource(stream);
+  // Connect the input to a filter.
+
+
+  var vca = context.createGain();
+  vca.gain.value = 1
+
+
+  // Connect graph.
+
+
+      input.connect(inputphaser);
+      inputphaser.connect(inputtremolo)
+      inputtremolo.connect(inputchorus)
+      inputchorus.connect(inputoverdrive)
+      inputoverdrive.connect(inputfilter)
+      inputfilter.connect(inputcabinet)
+      inputcabinet.connect(inputdelay)
+      inputdelay.connect(inputcompressor)
+      inputcompressor.connect(systemvolume)
+      systemvolume.connect(context.destination)
+      systemvolume.connect(myAudioAnalyser)
+
+
+  //input.connect(myAudioAnalyser);
+
+  // Set up an animation.
+  //requestAnimationFrame(render);
+};
+
+function onStreamError(e) {
+  console.error(e);
+};
+
+
+///////////////
+
+
+
+    // create a temp canvas we use for copying
+    var tempCanvas = document.createElement("canvas"),
+        tempCtx = tempCanvas.getContext("2d");
+    tempCanvas.width=2048;
+    tempCanvas.height=1000;
+
+
+var fft_colour1 = 'black'
+var fft_colour2 = 'darkblue'
+var fft_colour3 = 'green'
+var fft_colour4 = 'orange'
+var fft_colour5 = 'red'
+
+var fft_pos1 = 0
+var fft_pos2 = 0.00001
+var fft_pos3 = 0.2
+var fft_pos4 = 0.8
+var fft_pos5 = 1.2
+
+var fft_min = 0
+var fft_max = 300
+
+// used for color distribution
+    var hot = new chroma.ColorScale({
+            colors:['#000000', 'darkblue', 'green', 'red','orange'],
+        positions:[0, .025, .5, .75, .98],
+        mode:'rgb',
+        limits:[0, 300]
+    });
+
+
+    // load the sound
+    var fftmult = syntheffect.fftmult
+    setupAudioNodes();
+    var sourceNode;
+    var systemvolume;
+    
+    function setupAudioNodes() {
+
+        // setup a javascript node
+        javascriptNode = context.createScriptProcessor(4096, 1, 1);
+        // connect to destination, else it isn't called
+        javascriptNode.connect(context.destination);
+
+        
+
+        // setup a analyzer
+        myAudioAnalyser = context.createAnalyser();
+        myAudioAnalyser.smoothingTimeConstant = 0;
+        myAudioAnalyser.fftSize = syntheffect.fftmult
+
+//        var array = new Uint8Array(myAudioAnalyser.frequencyBinCount);
+//        myAudioAnalyser.getByteFrequencyData(array);
+
+
+        // source = context.createBufferSource();
+        // source.connect(myAudioAnalyser);
+        // source.connect(systemvolume)
+
+        // sourceNode = context.createBufferSource();
+        // sourceNode.connect(myAudioAnalyser);
+        // sourceNode.connect(systemvolume)
+        myAudioAnalyser.connect(javascriptNode);
+
+        //sourceNode.connect(context.destination);
+        systemvolume.connect(context.destination)
+        recorder = new Recorder(systemvolume);
+    }
+
+  
+    javascriptNode.onaudioprocess = function () {
+
+        // get the average for the first channel
+
+        var array = new Uint8Array(myAudioAnalyser.frequencyBinCount);
+        myAudioAnalyser.getByteFrequencyData(array);
+              drawSpectrogram(array);
+
+    }
+// var scale = 1024;
+// linear
+//for(var i = 0; i <= 1; i += 0.1) ctx.fillRect(i * scale, 0, 2, 20);
+// logarithmic
+//for(var i = 0; i <= 1; i += 0.1) ctx.fillRect(myLog(i) * scale, 35, 2, 20);
+var pr = syntheffect.spectrumRatio
+var logscale = syntheffect.logscale
+var specratio1 = syntheffect.specratio1
+var specratio2 = syntheffect.specratio2
+var specpxoffset = syntheffect.specpxoffset
+var minf = syntheffect.minf
+var maxf = syntheffect.maxf
+var pxmult = syntheffect.pxmult
+var log2 = Math.log(2)
+
+
+    function myLog(x) {return (Math.log(specratio1)^(x)/Math.log(specratio2))};   // some log function, just an example
+var width_px = 2048
+
+ var min_f = Math.log(minf) / log2,
+        max_f = Math.log(maxf) / log2,
+        range = max_f - min_f
+function frequencty_to_px(frequency) {
+   
+        position_px = (Math.log(frequency) / log2 - min_f) / (range) * width_px
+
+        return  position_px * pr
+}
+
+function px_to_frequency(px) {
+   
+        position_frequency = Math.exp(( specratio1 * range * (px- specpxoffset)/width_px)* log2+min_f);
+        
+        return  position_frequency * specratio2
+}
+
+
+    function drawBoard(){
+        var bw = 2048;
+        var bh = 700;
+        var p = 10;
+
+        for (var x = 0; x <= bw; x += 40) {
+            ctx.moveTo(0.5 + x + p, p);
+            ctx.lineTo(0.5 + x + p, bh + p);
+        }
+
+
+        for (var x = 0; x <= bh; x += 40) {
+            ctx.moveTo(p, 0.5 + x + p);
+            ctx.lineTo(bw + p, 0.5 + x + p);
+        }
+
+        ctx.strokeStyle = "green";
+        ctx.stroke();
+        }
+
+
+
+// var audio = {
+//     analyser: {},
+//     buffer: {},
+//     buffer_effects: {},
+//     compatibility: {},
+//     convolver: {},
+//     effects: ["claire.mp3", "rainbow.mp3", "pink.ogg"],
+//     files: ["claire.mp3", "rainbow.mp3", "pink.ogg"],
+//     frequencyData: {},
+//     gain: {},
+//     gain_loop: {},
+//     gain_once: {},
+//     message: {
+//         quote: ["I like audio loops... better than I like you.<br>~ Dr. McCoy to Spock", "There is the theory of the mobius, a twist in the fabric of space where time becomes a loop...<br>~ Worf", "Hey doll, is this audio boring you? Come and talk to me. I'm from a different planet.<br>~ Zaphod Beeblebrox", "I need your headphones, your record player and your glowsticks.<br>~ Arnold Schwarzenegger", "I'm the synthesizer. Are you the keymaster?<br>~ Sigourney Weaver", "Flash? Where we're going, we don't need flash.<br>~ Doc Brown", "I'll be history.back()<br>~ Arnold Schwarzenegger", "I don't want one loop, I want all loops!<br>~ Ruby Rhod", "If it reads, we can stream it.<br>~ Arnold Schwarzenegger"],
+//         quote_last: -1
+//     },
+//     pause_vis: true,
+//     playing: 0,
+//     proceed: true,
+//     source_loop: {},
+//     source_once: {},
+//     volume_fade_time: .7
+// };
+// audio.findSync = function(n) {
+//     var first = 0,
+//         current = 0,
+//         offset = 0;
+//     for (var i in audio.source_loop) {
+//         current = audio.source_loop[i]._startTime;
+//         if (current > 0) {
+//             if (current < first || first === 0) {
+//                 first = current
+//             }
+//         }
+//     }
+//     if (audio.context.currentTime > first) {
+//         var duration = audio.buffer[n].duration;
+//         offset = (audio.context.currentTime - first) % duration
+//     }
+//     return offset
+// };
+// audio.message.random = function() {
+//     var num;
+//     do {
+//         num = Math.floor(Math.random() * audio.message.quote.length)
+//     } while (num === audio.message.quote_last);
+//     audio.message.quote_last = num;
+//     return audio.message.quote[num]
+// };
+// audio.play = function(n, playOnly) {
+//     if (audio.source_loop[n]._playing) {
+//         if (!playOnly) {
+//             audio.stop(n)
+//         }
+//     } else {
+//         audio.source_loop[n] = audio.context.createBufferSource();
+//         audio.source_loop[n].buffer = audio.buffer[n];
+//         audio.source_loop[n].connect(audio.gain_loop[n]);
+//         audio.source_loop[n].loop = true;
+//         audio.source_loop[n].connect(systemvolume)
+//         var offset = audio.findSync(n);
+//         audio.source_loop[n]._startTime = audio.context.currentTime;
+//         if (audio.compatibility.start === "noteOn") {
+//             audio.source_once[n] = audio.context.createBufferSource();
+//             audio.source_once[n].buffer = audio.buffer[n];
+//             audio.source_once[n].connect(audio.gain_once[n]);
+//             audio.source_once[n].noteGrainOn(0, offset, audio.buffer[n].duration - offset);
+//             audio.gain_once[n].gain.setValueAtTime(0, audio.context.currentTime);
+//             audio.gain_once[n].gain.linearRampToValueAtTime(1, audio.context.currentTime + audio.volume_fade_time);
+//             audio.source_loop[n][audio.compatibility.start](audio.context.currentTime + (audio.buffer[n].duration - offset))
+//         } else {
+//             audio.source_loop[n][audio.compatibility.start](0, offset)
+//         }
+//         audio.gain_loop[n].gain.setValueAtTime(0, audio.context.currentTime);
+//         audio.gain_loop[n].gain.linearRampToValueAtTime(1, audio.context.currentTime + audio.volume_fade_time);
+//         document.getElementById("button-loop-" + n).className = "active";
+//         audio.source_loop[n]._playing = true;
+//         audio.playing = audio.playing + 1;
+//         if (audio.playing === 1) {
+//             audio.pause_vis = false;
+//             //drawSpectrum1();
+//             jQuery(".widget-vis p").stop().fadeOut(1500, function() {
+//                 jQuery(this).html(audio.message.random())
+//             })
+//         }
+//     }
+// };
+// audio.playAll = function() {
+//     for (var a in audio.source_loop) {
+//         audio.play(a, true)
+//     }
+// };
+// audio.stop = function(n) {
+//     if (audio.source_loop[n]._playing && !audio.source_loop[n]._stopping) {
+//         audio.source_loop[n]._stopping = true;
+//         audio.source_loop[n][audio.compatibility.stop](audio.context.currentTime + audio.volume_fade_time);
+//         audio.source_loop[n]._startTime = 0;
+//         if (audio.compatibility.start === "noteOn") {
+//             audio.source_once[n][audio.compatibility.stop](audio.context.currentTime + audio.volume_fade_time);
+//             audio.gain_once[n].gain.setValueAtTime(1, audio.context.currentTime);
+//             audio.gain_once[n].gain.linearRampToValueAtTime(0, audio.context.currentTime + audio.volume_fade_time)
+//         }(function() {
+//             var num = n;
+//             setTimeout(function() {
+//                 audio.source_loop[num]._playing = false;
+//                 audio.source_loop[num]._stopping = false
+//             }, audio.volume_fade_time * 100)
+//         })();
+//         audio.gain_loop[n].gain.setValueAtTime(1, audio.context.currentTime);
+//         audio.gain_loop[n].gain.linearRampToValueAtTime(0, audio.context.currentTime + audio.volume_fade_time);
+//         document.getElementById("button-loop-" + n).className = "inactive";
+//         audio.playing = audio.playing - 1;
+//         if (audio.playing === 0) {
+//             setTimeout(function() {
+//                 if (audio.playing === 0) {
+//                     audio.pause_vis = true;
+//                     jQuery(".widget-vis p").stop().fadeIn(3e3)
+//                 }
+//             }, 5e3)
+//         }
+//     }
+// };
+// audio.stopAll = function() {
+//     for (var a in audio.source_loop) {
+//         audio.stop(a)
+//     }
+// };
+// try {
+//     audio.context =  context
+// } catch (e) {
+//     audio.proceed = false;
+//     alert("Web Audio API not supported in this browser.")
+// }
+// if (audio.proceed) {
+//     (function() {
+//         var name = "createGain";
+//         if (typeof context.createGain !== "function") {
+//             name = "createGainNode"
+//         }
+//         audio.compatibility.createGain = name
+//     })();
+//     (function() {
+//         var start = "start",
+//             stop = "stop",
+//             buffer = context.createBufferSource();
+//         if (typeof buffer.start !== "function") {
+//             start = "noteOn"
+//         }
+//         audio.compatibility.start = start;
+//         if (typeof buffer.stop !== "function") {
+//             stop = "noteOff"
+//         }
+//         audio.compatibility.stop = stop
+//     })();
+//    // var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+//    // window.requestAnimationFrame = requestAnimationFrame;
+//     audio.gain.booster = context[audio.compatibility.createGain]();
+//     audio.gain.booster.gain.value = 3;
+//     audio.convolver = context.createConvolver();
+//     audio.convolver.connect(audio.gain.booster);
+//     audio.gain.collapse = context[audio.compatibility.createGain]();
+//     var img = new Image;
+//     img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAEklEQVR4AWNsP/eaATcYlcYKANQJFotqqVYoAAAAAElFTkSuQmCC";
+//     //var canvas_div = document.getElementById("vis-div");
+//     //var canvasloop = document.getElementById("vis");
+//    // canvasloop.height = canvas_div.offsetHeight;
+//    // canvasloop.width = canvas_div.offsetWidth;
+//     //var ctxloop = canvasloop.getContext("2d");
+//     //ctxloop.imageSmoothingEnabled = false;
+//    // ctxloop.webkitImageSmoothingEnabled = ctxloop.mozImageSmoothingEnabled = false;
+
+//    // function drawSpectrum1() {
+//     //    audio.analyser.getByteFrequencyData(audio.frequencyData);
+//     //    var bar_width = Math.ceil(canvasloop.width / (audio.analyser.frequencyBinCount * .85));
+// //ctxloop.clearRect(0, 0, canvasloop.width, canvasloop.height);
+//    //     var freq, x, y, w, h;
+//     //    ctxloop.fillStyle = ctxloop.createPattern(img, "repeat");
+//      //   for (var i = 0; i < audio.analyser.frequencyBinCount; i++) {
+//       //      freq = audio.frequencyData[i] || 0;
+// //x = bar_width * i;
+// //if (x + bar_width < canvasloop.width) {
+//        //         y = canvasloop.height;
+//        //         w = bar_width - 1;
+//         //        h = -(Math.floor(freq / 255 * canvasloop.height) + 1);
+//          //       ctxloop.fillRect(x, y, w, h)
+//           //  }
+//    //     }
+//    //     if (!audio.pause_vis) {
+//            // requestAnimationFrame(drawSpectrum1)
+//    //     } else {
+//    //         ctxloop.clearRect(0, 0, canvasloop.width, canvasloop.height)
+//   //      }
+//   //  }
+//    // audio.analyser = context.createAnalyser();
+//    // audio.analyser.smoothingTimeConstant = .85;
+//    // audio.analyser.fftSize = 256;
+//   //  audio.frequencyData = new Uint8Array(audio.analyser.frequencyBinCount);
+//     jQuery("#master-volume").prop("disabled", false).knob({
+//         angleArc: 360,
+//         angleOffset: 0,
+//         displayInput: true,
+//         height: 104,
+//         thickness: ".2",
+//         width: 104,
+//         change: function(v) {
+//             v = v / 100;
+//             audio.gain.master.gain.value = v * v
+//         }
+//     });
+//     audio.gain.master = context[audio.compatibility.createGain]();
+//     audio.gain.master.gain.value = .8649;
+//     audio.gain.master.connect(systemvolume)
+//     systemvolume.connect(myAudioAnalyser);  
+//    // systemvolume.connect(audio.analyser);
+//     systemvolume.connect(context.destination);
+//     audio.gain.collapse.connect(audio.gain.master);
+//     jQuery(".widget-effects").delegate("button", "click", function(e) {
+//         var val = parseInt(this.value);
+//         audio.gain.collapse.disconnect();
+//         audio.gain.booster.disconnect();
+//         var previous_vol = audio.gain.master.gain.value;
+//         audio.gain.master.gain.value = 0;
+//         if (this.className === "active") {
+//             jQuery(".widget-effects .active").removeClass("active");
+//             audio.gain.collapse.connect(audio.gain.master)
+//         } else {
+//             jQuery(".widget-effects .active").removeClass("active");
+//             audio.convolver.buffer = audio.buffer_effects[val];
+//             audio.gain.collapse.connect(audio.convolver);
+//             audio.gain.booster.connect(audio.gain.master);
+//             this.className = "active"
+//         }
+//         setTimeout(function() {
+//             audio.gain.master.gain.value = previous_vol
+//         }, 50)
+//     });
+//     document.getElementById("button-stop").addEventListener("click", audio.stopAll);
+//     document.getElementById("button-stop").disabled = false;
+//     document.getElementById("button-play").addEventListener("click", audio.playAll);
+//     document.getElementById("button-play").disabled = false;
+//     for (var a in audio.files) {
+//         (function() {
+//             var i = parseInt(a) + 1;
+//             var req = new XMLHttpRequest;
+//             req.open("GET", audio.files[i - 1], true);
+//             req.responseType = "arraybuffer";
+//             req.onload = function() {
+//                 context.decodeAudioData(req.response, function(buffer) {
+//                     audio.buffer[i] = buffer;
+//                     audio.source_loop[i] = {};
+//                     var button = document.getElementById("button-loop-" + i);
+//                     button.addEventListener("click", function(e) {
+//                         e.preventDefault();
+//                         audio.play(this.value, false)
+//                     });
+//                     jQuery(button).text(button.getAttribute("data-name")).removeClass("loading");
+//                     button.disabled = false;
+//                     audio.gain_loop[i] = context[audio.compatibility.createGain]();
+//                     audio.gain_loop[i].connect(audio.gain.collapse);
+//                     if (audio.compatibility.start === "noteOn") {
+//                         audio.gain_once[i] = context[audio.compatibility.createGain]();
+//                         audio.gain_once[i].connect(audio.gain.collapse)
+//                     }
+//                 }, function() {
+//                     console.log('Error decoding audio "' + audio.files[i - 1] + '".')
+//                 })
+//             };
+//             req.send()
+//         })()
+//     }
+//     for (var a in audio.effects) {
+//         (function() {
+//             var i = parseInt(a) + 1;
+//             var req = new XMLHttpRequest;
+//             req.open("GET", audio.effects[i - 1], true);
+//             req.responseType = "arraybuffer";
+//             req.onload = function() {
+//                 context.decodeAudioData(req.response, function(buffer) {
+//                     audio.buffer_effects[i] = buffer;
+//                     var button = document.getElementById("effect-" + i);
+//                     button.disabled = false;
+//                     jQuery(button).html(button.getAttribute("data-name").replace(" ", "<br>")).removeClass("loading")
+//                 }, function() {
+// //drawVisual = requestAnimationFrame(draw); 
+
+
+
+
+
+//                     console.log('Error decoding effect "' + audio.effects[i - 1] + '".')
+//                 })
+//             };
+//             req.send()
+//         })()
+//     }
+//     jQuery(document).ready(function() {
+//         jQuery(window).resize(function() {
+//             //canvasloop.height = canvas_div.offsetHeight;
+//             //canvasloop.width = canvas_div.offsetWidth
+//         })
+//     })
+// }
+
+
+
+// function draw() {
+//       stats.begin();
+
+//        var array = new Uint8Array(myAudioAnalyser.frequencyBinCount);
+//         myAudioAnalyser.getByteFrequencyData(array);
+//               drawSpectrogram(array);
+
+//       drawSpectrogram(array)   
+//       stats.end();
+// ;
+//       drawVisual = requestAnimationFrame(draw);
+ 
+// };    
+
+// var stats = new Stats();
+// stats.setMode( 1 ); // 0: fps, 1: ms, 2: mb
+
+// // align top-left
+// stats.domElement.style.position = 'absolute';
+// stats.domElement.style.left = '0px';
+// stats.domElement.style.top = '0px';
+
+// document.body.appendChild( stats.domElement );
+
+//drawVisual = requestAnimationFrame(draw); 
+
+
+    function drawSpectrogram(array) {
+        // copy the current canvas onto the temp canvas
+      var el = document.getElementsByTagName("canvas")[0];
+      var ctx = el.getContext("2d");
+      tempCtx.drawImage(canvas, 0, 0, 2048, 1000);
+        // iterate over the elements from the array
+      var arrayLength = array.length
+      for (var i = 0; i < arrayLength; i++) {
+          // draw each pixel with the specific color
+          var value = array[i];
+          ctx.fillStyle = hot.getColor(value).hex();
+          ctx.fillRect(pxmult * frequencty_to_px(i), 1000 - 1,pxmult * frequencty_to_px(i+1)-pxmult * frequencty_to_px(i) , 1);
+          
+          //ctx.fillRect(10*i, 600 - 1, .1, 5);
+        }
+        
+        ctx.translate(0, -1);
+        // draw the copied image
+        ctx.drawImage(tempCanvas, 0, 0, 2048, 1000, 0, 0, 2048, 1000);
+        // reset the transformation matrix
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+   
+        // set translate on the canvas
+    
+    }
+
+        function drawcross(x,y,pxfreq) {
+
+      var c = document.getElementById("content");
+      var co = c.getContext("2d");
+
+
+
+  //   var contDiv = $('#current_system_map'); 
+  //   var offset = contDiv.offset();
+  /*   x = e.clientX-offset.left;
+     y = e.clientY-offset.top; */
+  // var x = event.pageX - canvas.offsetLeft;
+  // var y = event.pageY - canvas.offsetTop;
+  co.clearRect(0, 0, canvas.width, canvas.height);
+
+ var teoriafreq = px_to_frequency(pxfreq+.0001)
+  var note = teoria.note.fromFrequency( pxfreq);
+  co.font = "15px Ariel";
+  co.fillStyle = "white";
+  co.fillText( note.note + "," + teoriafreq + "," + note.cents, x + 10, y +20);
+
+  co.beginPath();
+  co.moveTo(0, y);
+  co.lineTo(2048, y);
+  co.moveTo(x, 0);
+  co.lineTo(x, 2048);
+  co.strokeStyle = "white"; //"rgb(255,255,255)";
+  co.stroke();
+  co.closePath();
+
+
+  var radius = syntheffect.scaleradius;
+
+  for (i = 1; i < 10; i++) {
+    co.beginPath();
+    co.arc(x, y, i * radius*syntheffect.ratio1, 2 * Math.PI, false);
+
+    co.lineWidth = .5;
+    co.strokeStyle = 'white';
+    co.stroke();
+    co.closePath();
+  }
+  for (i = 1; i < 10; i++) {
+    co.beginPath();
+    co.arc(x, y, i * radius * syntheffect.ratio2, 2 * Math.PI, false);
+
+    co.lineWidth = .3;
+    co.strokeStyle = 'white';
+    co.stroke();
+    co.closePath();
+  }
+
+};
+
+
+     function drawcrossprint(x,y,pxfreq) {
+
+      var c1 = document.getElementById("contentprint");
+      var co1 = c1.getContext("2d");
+
+
+
+  //   var contDiv = $('#current_system_map'); 
+  //   var offset = contDiv.offset();
+  /*   x = e.clientX-offset.left;
+     y = e.clientY-offset.top; */
+  // var x = event.pageX - canvas.offsetLeft;
+  // var y = event.pageY - canvas.offsetTop;
+   co1.clearRect(0, 0, canvas.width, canvas.height);
+
+  var teoriafreq = px_to_frequency(pxfreq+.0001)
+  var note = teoria.note.fromFrequency( pxfreq);
+  co1.font = "15px Ariel";
+  co1.fillStyle = "white";
+  co1.fillText( note.note + "," + teoriafreq + "," + note.cents + "," + y, x + 10, y + 60);
+
+  co1.beginPath();
+  co1.moveTo(0, y);
+  co1.lineTo(2048, y);
+  co1.moveTo(x, 0);
+  co1.lineTo(x, 2048);
+  co1.strokeStyle = "white"; //"rgb(255,255,255)";
+  co1.stroke();
+  co1.closePath();
+
+  var radius = syntheffect.scaleradius;
+
+  for (i = 1; i < 10; i++) {
+    co1.beginPath();
+    co1.arc(x, y, i * radius*syntheffect.ratio1, 2 * Math.PI, false);
+
+    co1.lineWidth = .5;
+    co1.strokeStyle = 'white';
+    co1.stroke();
+    co1.closePath();
+  }
+  for (i = 1; i < 10; i++) {
+    co1.beginPath();
+    co1.arc(x, y, i * radius * syntheffect.ratio2, 2 * Math.PI, false);
+
+    co1.lineWidth = .3;
+    co1.strokeStyle = 'white';
+    co1.stroke();
+    co1.closePath();
+  }
+};
+
+///////////////
+
+</script>
+
+
+
+
+
+
+
+
+
+   
+    <div class="recorder container">
+       
+           <h2>Record</h2>
+      <p>Record monitor volume: <input type="range" max="1" step="0.1" value="0" onchange="changeVolume(this.value)"/></p>
+      <p>
+        <button class="btn btn-primary" onclick="startRecording(this);">Record</button>
+        <button class="btn btn-warning" onclick="stopRecording(this);" disabled>Stop</button>
+      </p>
+      
+      <h2>Sounds</h2>
+      <p>
+        Sequencer
+        <button class="btn btn-primary" onclick="startSequencer(this);">Play</button>
+        <button class="btn btn-warning" onclick="stopSequencer(this);" disabled>Stop</button>
+      </p>
+      <table id="recordingslist">
+        <tr>
+          <th>Sound</th>
+          <th></th>
+          <th></th>
+          <th id="sequencerBoxes">
+            <!-- <p>Sequence</p> -->
+            <input type="checkbox"/>
+            <input type="checkbox"/>
+            <input type="checkbox"/>
+            <input type="checkbox"/>
+            <input type="checkbox"/>
+            <input type="checkbox"/>
+            <input type="checkbox"/>
+            <input type="checkbox"/>
+          </th>
+        </tr>
+        <tr>
+          <th>Drone</th>
+          <th>
+            <label for='BaseNote'>Base Note: <span class='controlVal'></span></label>
+            <input class='control' id='BaseNote' type='range' min='40' max='100' value='63'>
+          </th>
+          <th>
+            <label for='NumOsc'>Number of Generators: <span class='controlVal'></span></label>
+            <input class='control' id='NumOsc' type='range' min='1' max='40' value='40'>
+          </th>
+          <th>
+            <!-- <input type="checkbox" id="droneToggle" checked/> -->
+          </th>
+        </tr>
+      </table>
+    </div>
+    <div class="editor container">
+      <div class="row">
+        <div class="span12">
+          <center>
+             <div class="btn-toolbar">
+            <div class="btn-group">
+              <a class="btn btn-primary" onclick="$('#audioLayerControl')[0].copy();"><i class="icon-share icon-white"></i> Copy</a>
+              <a class="btn btn-primary" onclick="$('#audioLayerControl')[0].paste();"><i class="icon-chevron-down icon-white"></i> Paste</a>
+              <a class="btn btn-primary" onclick="$('#audioLayerControl')[0].cut();"><i class="icon-chevron-up icon-white"></i> Cut</a>
+              <a class="btn btn-primary" onclick="$('#audioLayerControl')[0].del();"><i class="icon-remove icon-white"></i> Delete</a>
+            </div>
+            <div class="btn-group">
+              <a class="btn btn-success" onclick="$('#audioLayerControl')[0].selectAll();"><i class="icon-resize-horizontal icon-white"></i> Select All</a>
+              <a class="btn btn-success" onclick="$('#audioLayerControl')[0].zoomIntoSelection();"><i class="icon-plus-sign icon-white"></i> Zoom To Selection</a>
+              <a class="btn btn-success" onclick="$('#audioLayerControl')[0].zoomToFit();"><i class="icon-fullscreen icon-white"></i> Zoom To Fit</a>
+            </div>
+          </div>
+        </center>
+        </div>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span4">
+          <h6>Spectrum</h6>
+          <div class="well">
+            <div id="spectrum"></div>
+          </div>
+        </div>
+        <div class="span8">
+          <h6>Editor</h6>
+          <div class="well">
+             <audioLayerControl id="audioLayerControl" title="CloudCompany.mp3" />
+          </div>
+          <!--<div id="editor">
+                <div id="editorbox">
+                    <audioLayerControl id="audioLayerControl" title="CloudCompany.mp3" />
+                </div>
+            </div>-->
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="span12">
+          <center>
+            <div class="btn-toolbar">
+              <div class="btn-group">
+                <a id="btn_play" class="btn btn-success btn-large" onclick="$('#audioLayerControl')[0].play()" rel="tooltip" title="first tooltip"><i class="icon-play icon-white"></i></a>
+                <a id="btn_pause" class="btn btn-success btn-large disabled"><i class="icon-pause icon-white"></i></a>
+                <a id="btn_stop" class="btn btn-success btn-large" onclick="$('#audioLayerControl')[0].stop()"><i class="icon-stop icon-white"></i></a>
+                <a id="btn_loop" class="btn btn-warning btn-large" data-toggle="button" onclick="$('#audioLayerControl')[0].toggleLoop();"><i class="icon-repeat icon-white"></i></a>
+              </div>
+              <div class="btn-group">
+                <!-- <a class="btn btn-large btn-primary" onclick="$('#audioLayerControl')[0].save($('#savelink')[0]);"><i class="icon-fire"></i> Render</a> -->
+                <button class="btn btn-large btn-success" id="savelink" onclick="$('#audioLayerControl')[0].saveBack();"><i class="icon-download"></i> Save</button>
+              </div>
+            </div>
+          </center>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span4 offset4">
+          <div class="progress progress-striped active">
+            <div id="app-progress" class="bar" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>  
+      <br>
+      <div class="row">
+        <div class="span1"><br></div>
+        <div class="span2">
+          <h6>Gain</h6>
+          <div class="well" style="height: 130px; position:relative">
+            <p>Change the volume of the selected audio sequence with the given gain multiplicator.</p>
+            
+              <div class="pull-right" style=" position:absolute; bottom: 5px; width: 100%;" >
+                <div class="btn-group" >
+                  
+                    <button class="btn btn-success" onclick="decrease_db()"><i class="icon-minus"></i></button>
+                    <button id="gain-db" class="btn disabled" onclick="gain_btn_clicked()">0 db</button>
+                    <button class="btn btn-success" onclick="increase_db()"><i class="icon-plus"></i></button> 
+                </div>
+              </div>
+            <script type="text/javascript">
+                var db_gain = 0;
+
+                function decrease_db()
+                {
+                  --db_gain;
+                  update_db_gain_btn();
+                }
+
+                function increase_db()
+                {
+                  ++db_gain;
+                  update_db_gain_btn();
+                }
+
+                function update_db_gain_btn()
+                {
+                  var gain_btn = $('#gain-db')[0];
+
+                  gain_btn.innerHTML = db_gain + ' db'; 
+
+                  if (db_gain === 0)
+                  {
+                    gain_btn.className = 'btn disabled';
+                  }
+                  else
+                  {
+                    gain_btn.className = 'btn btn-primary';
+                  }
+                }
+
+                function gain_btn_clicked()
+                {
+                  $('#audioLayerControl')[0].filterGain(db_gain);
+                  db_gain = 0;
+                  update_db_gain_btn();
+                }
+                </script>
+          </div>
+        </div>
+        <div class="span2">
+          <h6>Normalize</h6>
+          <div class="well" style="height: 130px; position:relative">
+            <p>Adjust the volume to the maximum of the selected audio sequence.</p>
+            <a style="position:absolute; bottom: 5px; right: 5px"  class="btn btn-primary pull-right" onclick="$('#audioLayerControl')[0].filterNormalize();">Apply</a>
+            <br>
+          </div>
+        </div>
+        <div class="span2">
+          <h6>Silence</h6>
+          <div class="well" style="height: 130px; position:relative">
+            <p>Silence the selected audio sequence</p>
+            <a style="position:absolute; bottom: 5px; right: 5px"  class="btn btn-primary pull-right" onclick="$('#audioLayerControl')[0].filterSilence();">Apply</a>
+            <br>
+          </div>
+        </div>
+        <div class="span2">
+          <h6>Fade In</h6>
+          <div class="well" style="height: 130px; position:relative">
+            <p>Create a linear fade int of the selected audio sequence</p>
+            <a style="position:absolute; bottom: 5px; right: 5px"  class="btn btn-primary pull-right" onclick="$('#audioLayerControl')[0].filterFadeIn();">Apply</a>
+            <br>
+          </div>
+        </div>
+        <div class="span2">
+          <h6>Fade Out</h6>
+          <div class="well" style="height: 130px; position:relative">
+            <p>Create a linear fade out of the selected audio sequence</p>
+            <a style="position:absolute; bottom: 5px; right: 5px" class="btn btn-primary pull-right" onclick="$('#audioLayerControl')[0].filterFadeOut();">Apply</a>
+            <br>
+          </div>
+        </div>
+        <div class="span1">
+
+        </div>
+
+     <div>
+        <h1>zMIDI example</h1>
+        <p id="status"></p>
+        <button id="connect">Connect to MIDI</button>
+     </div>
+        
+      </div>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="jquery/js/jquery-1.7.2.js"></script>
+    <script src="bootstrap/js/bootstrap-transition.js"></script>
+    <script src="bootstrap/js/bootstrap-alert.js"></script>
+    <script src="bootstrap/js/bootstrap-modal.js"></script>
+    <script src="bootstrap/js/bootstrap-dropdown.js"></script>
+    <script src="bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script src="bootstrap/js/bootstrap-tab.js"></script>
+    <script src="bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="bootstrap/js/bootstrap-popover.js"></script>
+    <script src="bootstrap/js/bootstrap-button.js"></script>
+    <script src="bootstrap/js/bootstrap-collapse.js"></script>
+    <script src="bootstrap/js/bootstrap-carousel.js"></script>
+    <script src="bootstrap/js/bootstrap-typeahead.js"></script>
+
+
+    <script type="text/javascript" src="app/js/ACFIRFilter.js"></script>
+    <script type="text/javascript" src="app/js/ACAAFilter.js"></script> 
+    <script type="text/javascript" src="app/js/ACSpectrum.js"></script>    
+    <script type="text/javascript" src="app/js/ACFFT.js"></script>
+    <script type="text/javascript" src="app/js/SpectrumWorker.js"></script>
+    <script type="text/javascript" src="app/js/SpectrumDisplay.js"></script>
+    <script type="text/javascript" src="app/js/audioplayback.js"></script>
+    <script type="text/javascript" src="app/js/filedropbox.js"></script>
+    <script type="text/javascript" src="app/js/fft.js"></script>
+    <script type="text/javascript" src="app/js/audioLayerControl.js"></script>
+    <script type="text/javascript" src="app/js/audiosequence.js"></script>
+    <script type="text/javascript" src="app/js/AudioSequenceEditor.js"></script>
+    <script type="text/javascript" src="app/js/mathutilities.js"></script>
+    <script type="text/javascript" src="app/js/wavetrack.js"></script>
+    <script type="text/javascript" src="app/js/binarytoolkit.js"></script>
+    <script type="text/javascript" src="app/js/filesystemutility.js"></script>
+    <script type="text/javascript" src="app/js/editorapp.js"></script>
+
+    <script src="js/lib/recorder.js"></script>
+    <script src="js/recordLive.js"></script>
+    <script src="js/sequencer.js"></script>
+    <script src="js/drone.js"></script>
+
+    <!-- include RequireJS to resolve dependencies -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.min.js" type="text/javascript"></script>
+
+
+
+    <script type="text/javascript">
+      $(window).load(function()
+      {
+        //$('.editor.container').addClass('invisible');
+        //$('.editor.container').removeClass('invisible');
+        onDocumentLoaded();
+      });
+
+
+
+
+
+        // resolve dependencies
+
+        requirejs.config({
+            baseUrl : "src/zmidi/",
+            urlArgs : "bust=" + Date.now()
+        });
+
+       
+
+        require( [ "zMIDI", "zMIDIEvent", "MIDINotes" ],
+
+                function( zMIDI, zMIDIEvent, MIDINotes )
+                {
+                    // cheap method to scope them on window for this demo
+                    window.zMIDI      = zMIDI;
+                    window.zMIDIEvent = zMIDIEvent;
+                    window.MIDINotes  = MIDINotes;
+
+                    // check if zMIDI is supported
+
+                    if ( !zMIDI.isSupported())
+                    {
+                        showMessage( "Web MIDI is not supported in this browser :( see more at http://www.github.com/igorski/zmidi" );
+                        connect.style.display = "none";
+                    }
+                    else
+                    {
+                        document.getElementById( "connect" ).addEventListener( "click", function( e )
+                        {
+                            zMIDI.connect( onConnectSuccess, onConnectFailure );
+                        });
+                    }
+                });
+
+        // demo functions
+
+        function onConnectSuccess()
+        {
+            var inputs = zMIDI.getInChannels();
+
+            if ( inputs.length === 0) {
+                onConnectFailure();
+            }
+            else {
+                var feedback = "", i = -1;
+
+                inputs.forEach( function( input )
+                {
+                    feedback += input.manufacturer + " " + input.name + "<br />";
+                    zMIDI.addMessageListener( ++i, messageHandler );
+                });
+                showMessage( "found these devices:<br /><br />" + feedback + "<br />now try sending MIDI messages<br />" );
+            }
+        }
+ var midivoice        
+ var midivoices = [];
+
+
+function ongoingVoiceMidiIndexById(idToFind) {
+
+  var midivoiceslength = midivoices.length;
+  for (var i = 0; i < midivoiceslength; i++) {
+    var id = midivoices[i].midikey;
+    
+    if (id == idToFind) {
+      return i;
+    }
+  }
+  return -1; // not found
+}
+
+
+        function messageHandler( event )
+        {
+            var msg = "";
+
+            switch ( event.type )
+            {
+                case zMIDIEvent.NOTE_ON:
+
+                    var pitch = MIDINotes.getPitchByNoteNumber( event.value );
+                    // msg = "note on event value: " + event.value + " ( note is " +
+                    //        pitch.note + pitch.octave + " @ " + pitch.frequency + "Hz ) " +
+                    //        "@ velocity " + event.velocity;
+                     // midivca.gain.value = event.velocity /100
+                     // midivco.frequency.value = pitch.frequency
+                     var midivoice = new Voicemidi(pitch.frequency,event.velocity-.7,event.value);
+                     midivoice.start();
+                     midivoices.push(midivoice);
+                     //console.log(event.value )
+                     //console.log(midivoice)
+
+                    break;
+
+                case zMIDIEvent.NOTE_OFF:
+
+                    msg = "note off event value: " + event.value + " @ velocity " + event.velocity;
+                    console.log(event.value)
+
+                   var touchesmidi = event.value;
+                   var midivoiceslength = midivoices.length;
+                   var pitch = MIDINotes.getPitchByNoteNumber( event.value );
+                  // var ongoingVoiceMidiIndexById = touches.length;
+                  for (var i = 0; i < midivoiceslength; i++) {
+                    
+                    var idx = ongoingVoiceMidiIndexById(touchesmidi);    
+                    if (idx >= 0) {
+             
+                        midivoices[idx].stop(); 
+                        midivoices.splice(idx, 1); // remove it; we're done
+                        //console.log("voiceupdate:" + idx + ".");     
+                    } else {
+                        //console.log("can't figure out which touch to continue");
+                    }
+                  }
+
+
+
+
+                    break;
+
+                case zMIDIEvent.CONTROL_CHANGE:
+                    var pitch = MIDINotes.getPitchByNoteNumber( event.value );
+                    // msg = "CC event value: " + event.velocity
+                   // midivoices[event.value].update(pitch.frequency,event.velocity);
+                    //console.log(midivoices)
+
+              var touchesmidi = event.value;
+               var midivoiceslength = midivoices.length;
+               var pitch = MIDINotes.getPitchByNoteNumber( event.value );
+              // var ongoingVoiceMidiIndexById = touches.length;
+              for (var i = 0; i < midivoiceslength; i++) {
+                
+                var idx = ongoingVoiceMidiIndexById(touchesmidi);    
+                if (idx >= 0) {
+                  
+                    midivoices[idx].update(pitch.frequency,event.velocity);
+                    //midivoices[idx].update(voicex,voicey);
+                    //log("voiceupdate:" + idx + ".");     
+                } else {
+                 // log("can't figure out which touch to continue");
+                }
+              }
+
+                    break;
+
+                default:
+                    // msg = "zMIDIEvent type : " + event.type + " with value " + event.value;
+                break;
+            }
+
+            // showMessage( "received on MIDI port " + event.port + ": " + msg + " coming in on channel " + event.channel + "<br />" );
+        }
+
+
+
+        function onConnectFailure()
+        {
+            showMessage( "Could not connect to MIDI peripherals..." );
+        }
+
+        function showMessage( aMessage )
+        {
+            document.getElementById( "status" ).innerHTML += aMessage;
+        }
+
+
+
+var Voicemidi = function(context,touch) {   
+    function Voicemidi(frequency,volume,midikey){
+      var lowNote = 0; // C4
+      var highNote = 7900; // B4
+      //this.attack = attack
+      //this.release = release
+
+      
+       
+        this.midikey = midikey;
+         
+      
+      //log("continuing touch " + 2 ^ (frequency/68.26));
+      this.frequency = frequency
+      this.frequency54 = frequency*2.5
+      this.volume = volume-.5
+ 
+      this.oscillators = [];
+      this.gains = [];
+     
+
+ };
+           
+
+     Voicemidi.prototype.start = function() {
+
+
+
+      var real = new Float32Array(21);
+      var imag = new Float32Array(21);   
+      real[0] = syntheffect.synthreal0
+      real[1] = syntheffect.synthreal1
+      real[2] = syntheffect.synthreal2
+      real[3] = syntheffect.synthreal3
+      real[4] = syntheffect.synthreal4
+      real[5] = syntheffect.synthreal5
+      real[6] = syntheffect.synthreal6
+      real[7] = syntheffect.synthreal7
+      real[8] = syntheffect.synthreal8
+      real[9] = syntheffect.synthreal9
+      real[10] = syntheffect.synthreal10
+      real[11] = syntheffect.synthreal11
+      real[12] = syntheffect.synthreal12
+      real[13] = syntheffect.synthreal13
+      real[14] = syntheffect.synthreal14
+      real[15] = syntheffect.synthreal15
+      real[16] = syntheffect.synthreal16
+      real[17] = syntheffect.synthreal17
+      real[18] = syntheffect.synthreal18
+      real[19] = syntheffect.synthreal19
+      real[20] = syntheffect.synthreal20
+
+
+      imag[0] = 0
+      imag[1] = 0
+      imag[2] = 0
+      imag[3] = 0
+      imag[4] = 0
+      imag[5] = 0
+      imag[6] = 0
+      imag[7] = 0
+      imag[8] = 0
+      imag[9] = 0
+      imag[10] = 0
+      imag[11] = 0
+      imag[12] = 0
+      imag[13] = 0
+      imag[14] = 0
+      imag[15] = 0
+      imag[16] = 0
+      imag[17] = 0
+      imag[18] = 0
+      imag[19] = 0
+      imag[20] = 0
+
+       
+     // var imag = new Float32Array(real.length);
+      var hornTable = context.createPeriodicWave(real, imag);
+      this.touch = touch    
+ /* VCA */
+      var vca = context.createGain();
+      vca.gain.value = this.volume
+/* VCO */
+      var vco = context.createOscillator();
+      //vco.type = "square";
+      vco.setPeriodicWave(hornTable);
+      vco.frequency.value = this.frequency;
+
+          var vco54 = context.createOscillator();
+      //vco.type = "square";
+      vco54.setPeriodicWave(hornTable);
+  
+      vco54.frequency.value = this.frequency54;
+  
+  
+      //envelope with 0.001 sec attack and 0.5 sec decay      
+      //var envelope = context.createEnvelope(attack,decay,sustain,release);
+
+
+      //var noiseGen = context.createNoiseGen(0,4096)
+      //noiseGen.connect(context.destination)
+      //noiseGen.connect(myAudioAnalyser)
+      //envelope.trigger(0.01);
+      //feedback delay of 0.4 seconds with 0.5x feedback
+           /* connections */
+       vco.connect(vca)
+      //  vco54.connect(vca)
+      //vca.connect(feedbackDelay);   
+      //vco.connect(context.destination)
+      // vca.connect(context.destination) 
+      //vca.connect(envelope)  
+
+      vco.start(0);  
+       //vco54.start(0);      
+
+
+      //var delay = new tuna.Delay({
+        //feedback: .7,    //0 to 1+
+        //delayTime: 350,    //how many milliseconds should the wet signal be delayed?
+        //wetLevel: 0.6,    //0 to 1+
+        //dryLevel: .4,       //0 to 1+
+        //cutoff: 300,      //cutoff frequency of the built in lowpass-filter. 20 to 22050
+        //bypass: 0
+      //});
+
+  
+
+    var now = context.currentTime;
+    vca.gain.cancelScheduledValues( now );
+    vca.gain.setValueAtTime(0, now)
+    vca.gain.linearRampToValueAtTime(vca.gain.value, now + syntheffect.source_attack)
+
+     // envelope.connect(context.destination)      
+      //vca.connect(context.destination);
+      vca.connect(synthphaser);
+      synthphaser.connect(synthtremolo)
+      synthtremolo.connect(synthchorus)
+      synthchorus.connect(synthoverdrive)
+      synthoverdrive.connect(synthfilter)
+      synthfilter.connect(synthcabinet)
+      synthcabinet.connect(synthdelay)
+      synthdelay.connect(synthcompressor)
+      synthcompressor.connect(systemvolume)
+      systemvolume.connect(context.destination)
+      systemvolume.connect(myAudioAnalyser)
+
+   
+    
+      this.oscillators.push(vco); 
+      this.gains.push(vca)
+
+    };
+
+  // Update the note frequency.
+  Voicemidi.prototype.updateFrequency = function(event) {
+    if (event.type == 'touchstart' || event.type == 'touchmove') {
+       var touch = event.touches[0];
+      voicemidi.updateFreq(touch.pageX, touch.pageY);
+    } else if (event.type == 'touchstart' || event.type == 'touchmove') {
+      var touch = event.touches[0];
+      voicemidi.calculateFrequency(touch.pageX, touch.pageY);
+
+    }
+  };
+  // Calculate the note frequency.
+  Voicemidi.calculateNote = function(posX) {
+    var noteDifference = highNote - lowNote;
+    var noteOffset = (noteDifference / el.offsetWidth) * (posX - el.offsetLeft);
+    return lowNote + noteOffset;
+  };  
+  // Calculate the volume.
+  Voicemidi.calculateVolume = function(posY) {
+    var volumeLevel = 1 - (((100 / el.offsetHeight) * (posY - el.offsetTop)) / 100);
+    return volumeLevel;
+  };
+    Voicemidi.prototype.update = function(x,y) {
+      this.gains.forEach(function(g, _) {
+      g.gain.value = y-0.5
+     // log("touch" + touch + "; " +  g.gain.value)
+     });
+      this.oscillators.forEach(function(oscillator, _) {
+      oscillator.frequency.value =  x
+      //log("touch" + touch + "; " + oscillator.frequency.value)
+     });
+
+    }; 
+    Voicemidi.prototype.stop = function() {     
+    var now = context.currentTime;
+      this.gains.forEach(function(vcagain, _) {
+              
+              vcagain.gain.cancelScheduledValues( now );
+              vcagain.gain.setValueAtTime(vcagain.gain.value, now)     
+            
+              vcagain.gain.linearRampToValueAtTime(0, now + syntheffect.source_decay)              
+      });          
+
+ 
+      this.oscillators.forEach(function(oscillator, _) {
+           
+              oscillator.stop(now + syntheffect.source_decay+0.0001);
+      });
+      delete this.oscillators
+      delete this.gains
+    };
+    return Voicemidi;
+  }(context);
+
+
+ //    var midivco = context.createOscillator();
+ //    var midivca = context.createGain();
+ //    midivca.gain.value = 0
+ //    midivco.frequency.value = 0
+ //    midivco.start(0);
+ //    midivco.connect(midivca)
+ //    midivca.connect(systemvolume)
+ //    midivca.connect(myAudioAnalyser)
+ //    midivca.connect(context.destination)
+ //    //var frequency = pitch.frequency
+ //    //var volume = event.velocity/100
+
+ // var voice = new Voice(frequencyx,volumey,delayvalue,feedbackvalue,attack,decay,sustain,release,touches[i]);
+ //    voice.start();
+ //    voices.push(voice);
+ //   voices[idx].update(voicex,voicey);
+
+ //     voices[idx].stop(); 
+ //      voices.splice(idx, 1); // remove it; we're done
+
+
+
+    </script>
+  </body>
+</html>
